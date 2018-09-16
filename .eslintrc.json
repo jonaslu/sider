@@ -1,0 +1,11 @@
+{
+  "extends": ["airbnb-base", "prettier"],
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "no-console": "off",
+    "arrow-body-style": "off",
+    "no-unused-vars": [2, { "args": "all", "argsIgnorePattern": "^_" }]
+  }
+}

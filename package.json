@@ -1,0 +1,39 @@
+{
+  "bin": "./sider.js",
+  "dependencies": {
+    "aws-sdk": "^2.210.0",
+    "bluebird": "^3.5.1",
+    "chalk": "^2.3.0",
+    "cli-table": "^0.3.1",
+    "commander": "^2.11.0",
+    "fast-levenshtein": "^2.0.6",
+    "fs-extra": "^4.0.2",
+    "klaw-sync": "^3.0.2",
+    "moment": "^2.19.2",
+    "nconf": "^0.9.1",
+    "prompt": "^1.0.0",
+    "untildify": "^3.0.2"
+  },
+  "name": "sider",
+  "version": "0.0.1",
+  "description": "Sider - database dumps made tolerable",
+  "main": "sider.js",
+  "devDependencies": {
+    "eslint": "^5.4.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-config-prettier": "^3.0.1",
+    "eslint-plugin-import": "^2.14.0"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "keywords": [
+    "docker",
+    "redis",
+    "dump.rdb",
+    "dumps",
+    "management"
+  ],
+  "author": "Jonas Lundberg",
+  "license": "MIT"
+}
