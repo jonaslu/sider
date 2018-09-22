@@ -1,8 +1,10 @@
 const chalk = require('chalk');
 const fs = require('fs-extra');
-const fileDb = require('./file-db');
 
-function addSnapshot(snapshotName, importSnapshotDiskPath) {
+const engines = require('./engines');
+const fileDb = require('./storage/file-db');
+
+function addSnapshot(snapshotName, engineName, importSnapshotDiskPath) {
   const importSnapshotPathExists = fs.pathExistsSync(importSnapshotDiskPath);
 
   if (!importSnapshotPathExists) {
@@ -10,9 +12,6 @@ function addSnapshot(snapshotName, importSnapshotDiskPath) {
     console.error(`File ${chalk.blue(importSnapshotDiskPath)} not found`);
     process.exit(1);
   }
-
-  // TODO Check that it's name is *.rdb
-  // TODO If a directory, scan its subfolders for any *.rdb and give option on which found to import
 
   const existingSnapshot = fileDb.getSnapshot(snapshotName);
 
@@ -22,11 +21,17 @@ function addSnapshot(snapshotName, importSnapshotDiskPath) {
         existingSnapshot.path
       }`
     );
-
     process.exit(1);
   }
 
-  fileDb.addSnapshot(snapshotName, importSnapshotDiskPath);
+  const engine = engines.getEngine(engineName);
+  const engineSnapshotFolder = fileDb.getSnapshotFolder(
+    snapshotName,
+    engineName,
+  );
+
+  engine.load(importSnapshotDiskPath, engineSnapshotFolder);
+  // !! TODO !! Add after-check of permissons et al
 }
 
 module.exports = {

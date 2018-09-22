@@ -1,6 +1,8 @@
 #! /usr/bin/env node
 
 const commander = require('commander');
+
+require('./global-error-handler');
 const notFoundCommand = require('./not-found-command');
 
 commander

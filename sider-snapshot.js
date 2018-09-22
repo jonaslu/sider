@@ -2,15 +2,16 @@ const CliTable = require('cli-table');
 const commander = require('commander');
 const moment = require('moment');
 
-const fileDb = require('./file-db');
+require('./global-error-handler');
+const fileDb = require('./storage/file-db');
 const snapshots = require('./snapshots');
 const notFoundCommand = require('./not-found-command');
 
 let commandFound = false;
 
-function addSnapshot(snapshotName, importSnapshotDiskPath) {
+function addSnapshot(engineName, snapshotName, importSnapshotDiskPath, _) {
   commandFound = true;
-  snapshots.addSnapshot(snapshotName, importSnapshotDiskPath);
+  snapshots.addSnapshot(snapshotName, engineName, importSnapshotDiskPath);
 }
 
 function removeSnapshot(snapshotName) {
@@ -31,13 +32,13 @@ function listSnapshots() {
   commandFound = true;
 
   const table = new CliTable({
-    head: ['name', 'created', 'last used', 'dbs']
+    head: ['name', 'engine', 'created', 'last used', 'dbs']
   });
 
   const dbs = fileDb.getDbsAsArray();
 
   const tableData = fileDb.getSnapshotsAsArray().map(snapshot => {
-    const { snapshotName, stats: { birthtime, mtime } } = snapshot;
+    const { snapshotName, engineName,  stats: { birthtime, mtime } } = snapshot;
 
     const dbsClonedFromSnapshot = dbs
       .filter(db => db.snapshotName === snapshotName)
@@ -45,6 +46,7 @@ function listSnapshots() {
 
     return [
       snapshotName,
+      engineName,
       moment(birthtime).fromNow(),
       moment(mtime).fromNow(),
       dbsClonedFromSnapshot.join(',')
@@ -57,7 +59,7 @@ function listSnapshots() {
 
 function setupCommanderArguments() {
   commander
-    .command('add <snapshotName> <path>')
+    .command('add <engineName> <snapshotName> <path> [engineParameters]')
     .description('adds the named snapshot')
     .action(addSnapshot);
 
@@ -76,14 +78,6 @@ function setupCommanderArguments() {
     .description('controls snapshots')
     .usage('<command> [arguments]');
 }
-
-function printErrorAndExit(error) {
-  console.error(error);
-  process.exit(1);
-}
-
-process.on('unhandledRejection', printErrorAndExit);
-process.on('uncaughtException', printErrorAndExit);
 
 setupCommanderArguments();
 commander.parse(process.argv);

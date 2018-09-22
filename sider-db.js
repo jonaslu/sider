@@ -1,19 +1,20 @@
 const commander = require('commander');
 const CliTable = require('cli-table');
 const moment = require('moment');
-const path = require('path');
 
-const fileDb = require('./file-db');
-const runDb = require('./start-engine');
+require('./global-error-handler');
+const engines = require('./engines');
+const fileDb = require('./storage/file-db');
 const notFoundCommand = require('./not-found-command');
 const snapshots = require('./snapshots');
 
 let commandFound = false;
 
-function cloneSnapshotToDb(dbName, snapshotName, port) {
+function cloneSnapshotToDb(dbName, snapshotName, dbPort) {
   const snapshot = fileDb.getSnapshot(snapshotName);
 
   if (!snapshot) {
+    // !! TODO !! Did you mean?
     console.error('Snapshot does not exist');
     process.exit(1);
   }
@@ -25,46 +26,36 @@ function cloneSnapshotToDb(dbName, snapshotName, port) {
     process.exit(1);
   }
 
-  fileDb.cloneSnapshotToDb(dbName, snapshotName, port);
+  fileDb.cloneSnapshotToDb(dbName, snapshotName, dbPort);
 
   return true;
 }
 
-function startDbInternal(dbName, port) {
-  let dbPort = port;
-  const dbDirectory = fileDb.getDb(dbName);
-
-  if (!dbDirectory) {
-    console.error('Error: db not found');
-    process.exit(1);
-  }
-
-  if (!port) {
-    dbPort = dbDirectory.port;
-  }
-
-  // This should probably be handled by fileDb
-  const dbPortPath = path.join(path.dirname(dbDirectory.path), path.sep);
-
-  runDb.runSingleDb(
-    dbPortPath,
-    dbName,
-    dbPort
-  );
-}
-
 function startDb(dbName, snapshotName, options) {
   commandFound = true;
-
   const { port } = options;
 
   if (snapshotName) {
+    // !! TODO !! Port should be set as engine defaults
     if (!cloneSnapshotToDb(dbName, snapshotName, port || '6379')) {
       return;
     }
   }
 
-  startDbInternal(dbName, port);
+  const db = fileDb.getDb(dbName);
+
+  if (!db) {
+    // !! TODO !! Did you mean?
+    console.error(`Error: db ${dbName} not found`);
+    process.exit(1);
+  }
+
+  const { dbPort, dbPath, engineName } = db;
+
+  const engine = engines.getEngine(engineName);
+  const enginePort = port || dbPort;
+
+  engine.start(dbPath, dbName, enginePort);
 }
 
 function removeDb(dbName) {
@@ -73,9 +64,8 @@ function removeDb(dbName) {
   const db = fileDb.getDb(dbName);
 
   if (!db) {
-    console.error(
-      `Error: cannot remove db ${dbName} - not found`
-    );
+    // !! TODO !! Did you mean?
+    console.error(`Error: cannot remove db ${dbName} - not found`);
     process.exit(1);
   }
 
@@ -86,14 +76,15 @@ function listDbs() {
   commandFound = true;
 
   const table = new CliTable({
-    head: ['name', 'snapshot', 'port', 'created', 'last used']
+    head: ['name', 'snapshot', 'engine', 'port', 'created', 'last used']
   });
 
   const tableData = fileDb.getDbsAsArray().map(db => {
     const {
       dbName,
       snapshotName,
-      port,
+      engineName,
+      dbPort,
       stats: { birthtime, mtime }
     } = db;
 
@@ -102,7 +93,8 @@ function listDbs() {
     return [
       dbName,
       snapshotName,
-      port,
+      engineName,
+      dbPort,
       moment(birthtime).fromNow(),
       moment(mtime).fromNow()
     ];
@@ -121,7 +113,14 @@ function promoteToSnapshot(dbName, snapshotName) {
 
   const db = fileDb.getDb(dbName);
 
-  snapshots.addSnapshot(snapshotName, db.path);
+  if (!db) {
+    // !! TODO !! Did you mean?
+    console.error(`Error: cannot promote db ${dbName} - not found`);
+    process.exit(1);
+  }
+
+  const { dbPath, engineName } = db;
+  snapshots.addSnapshot(snapshotName, engineName, dbPath);
 }
 
 function resetDb(dbName) {
@@ -130,6 +129,7 @@ function resetDb(dbName) {
   const db = fileDb.getDb(dbName);
 
   if (!db) {
+    // !! TODO !! Did you mean?
     console.error(`Error: cannot reset db ${dbName} - not found`);
 
     process.exit(1);
@@ -137,11 +137,9 @@ function resetDb(dbName) {
 
   fileDb.removeDb(dbName);
 
-  fileDb.cloneSnapshotToDb(
-    dbName,
-    db.snapshotName,
-    db.port
-  );
+  const { snapshotName, dbPort } = db;
+
+  fileDb.cloneSnapshotToDb(dbName, snapshotName, dbPort);
 }
 
 function setupCommanderArguments() {
