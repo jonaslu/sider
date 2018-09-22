@@ -51,11 +51,9 @@ function startDb(dbName, snapshotName, options) {
   }
 
   const { dbPort, dbPath, engineName } = db;
-
-  const engine = engines.getEngine(engineName);
   const enginePort = port || dbPort;
 
-  engine.start(dbPath, dbName, enginePort);
+  engines.start(engineName, enginePort, dbPath, dbName);
 }
 
 function removeDb(dbName) {
@@ -174,11 +172,6 @@ function setupCommanderArguments() {
     .description('controls dbs')
     .usage('<command> [arguments]');
 }
-
-// I need this but it can be empty.
-// This causes any child-processes to receive SIGINT on ctrl+c and shut down before we do
-// Without this redis is killed hard without a chance to save background data
-process.on('SIGINT', () => {});
 
 setupCommanderArguments();
 commander.parse(process.argv);

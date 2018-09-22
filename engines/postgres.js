@@ -1,11 +1,9 @@
 const fs = require('fs-extra');
 const os = require('os');
-const path = require('path');
 const { spawn } = require('child_process');
 
-const config = require('../config');
-
-// !! TODO !! Create a docker-runner helper - unify this and postgres
+// !! TODO !! Create a docker-runner helper - unify this and redis
+// !! TODO !! Make ports and other stuff configurable
 function runDb(dbPath, dbName, port, echoOutput = true) {
   let osSpecificArgs = [];
 
@@ -27,13 +25,12 @@ function runDb(dbPath, dbName, port, echoOutput = true) {
     '--rm',
     ...osSpecificArgs,
     '-v',
-    `${dbPath}:/data`,
+    `${dbPath}:/var/lib/postgresql/data`,
     '-p',
-    `${port}:6379`,
+    `${port}:5432`,
     '--name',
     dbName,
-    `redis:${config.redisVersion}`,
-    'redis-server'
+    'postgres'
   ];
 
   const childProcess = spawn('docker', args);
@@ -42,6 +39,10 @@ function runDb(dbPath, dbName, port, echoOutput = true) {
     childProcess.stdout.on('data', data =>
       process.stdout.write(`${data.toString('utf-8')}`)
     );
+
+    childProcess.stderr.on('data', data => {
+      process.stdout.write(`${data.toString('utf-8')}`);
+    });
   }
 
   return new Promise(resolve => {
@@ -55,28 +56,18 @@ module.exports = {
   // !! TODO !! Make this return a promise (or have a done callback)
   // for things that are async
   load(dumpBasePath, snapshotStoreFolder, params) {
-    let copyFilePath;
-
     const dumpBasePathStats = fs.statSync(dumpBasePath);
 
-    if (dumpBasePathStats.isFile()) {
-      copyFilePath = dumpBasePath;
-    } else {
-      copyFilePath = path.join(dumpBasePath, 'dump.rdb');
-      const dumpFileExists = fs.pathExistsSync(copyFilePath);
-
-      if (!dumpFileExists) {
-        console.error(`Cannot find a dump.rdb file in path ${dumpBasePath}`);
-        process.exit(1);
-      }
+    if (!dumpBasePathStats.isDirectory()) {
+      console.error(
+        `Postgres currently only loads entire data-dirs, cannot find directory at ${dumpBasePath}`
+      );
+      process.exit(1);
     }
 
-    const dumpCopyFile = path.join(snapshotStoreFolder, 'dump.rdb');
-    fs.copySync(copyFilePath, dumpCopyFile);
+    fs.copySync(dumpBasePath, snapshotStoreFolder);
   },
   start(dbPath, dbName, dbPort, params) {
-    // !! TODO !! Make this into a promise so
-    // the outside can print starting and stopping messages
     return runDb(dbPath, dbName, dbPort);
   }
 };

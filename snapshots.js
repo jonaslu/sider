@@ -24,13 +24,12 @@ function addSnapshot(snapshotName, engineName, importSnapshotDiskPath) {
     process.exit(1);
   }
 
-  const engine = engines.getEngine(engineName);
   const engineSnapshotFolder = fileDb.getSnapshotFolder(
     snapshotName,
     engineName,
   );
 
-  engine.load(importSnapshotDiskPath, engineSnapshotFolder);
+  engines.loadFiles(engineName, importSnapshotDiskPath, engineSnapshotFolder);
   // !! TODO !! Add after-check of permissons et al
 }
 

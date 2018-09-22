@@ -3,6 +3,16 @@ It's assumed that a database runs on one
 port and that it somehow persists things in
 files or files in subfolders of a folder.
 
+# But I just want an empty database
+The default database hack
+
+It's a design decision to always
+have an db with a corresponding
+image - thus an image is needed.
+
+But you can create a default
+database easily.
+
 # Design choices
 
 
