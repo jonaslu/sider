@@ -9,10 +9,11 @@ commander
   .description('redis dump manager')
   .command('snapshot', 'manages snapshots')
   .command('db', 'controls the installed dbs')
+  .command('engine', 'manage settings on engines')
   .usage('<command> [arguments]');
 
 commander.parse(process.argv);
-const knownSubCommands = ['snapshot', 'db'];
+const knownSubCommands = ['snapshot', 'db', 'engine'];
 
 if (commander.args.length) {
   const [ enteredCommand ] = commander.args;

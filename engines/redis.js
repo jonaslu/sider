@@ -54,7 +54,7 @@ function runDb(dbPath, dbName, port, echoOutput = true) {
 module.exports = {
   // !! TODO !! Make this return a promise (or have a done callback)
   // for things that are async
-  load(dumpBasePath, snapshotStoreFolder, params) {
+  load(dumpBasePath, snapshotStoreFolder, config) {
     let copyFilePath;
 
     const dumpBasePathStats = fs.statSync(dumpBasePath);
@@ -74,7 +74,13 @@ module.exports = {
     const dumpCopyFile = path.join(snapshotStoreFolder, 'dump.rdb');
     fs.copySync(copyFilePath, dumpCopyFile);
   },
-  start(dbPath, dbName, dbPort, params) {
+  getConfig(storedSettings) {
+    return {
+      defaultPort: 6379,
+      ...storedSettings
+    };
+  },
+  start(dbPath, dbName, dbPort, config) {
     // !! TODO !! Make this into a promise so
     // the outside can print starting and stopping messages
     return runDb(dbPath, dbName, dbPort);

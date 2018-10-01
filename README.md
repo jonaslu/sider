@@ -148,3 +148,24 @@ dbsFolder: 'dbs/'
 The basepath is where sider will put all of it's data files. The snapshots
 folder is appended to the basePath to get the storage for snapshots and
 the same goes for dbs.
+
+# Geeky stuff
+
+## Design choices
+The file-db knows as much as possible about the file-system. It's like a db that deals with files.
+
+Engines knows about what engines are present and how to load and start them.
+
+Snapshots deals with. Snapshots on a higher level. It knows about.
+
+Db.
+
+## Engines
+Engines implement an interface looking like this:
+```
+  load(dumpBasePath, snapshotStoreFolder, config),
+  getConfig(storedSettings),
+  start(dbPath, dbName, dbPort, config)
+```
+
+Engines carry their own config, but know nothing of storage. It gets an object with user settings and should process them for validity.

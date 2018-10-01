@@ -50,7 +50,11 @@ const fs = require('fs-extra');
 const path = require('path');
 
 const { ensureFolder } = require('../helpers');
-const { snapshotsStoragePath, dbsStoragePath } = require('../config');
+const {
+  snapshotsStoragePath,
+  dbsStoragePath,
+  engineStoragePath
+} = require('../config');
 
 function isDirAtDepth(dir, basePath, depth) {
   return dir.replace(basePath, '').split(path.sep).length === depth;
@@ -150,6 +154,10 @@ function removeDb(dbName) {
   loadDbs();
 }
 
+function getEngineConfigPath(engineName) {
+  return path.join(engineStoragePath, engineName, 'config.json');
+}
+
 loadSnapshots();
 loadDbs();
 
@@ -208,6 +216,25 @@ module.exports = {
     return Object.keys(dbs).map(dbName =>
       Object.assign({}, { dbName }, dbs[dbName])
     );
+  },
+
+  getEngineConfig(engineName) {
+    const filePath = getEngineConfigPath(engineName);
+
+    try {
+      return fs.readJsonSync(filePath);
+    } catch (e) {
+      if (e.code === 'ENOENT') {
+        return {};
+      }
+
+      throw e;
+    }
+  },
+
+  setEngineConfig(engineName, config) {
+    const filePath = getEngineConfigPath(engineName);
+    fs.outputJsonSync(filePath, config, { spaces: 2 });
   },
 
   removeDb

@@ -55,7 +55,7 @@ function runDb(dbPath, dbName, port, echoOutput = true) {
 module.exports = {
   // !! TODO !! Make this return a promise (or have a done callback)
   // for things that are async
-  load(dumpBasePath, snapshotStoreFolder, params) {
+  load(dumpBasePath, snapshotStoreFolder, config) {
     const dumpBasePathStats = fs.statSync(dumpBasePath);
 
     if (!dumpBasePathStats.isDirectory()) {
@@ -67,7 +67,13 @@ module.exports = {
 
     fs.copySync(dumpBasePath, snapshotStoreFolder);
   },
-  start(dbPath, dbName, dbPort, params) {
+  getConfig(storedSettings) {
+    return {
+      defaultPort: 5432,
+      ...storedSettings
+    }
+  },
+  start(dbPath, dbName, dbPort, config) {
     return runDb(dbPath, dbName, dbPort);
   }
 };

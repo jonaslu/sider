@@ -29,6 +29,7 @@ function getEngine(engineName) {
 }
 
 module.exports = {
+  getEngine,
   loadFiles(engineName, importSnapshotDiskPath, engineSnapshotFolder) {
     const engine = getEngine(engineName);
     // !! TODO !! Make a bit more chatty
