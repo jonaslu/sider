@@ -26,10 +26,10 @@ function loadConfigJson(engineName) {
 function getConfig(engineName) {
   commandFound = true;
 
-  const engineConfig = loadConfigJson(engineName);
+  const storedConfig = loadConfigJson(engineName);
 
-  const configMessage = Object.keys(engineConfig)
-    .map(key => `${key}=${engineConfig[key]}`)
+  const configMessage = Object.keys(storedConfig)
+    .map(key => `${key}=${storedConfig[key]}`)
     .join('\n');
 
   console.log(configMessage);
@@ -37,9 +37,6 @@ function getConfig(engineName) {
 
 function setConfig(engineName, values) {
   commandFound = true;
-
-  // !! TODO !! Engine name exists with did you mean
-  engines.getEngine(engineName);
 
   const storedConfig = loadConfigJson(engineName);
 
@@ -53,6 +50,27 @@ function setConfig(engineName, values) {
   fileDb.setEngineConfig(engineName, { ...storedConfig, ...newSettings });
 }
 
+function removeOneConfigKey(storedConfig, key, engineName) {
+  const keyExists = Object.keys(storedConfig).find(storedKey => storedKey === key);
+
+  if (!keyExists) {
+    console.error(`Could not find key ${key} on engine ${engineName}`);
+    process.exit(1);
+  }
+
+  return delete storedConfig[key];
+}
+
+function removeConfig(engineName, keys) {
+  commandFound = true;
+
+  const storedConfig = loadConfigJson(engineName);
+
+  keys.forEach(key => removeOneConfigKey(storedConfig, key, engineName));
+
+  fileDb.setEngineConfig(engineName, storedConfig);
+}
+
 function setupCommanderArguments() {
   commander
     .command('get <engineName>')
@@ -63,6 +81,11 @@ function setupCommanderArguments() {
     .command('set <engineName> [values...]')
     .description('sets config on an engine')
     .action(setConfig);
+
+  commander
+    .command('remove <engineName> [keys...]')
+    .description('removes config on an engine')
+    .action(removeConfig);
 
   commander
     .name('sider engine')
