@@ -36,13 +36,24 @@ function startDb(dbName, snapshotName, options) {
   const { port } = options;
 
   if (snapshotName) {
-    // !! TODO !! Port should be set as engine defaults
-    if (!cloneSnapshotToDb(dbName, snapshotName, port || '6379')) {
+    let clonePort = port;
+
+    if (!clonePort) {
+      const snapshot = fileDb.getSnapshot(snapshotName);
+
+      const { engineName } = snapshot;
+      const { defaultPort } = engines.loadConfigJson(engineName);
+
+      clonePort = defaultPort.toString();
+    }
+
+    if (!cloneSnapshotToDb(dbName, snapshotName, clonePort)) {
       return;
     }
   }
 
   const db = fileDb.getDb(dbName);
+  const { dbPort, dbPath, engineName } = db;
 
   if (!db) {
     // !! TODO !! Did you mean?
@@ -50,7 +61,6 @@ function startDb(dbName, snapshotName, options) {
     process.exit(1);
   }
 
-  const { dbPort, dbPath, engineName } = db;
   const enginePort = port || dbPort;
 
   engines.start(engineName, enginePort, dbPath, dbName);
