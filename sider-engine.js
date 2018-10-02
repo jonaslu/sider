@@ -13,20 +13,10 @@ require('./global-error-handler');
 
 let commandFound = false;
 
-function loadConfigJson(engineName) {
-  // !! TODO !! Make engineExists with error logging
-  const engine = engines.getEngine(engineName);
-
-  const storedEngineConfig = fileDb.getEngineConfig(engineName);
-  const engineConfig = engine.getConfig(storedEngineConfig);
-
-  return engineConfig;
-}
-
 function getConfig(engineName) {
   commandFound = true;
 
-  const storedConfig = loadConfigJson(engineName);
+  const storedConfig = engines.loadConfigJson(engineName);
 
   const configMessage = Object.keys(storedConfig)
     .map(key => `${key}=${storedConfig[key]}`)
@@ -38,7 +28,7 @@ function getConfig(engineName) {
 function setConfig(engineName, values) {
   commandFound = true;
 
-  const storedConfig = loadConfigJson(engineName);
+  const storedConfig = engines.loadConfigJson(engineName);
 
   const newSettings = values.reduce((acc, keyValue) => {
     const [key, value] = keyValue.split('=');
@@ -64,7 +54,7 @@ function removeOneConfigKey(storedConfig, key, engineName) {
 function removeConfig(engineName, keys) {
   commandFound = true;
 
-  const storedConfig = loadConfigJson(engineName);
+  const storedConfig = engines.loadConfigJson(engineName);
 
   keys.forEach(key => removeOneConfigKey(storedConfig, key, engineName));
 

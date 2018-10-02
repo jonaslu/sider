@@ -2,6 +2,8 @@ const chalk = require('chalk');
 const path = require('path');
 const fs = require('fs-extra');
 
+const fileDb = require('../storage/file-db');
+
 function getEngineFile(engineName) {
   return path.join(__dirname, `${engineName}.js`);
 }
@@ -28,6 +30,7 @@ function getEngine(engineName) {
   process.exit(1);
 }
 
+
 module.exports = {
   getEngine,
   loadFiles(engineName, importSnapshotDiskPath, engineSnapshotFolder) {
@@ -51,5 +54,14 @@ module.exports = {
     engine.start(dbPath, dbName, dbPort).then(() => {
       console.log(chalk.green(`Successfully shut down db ${dbNameInBlue}`));
     });
+  },
+  loadConfigJson(engineName) {
+    // !! TODO !! Make engineExists with error logging
+    const engine = getEngine(engineName);
+
+    const storedEngineConfig = fileDb.getEngineConfig(engineName);
+    const engineConfig = engine.getConfig(storedEngineConfig);
+
+    return engineConfig;
   }
 };
