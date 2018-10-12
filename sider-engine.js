@@ -5,9 +5,10 @@
 
 const commander = require('commander');
 
-const engines = require('./engines/');
-const fileDb = require('./storage/file-db');
+const engines = require('./engines');
 const notFoundCommand = require('./not-found-command');
+const parseEngineConfig = require('./parse-engine-config.js');
+const fileDb = require('./storage/file-db');
 
 require('./global-error-handler');
 
@@ -25,17 +26,11 @@ function getConfig(engineName) {
   console.log(configMessage);
 }
 
-function setConfig(engineName, values) {
+function setConfig(engineName, config) {
   commandFound = true;
 
+  const newSettings = parseEngineConfig.parseConfigKeyValues(config)
   const storedConfig = engines.loadConfigJson(engineName);
-
-  const newSettings = values.reduce((acc, keyValue) => {
-    const [key, value] = keyValue.split('=');
-    acc[key] = value;
-
-    return acc;
-  }, {});
 
   fileDb.setEngineConfig(engineName, { ...storedConfig, ...newSettings });
 }
@@ -48,6 +43,7 @@ function removeOneConfigKey(storedConfig, key, engineName) {
     process.exit(1);
   }
 
+  // eslint-disable-next-line no-param-reassign
   return delete storedConfig[key];
 }
 

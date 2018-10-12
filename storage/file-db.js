@@ -13,7 +13,6 @@
       dbPath,
       snapshotName,
       engineName,
-      dbPort,
       stats: {
         https://nodejs.org/api/fs.html#fs_class_fs_stats
       }
@@ -27,7 +26,6 @@
     dbName,
     dbPath,
     snapshotName,
-    port,
     stats: {
       https://nodejs.org/api/fs.html#fs_class_fs_stats
     }
@@ -41,8 +39,7 @@
 
   /home/jonasl/.sider/dbs/ <- dbsStoragePath
   /home/jonasl/.sider/dbs/db-name/ <- dbNamePath
-  /home/jonasl/.sider/dbs/db-name/snapshot-name/ <- dbsnapshotPath
-  /home/jonasl/.sider/dbs/db-name/snapshot-name/port/ <- dbPortPath
+  /home/jonasl/.sider/dbs/db-name/snapshot-name/ <- dbSnapshotPath
 */
 
 const klaw = require('klaw-sync');
@@ -80,7 +77,7 @@ function getDirsAtDepth(dirToWalk, depthLimit) {
   return dirContent
     .filter(
       file =>
-        file.stats.isDirectory && isDirAtDepth(file.path, dirToWalk, depthLimit)
+        file.stats.isDirectory() && isDirAtDepth(file.path, dirToWalk, depthLimit)
     )
     .map(file => ({ ...file, path: ensureFolder(file.path) }));
 }
@@ -117,14 +114,11 @@ function loadSnapshots() {
 let dbs = {};
 
 function loadDbs() {
-  const dbStoragePathContents = getDirsAtDepth(dbsStoragePath, 3);
-
+  const dbStoragePathContents = getDirsAtDepth(dbsStoragePath, 2);
   if (!dbStoragePathContents.length) return;
 
   dbs = dbStoragePathContents.reduce((acc, klawStruct) => {
-    const [dbName, snapshotName, port] = klawStruct.path
-      .split(path.sep)
-      .slice(-4);
+    const [dbName, snapshotName] = klawStruct.path.split(path.sep).slice(-3);
 
     const { engineName } = snapshots[snapshotName];
 
@@ -132,9 +126,10 @@ function loadDbs() {
       dbPath: klawStruct.path,
       stats: klawStruct.stats,
       snapshotName,
-      dbPort: port,
       engineName
     };
+
+    // !! TODO !! Merge in settings here (getSettings from this file)
 
     if (acc[dbName]) {
       console.error(
@@ -155,7 +150,30 @@ function removeDb(dbName) {
 }
 
 function getEngineConfigPath(engineName) {
-  return path.join(engineStoragePath, engineName, 'config.json');
+  return path.join(engineStoragePath, engineName);
+}
+
+function getDbConfigPath(dbName) {
+  return path.join(dbsStoragePath, dbName);
+}
+
+function readConfig(configStoragePath) {
+  const filePath = path.join(configStoragePath, 'config.json');
+
+  try {
+    return fs.readJsonSync(filePath);
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      return {};
+    }
+
+    throw e;
+  }
+}
+
+function setConfig(configStoragePath, config) {
+  const filePath = path.join(configStoragePath, 'config.json');
+  fs.outputJsonSync(filePath, config, { spaces: 2 });
 }
 
 loadSnapshots();
@@ -194,11 +212,11 @@ module.exports = {
     loadSnapshots();
   },
 
-  cloneSnapshotToDb(dbName, snapshotName, dbPort) {
+  cloneSnapshotToDb(dbName, snapshotName) {
     const { snapshotPath } = snapshots[snapshotName];
 
-    // !! TODO !! This is crucial, put this in a function?
-    const dbPath = path.join(dbsStoragePath, dbName, snapshotName, dbPort);
+    // !! TODO !! This is now same base as getDbConfigPath
+    const dbPath = path.join(dbsStoragePath, dbName, snapshotName);
 
     fs.ensureDirSync(dbPath);
     fs.copySync(snapshotPath, dbPath, {
@@ -219,26 +237,24 @@ module.exports = {
   },
 
   getEngineConfig(engineName) {
-    const filePath = getEngineConfigPath(engineName);
-
-    try {
-      return fs.readJsonSync(filePath);
-    } catch (e) {
-      if (e.code === 'ENOENT') {
-        return {};
-      }
-
-      throw e;
-    }
+    const engineConfigPath = getEngineConfigPath(engineName);
+    return readConfig(engineConfigPath);
   },
 
   setEngineConfig(engineName, config) {
     const filePath = getEngineConfigPath(engineName);
-    fs.outputJsonSync(filePath, config, { spaces: 2 });
+    setConfig(filePath, config);
+  },
+
+  getDbConfig(dbName) {
+    const dbConfigPath = getDbConfigPath(dbName);
+    return readConfig(dbConfigPath);
+  },
+
+  setDbConfig(dbName, config) {
+    const dbConfigFilePath = getDbConfigPath(dbName);
+    setConfig(dbConfigFilePath, config);
   },
 
   removeDb
 };
-
-// module.exports.setEngineConfig('redis', { yak: 1 });
-// console.log(module.exports.getEngineConfig('redis'));

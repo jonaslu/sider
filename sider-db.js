@@ -6,11 +6,12 @@ require('./global-error-handler');
 const engines = require('./engines');
 const fileDb = require('./storage/file-db');
 const notFoundCommand = require('./not-found-command');
+const parseEngineConfig = require('./parse-engine-config.js');
 const snapshots = require('./snapshots');
 
 let commandFound = false;
 
-function cloneSnapshotToDb(dbName, snapshotName, dbPort) {
+function cloneSnapshotToDb(dbName, snapshotName) {
   const snapshot = fileDb.getSnapshot(snapshotName);
 
   if (!snapshot) {
@@ -26,34 +27,28 @@ function cloneSnapshotToDb(dbName, snapshotName, dbPort) {
     process.exit(1);
   }
 
-  fileDb.cloneSnapshotToDb(dbName, snapshotName, dbPort);
+  fileDb.cloneSnapshotToDb(dbName, snapshotName);
 
   return true;
 }
 
 function startDb(dbName, snapshotName, options) {
   commandFound = true;
-  const { port } = options;
 
-  if (snapshotName) {
-    let clonePort = port;
+  let isClone = !!snapshotName;
 
-    if (!clonePort) {
-      const snapshot = fileDb.getSnapshot(snapshotName);
+  if (snapshotName && snapshotName.includes('=')) {
+    options.push(snapshotName);
+    isClone = false;
+  }
 
-      const { engineName } = snapshot;
-      const { defaultPort } = engines.loadConfigJson(engineName);
-
-      clonePort = defaultPort.toString();
-    }
-
-    if (!cloneSnapshotToDb(dbName, snapshotName, clonePort)) {
+  if (isClone) {
+    if (!cloneSnapshotToDb(dbName, snapshotName)) {
       return;
     }
   }
 
   const db = fileDb.getDb(dbName);
-  const { dbPort, dbPath, engineName } = db;
 
   if (!db) {
     // !! TODO !! Did you mean?
@@ -61,9 +56,10 @@ function startDb(dbName, snapshotName, options) {
     process.exit(1);
   }
 
-  const enginePort = port || dbPort;
+  const { dbPath, engineName } = db;
+  const cliConfig = parseEngineConfig.parseConfigKeyValues(options);
 
-  engines.start(engineName, enginePort, dbPath, dbName);
+  engines.start(engineName, dbPath, dbName, cliConfig);
 }
 
 function removeDb(dbName) {
@@ -84,7 +80,7 @@ function listDbs() {
   commandFound = true;
 
   const table = new CliTable({
-    head: ['name', 'snapshot', 'engine', 'port', 'created', 'last used']
+    head: ['name', 'snapshot', 'engine', 'settings', 'created', 'last used']
   });
 
   const tableData = fileDb.getDbsAsArray().map(db => {
@@ -92,9 +88,10 @@ function listDbs() {
       dbName,
       snapshotName,
       engineName,
-      dbPort,
       stats: { birthtime, mtime }
     } = db;
+
+    // Get engine settings and any possible settings on the db and join them
 
     // TODO Factor out birthtime and mtime to common formatting util. Methinks the folder is a better option
     // when it comes to creation time
@@ -102,7 +99,6 @@ function listDbs() {
       dbName,
       snapshotName,
       engineName,
-      dbPort,
       moment(birthtime).fromNow(),
       moment(mtime).fromNow()
     ];
@@ -152,7 +148,7 @@ function resetDb(dbName) {
 
 function setupCommanderArguments() {
   commander
-    .command('start <name> [snapshot]')
+    .command('start <name> [snapshot] [parameters...]')
     .option('-p, --port <port>', 'Start on other than default port')
     .description('starts the named db')
     .action(startDb);

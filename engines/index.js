@@ -30,7 +30,6 @@ function getEngine(engineName) {
   process.exit(1);
 }
 
-
 module.exports = {
   getEngine,
   loadFiles(engineName, importSnapshotDiskPath, engineSnapshotFolder) {
@@ -38,7 +37,7 @@ module.exports = {
     // !! TODO !! Make a bit more chatty
     engine.load(importSnapshotDiskPath, engineSnapshotFolder);
   },
-  start(engineName, dbPort, dbPath, dbName) {
+  start(engineName, dbPath, dbName, cliConfig) {
     // I need this but it can be empty.
     // This causes any child-processes to receive SIGINT on ctrl+c and shut down before we do
     // Without this redis is killed hard without a chance to save background data
@@ -46,12 +45,25 @@ module.exports = {
 
     const engine = getEngine(engineName);
 
+    const storedEngineConfig = fileDb.getEngineConfig(engineName);
+    const engineConfig = engine.getConfig(storedEngineConfig);
+
+    const dbConfig = fileDb.getDbConfig(engineName);
+
+    const config = {
+      ...engineConfig,
+      ...dbConfig,
+      ...cliConfig
+    };
+
+    const { port } = config;
+
     const dbNameInBlue = chalk.blue(dbName);
     console.log(
-      chalk.green(`✨ Starting db ${dbNameInBlue} on port ${dbPort} 🚀`)
+      chalk.green(`✨ Starting db ${dbNameInBlue} on port ${port} 🚀`)
     );
 
-    engine.start(dbPath, dbName, dbPort).then(() => {
+    engine.start(dbPath, dbName, config).then(() => {
       console.log(chalk.green(`Successfully shut down db ${dbNameInBlue}`));
     });
   },

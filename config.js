@@ -24,7 +24,6 @@ const dbsStoragePath = untildify(dbsFullPath);
 const engineStoragePath = untildify(enginesFullPath)
 
 module.exports = {
-  redisVersion: '3.2.6',
   snapshotsStoragePath,
   dbsStoragePath,
   engineStoragePath

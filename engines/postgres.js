@@ -4,8 +4,9 @@ const { spawn } = require('child_process');
 
 // !! TODO !! Create a docker-runner helper - unify this and redis
 // !! TODO !! Make ports and other stuff configurable
-function runDb(dbPath, dbName, port, echoOutput = true) {
+function runDb(dbPath, dbName, config, echoOutput = true) {
   let osSpecificArgs = [];
+  const { port } = config;
 
   const platform = os.platform();
   if (platform === 'linux') {
@@ -69,11 +70,11 @@ module.exports = {
   },
   getConfig(storedSettings) {
     return {
-      defaultPort: 5432,
+      port: 5432,
       ...storedSettings
     }
   },
-  start(dbPath, dbName, dbPort, config) {
-    return runDb(dbPath, dbName, dbPort);
+  start(dbPath, dbName, config) {
+    return runDb(dbPath, dbName, config);
   }
 };

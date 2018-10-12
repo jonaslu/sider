@@ -3,11 +3,16 @@ const os = require('os');
 const path = require('path');
 const { spawn } = require('child_process');
 
-const config = require('../config');
-
 // !! TODO !! Create a docker-runner helper - unify this and postgres
-function runDb(dbPath, dbName, port, echoOutput = true) {
+function runDb(dbPath, dbName, config, echoOutput = true) {
   let osSpecificArgs = [];
+
+  const { port } = config;
+  let { version } = config;
+
+  if (!version) {
+    version = 'latest';
+  }
 
   const platform = os.platform();
   if (platform === 'linux') {
@@ -32,13 +37,18 @@ function runDb(dbPath, dbName, port, echoOutput = true) {
     `${port}:6379`,
     '--name',
     dbName,
-    `redis:${config.redisVersion}`,
+    `redis:${version}`,
     'redis-server'
   ];
 
   const childProcess = spawn('docker', args);
 
   if (echoOutput) {
+    // !! TODO !! Maybe always print errors? Or have a debug flag?
+    childProcess.stderr.on('data', data =>
+      process.stdout.write(`${data.toString('utf-8')}`)
+    );
+
     childProcess.stdout.on('data', data =>
       process.stdout.write(`${data.toString('utf-8')}`)
     );
@@ -76,13 +86,13 @@ module.exports = {
   },
   getConfig(storedSettings) {
     return {
-      defaultPort: 6379,
+      port: 6379,
       ...storedSettings
     };
   },
-  start(dbPath, dbName, dbPort, config) {
+  start(dbPath, dbName, config) {
     // !! TODO !! Make this into a promise so
     // the outside can print starting and stopping messages
-    return runDb(dbPath, dbName, dbPort);
+    return runDb(dbPath, dbName, config);
   }
 };
