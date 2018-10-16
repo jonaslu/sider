@@ -32,20 +32,20 @@ function cloneSnapshotToDb(dbName, snapshotName) {
   return true;
 }
 
-function startDb(dbName, snapshotName, options) {
+function startDb(dbName, snapshotName, parameters, cmd) {
   commandFound = true;
+
+  const { persist } = cmd;
 
   let isClone = !!snapshotName;
 
   if (snapshotName && snapshotName.includes('=')) {
-    options.push(snapshotName);
+    parameters.push(snapshotName);
     isClone = false;
   }
 
   if (isClone) {
-    if (!cloneSnapshotToDb(dbName, snapshotName)) {
-      return;
-    }
+    cloneSnapshotToDb(dbName, snapshotName);
   }
 
   const db = fileDb.getDb(dbName);
@@ -57,9 +57,13 @@ function startDb(dbName, snapshotName, options) {
   }
 
   const { dbPath, engineName } = db;
-  const cliConfig = parseEngineConfig.parseConfigKeyValues(options);
+  const cliConfig = parseEngineConfig.parseConfigKeyValues(parameters);
 
-  engines.start(engineName, dbPath, dbName, cliConfig);
+  if (persist) {
+    fileDb.setDbConfig(dbName, cliConfig);
+  }
+
+  engines.start(engineName, dbPath, dbName, persist ? {} : cliConfig);
 }
 
 function removeDb(dbName) {
@@ -149,7 +153,7 @@ function resetDb(dbName) {
 function setupCommanderArguments() {
   commander
     .command('start <name> [snapshot] [parameters...]')
-    .option('-p, --port <port>', 'Start on other than default port')
+    .option('-p, --persist', 'Persist the parameters')
     .description('starts the named db')
     .action(startDb);
 

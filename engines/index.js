@@ -47,8 +47,7 @@ module.exports = {
 
     const storedEngineConfig = fileDb.getEngineConfig(engineName);
     const engineConfig = engine.getConfig(storedEngineConfig);
-
-    const dbConfig = fileDb.getDbConfig(engineName);
+    const dbConfig = fileDb.getDbConfig(dbName);
 
     const config = {
       ...engineConfig,
