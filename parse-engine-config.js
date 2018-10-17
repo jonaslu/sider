@@ -6,5 +6,10 @@ module.exports = {
 
       return acc;
     }, {});
+  },
+  formatConfigKeyValuesForConsole(config) {
+    return Object.keys(config)
+      .map(key => `${key}=${config[key]}`)
+      .join('\n');
   }
 };

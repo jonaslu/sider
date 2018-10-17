@@ -19,9 +19,9 @@ function getConfig(engineName) {
 
   const storedConfig = engines.loadConfigJson(engineName);
 
-  const configMessage = Object.keys(storedConfig)
-    .map(key => `${key}=${storedConfig[key]}`)
-    .join('\n');
+  const configMessage = parseEngineConfig.formatConfigKeyValuesForConsole(
+    storedConfig
+  );
 
   console.log(configMessage);
 }
@@ -29,14 +29,16 @@ function getConfig(engineName) {
 function setConfig(engineName, config) {
   commandFound = true;
 
-  const newSettings = parseEngineConfig.parseConfigKeyValues(config)
+  const newSettings = parseEngineConfig.parseConfigKeyValues(config);
   const storedConfig = engines.loadConfigJson(engineName);
 
   fileDb.setEngineConfig(engineName, { ...storedConfig, ...newSettings });
 }
 
 function removeOneConfigKey(storedConfig, key, engineName) {
-  const keyExists = Object.keys(storedConfig).find(storedKey => storedKey === key);
+  const keyExists = Object.keys(storedConfig).find(
+    storedKey => storedKey === key
+  );
 
   if (!keyExists) {
     console.error(`Could not find key ${key} on engine ${engineName}`);
@@ -59,17 +61,17 @@ function removeConfig(engineName, keys) {
 
 function setupCommanderArguments() {
   commander
-    .command('get <engineName>')
+    .command('getconf <engineName>')
     .description('lists stored and default config on an engine')
     .action(getConfig);
 
   commander
-    .command('set <engineName> [values...]')
+    .command('setconf <engineName> [values...]')
     .description('sets config on an engine')
     .action(setConfig);
 
   commander
-    .command('remove <engineName> [keys...]')
+    .command('remconf <engineName> [keys...]')
     .description('removes config on an engine')
     .action(removeConfig);
 
@@ -87,7 +89,7 @@ if (!commander.args.length) {
   process.exit(1);
 }
 
-const knownSubCommands = ['config', 'set'];
+const knownSubCommands = ['config', 'setconf', 'getconf', 'remconf'];
 
 if (!commandFound) {
   notFoundCommand.printCommandHelp(knownSubCommands, commander);
