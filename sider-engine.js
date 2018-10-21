@@ -7,7 +7,7 @@ const commander = require('commander');
 
 const engines = require('./engines');
 const notFoundCommand = require('./not-found-command');
-const parseEngineConfig = require('./config-db');
+const configDb = require('./config-db');
 const fileDb = require('./storage/file-db');
 
 require('./global-error-handler');
@@ -18,14 +18,14 @@ function getConfig(engineName) {
   commandFound = true;
 
   const storedConfig = engines.loadConfigJson(engineName);
-  parseEngineConfig.printConfig(storedConfig);
+  configDb.printConfig(storedConfig);
 }
 
 function setConfig(engineName, configKeyValues) {
   commandFound = true;
 
   const storedConfig = engines.loadConfigJson(engineName);
-  const newSettings = parseEngineConfig.mergeConfig(configKeyValues, storedConfig);
+  const newSettings = configDb.mergeConfig(configKeyValues, storedConfig);
 
   fileDb.setEngineConfig(engineName, newSettings);
 }
@@ -34,7 +34,7 @@ function removeConfig(engineName, keys) {
   commandFound = true;
 
   const storedConfig = engines.loadConfigJson(engineName);
-  const newSettings = parseEngineConfig.removeConfig(keys, storedConfig);
+  const newSettings = configDb.removeConfig(keys, storedConfig);
 
   fileDb.setEngineConfig(engineName, storedConfig);
 }

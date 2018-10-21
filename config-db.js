@@ -33,6 +33,10 @@ module.exports = {
     console.log(configMessage);
   },
 
+  formatConfig(config) {
+    return formatConfigKeyValuesForConsole(config);
+  },
+
   mergeConfig(configKeyValues, storedConfig) {
     const newSettings = parseConfigKeyValues(configKeyValues);
     return { ...storedConfig, ...newSettings };

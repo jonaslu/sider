@@ -6,7 +6,7 @@ require('./global-error-handler');
 const engines = require('./engines');
 const fileDb = require('./storage/file-db');
 const notFoundCommand = require('./not-found-command');
-const parseEngineConfig = require('./config-db');
+const configDb = require('./config-db');
 const snapshots = require('./snapshots');
 
 let commandFound = false;
@@ -61,14 +61,14 @@ function startDb(dbName, snapshotName, configKeyValues, cmd) {
 
   if (persist) {
     const storedConfig = fileDb.getDbConfig(dbName);
-    const newSettings = parseEngineConfig.mergeConfig(
+    const newSettings = configDb.mergeConfig(
       configKeyValues,
       storedConfig
     );
 
     fileDb.setDbConfig(dbName, newSettings);
   } else {
-    cliConfig = parseEngineConfig.mergeConfig(configKeyValues, {});
+    cliConfig = configDb.mergeConfig(configKeyValues, {});
   }
 
   engines.start(engineName, dbPath, dbName, cliConfig);
@@ -88,12 +88,17 @@ function removeDb(dbName) {
   fileDb.removeDb(dbName);
 }
 
-function listDbs() {
+function listDbs(cmd) {
   commandFound = true;
+  const { settings } = cmd;
 
-  const table = new CliTable({
-    head: ['name', 'snapshot', 'engine', 'settings', 'created', 'last used']
-  });
+  const head = ['name', 'snapshot', 'engine', 'created', 'last used'];
+
+  if (settings) {
+    head.push('settings');
+  }
+
+  const table = new CliTable({ head });
 
   const tableData = fileDb.getDbsAsArray().map(db => {
     const {
@@ -103,17 +108,33 @@ function listDbs() {
       stats: { birthtime, mtime }
     } = db;
 
-    // Get engine settings and any possible settings on the db and join them
-
     // TODO Factor out birthtime and mtime to common formatting util. Methinks the folder is a better option
     // when it comes to creation time
-    return [
+    const returnValue = [
       dbName,
       snapshotName,
       engineName,
       moment(birthtime).fromNow(),
       moment(mtime).fromNow()
     ];
+
+    if (settings) {
+      const engine = engines.getEngine(engineName);
+
+      const storedEngineConfig = fileDb.getEngineConfig(engineName);
+      const engineConfig = engine.getConfig(storedEngineConfig);
+      const dbConfig = fileDb.getDbConfig(dbName);
+
+      const config = {
+        ...engineConfig,
+        ...storedEngineConfig,
+        ...dbConfig
+      };
+
+      returnValue.push(configDb.formatConfig(config));
+    }
+
+    return returnValue;
   });
 
   // TODO Take command-line parameters for sorting
@@ -162,14 +183,14 @@ function getConfig(dbName) {
   commandFound = true;
 
   const storedConfig = fileDb.getDbConfig(dbName);
-  parseEngineConfig.printConfig(storedConfig);
+  configDb.printConfig(storedConfig);
 }
 
 function setConfig(dbName, configKeyValues) {
   commandFound = true;
 
   const storedConfig = fileDb.getDbConfig(dbName);
-  const newSettings = parseEngineConfig.mergeConfig(
+  const newSettings = configDb.mergeConfig(
     configKeyValues,
     storedConfig
   );
@@ -181,7 +202,7 @@ function removeConfig(dbName, keys) {
   commandFound = true;
   const storedConfig = fileDb.getDbConfig(dbName);
 
-  const newSettings = parseEngineConfig.removeConfig(keys, storedConfig);
+  const newSettings = configDb.removeConfig(keys, storedConfig);
 
   fileDb.setDbConfig(dbName, newSettings);
 }
@@ -200,6 +221,7 @@ function setupCommanderArguments() {
 
   commander
     .command('list')
+    .option('-s, --settings', 'Lists out settings')
     .description('lists all dbs')
     .action(listDbs);
 
