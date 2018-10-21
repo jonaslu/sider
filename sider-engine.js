@@ -7,7 +7,7 @@ const commander = require('commander');
 
 const engines = require('./engines');
 const notFoundCommand = require('./not-found-command');
-const parseEngineConfig = require('./parse-engine-config.js');
+const parseEngineConfig = require('./config-db');
 const fileDb = require('./storage/file-db');
 
 require('./global-error-handler');
@@ -18,43 +18,23 @@ function getConfig(engineName) {
   commandFound = true;
 
   const storedConfig = engines.loadConfigJson(engineName);
-
-  const configMessage = parseEngineConfig.formatConfigKeyValuesForConsole(
-    storedConfig
-  );
-
-  console.log(configMessage);
+  parseEngineConfig.printConfig(storedConfig);
 }
 
-function setConfig(engineName, config) {
+function setConfig(engineName, configKeyValues) {
   commandFound = true;
 
-  const newSettings = parseEngineConfig.parseConfigKeyValues(config);
   const storedConfig = engines.loadConfigJson(engineName);
+  const newSettings = parseEngineConfig.mergeConfig(configKeyValues, storedConfig);
 
-  fileDb.setEngineConfig(engineName, { ...storedConfig, ...newSettings });
-}
-
-function removeOneConfigKey(storedConfig, key, engineName) {
-  const keyExists = Object.keys(storedConfig).find(
-    storedKey => storedKey === key
-  );
-
-  if (!keyExists) {
-    console.error(`Could not find key ${key} on engine ${engineName}`);
-    process.exit(1);
-  }
-
-  // eslint-disable-next-line no-param-reassign
-  return delete storedConfig[key];
+  fileDb.setEngineConfig(engineName, newSettings);
 }
 
 function removeConfig(engineName, keys) {
   commandFound = true;
 
   const storedConfig = engines.loadConfigJson(engineName);
-
-  keys.forEach(key => removeOneConfigKey(storedConfig, key, engineName));
+  const newSettings = parseEngineConfig.removeConfig(keys, storedConfig);
 
   fileDb.setEngineConfig(engineName, storedConfig);
 }
@@ -66,13 +46,13 @@ function setupCommanderArguments() {
     .action(getConfig);
 
   commander
-    .command('setconf <engineName> [values...]')
-    .description('sets config on an engine')
+    .command('setconf <engineName> [keyvalues...]')
+    .description('sets config(s) on an engine')
     .action(setConfig);
 
   commander
     .command('remconf <engineName> [keys...]')
-    .description('removes config on an engine')
+    .description('removes config(s) on an engine')
     .action(removeConfig);
 
   commander

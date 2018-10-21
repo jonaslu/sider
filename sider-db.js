@@ -6,7 +6,7 @@ require('./global-error-handler');
 const engines = require('./engines');
 const fileDb = require('./storage/file-db');
 const notFoundCommand = require('./not-found-command');
-const parseEngineConfig = require('./parse-engine-config.js');
+const parseEngineConfig = require('./config-db');
 const snapshots = require('./snapshots');
 
 let commandFound = false;
@@ -32,7 +32,7 @@ function cloneSnapshotToDb(dbName, snapshotName) {
   return true;
 }
 
-function startDb(dbName, snapshotName, parameters, cmd) {
+function startDb(dbName, snapshotName, configKeyValues, cmd) {
   commandFound = true;
 
   const { persist } = cmd;
@@ -40,7 +40,7 @@ function startDb(dbName, snapshotName, parameters, cmd) {
   let isClone = !!snapshotName;
 
   if (snapshotName && snapshotName.includes('=')) {
-    parameters.push(snapshotName);
+    configKeyValues.push(snapshotName);
     isClone = false;
   }
 
@@ -57,13 +57,21 @@ function startDb(dbName, snapshotName, parameters, cmd) {
   }
 
   const { dbPath, engineName } = db;
-  const cliConfig = parseEngineConfig.parseConfigKeyValues(parameters);
+  let cliConfig = {};
 
   if (persist) {
-    fileDb.setDbConfig(dbName, cliConfig);
+    const storedConfig = fileDb.getDbConfig(dbName);
+    const newSettings = parseEngineConfig.mergeConfig(
+      configKeyValues,
+      storedConfig
+    );
+
+    fileDb.setDbConfig(dbName, newSettings);
+  } else {
+    cliConfig = parseEngineConfig.mergeConfig(configKeyValues, {});
   }
 
-  engines.start(engineName, dbPath, dbName, persist ? {} : cliConfig);
+  engines.start(engineName, dbPath, dbName, cliConfig);
 }
 
 function removeDb(dbName) {
@@ -150,6 +158,34 @@ function resetDb(dbName) {
   fileDb.cloneSnapshotToDb(dbName, snapshotName, dbPort);
 }
 
+function getConfig(dbName) {
+  commandFound = true;
+
+  const storedConfig = fileDb.getDbConfig(dbName);
+  parseEngineConfig.printConfig(storedConfig);
+}
+
+function setConfig(dbName, configKeyValues) {
+  commandFound = true;
+
+  const storedConfig = fileDb.getDbConfig(dbName);
+  const newSettings = parseEngineConfig.mergeConfig(
+    configKeyValues,
+    storedConfig
+  );
+
+  fileDb.setDbConfig(dbName, newSettings);
+}
+
+function removeConfig(dbName, keys) {
+  commandFound = true;
+  const storedConfig = fileDb.getDbConfig(dbName);
+
+  const newSettings = parseEngineConfig.removeConfig(keys, storedConfig);
+
+  fileDb.setDbConfig(dbName, newSettings);
+}
+
 function setupCommanderArguments() {
   commander
     .command('start <name> [snapshot] [parameters...]')
@@ -178,6 +214,21 @@ function setupCommanderArguments() {
     .action(resetDb);
 
   commander
+    .command('setconf <name> [keyvalues...]')
+    .description('sets config(s) on a db')
+    .action(setConfig);
+
+  commander
+    .command('getconf <name>')
+    .description('gets config on a db')
+    .action(getConfig);
+
+  commander
+    .command('remconf <name> [keys...]')
+    .description('removes config(s) on a db')
+    .action(removeConfig);
+
+  commander
     .name('sider db')
     .description('controls dbs')
     .usage('<command> [arguments]');
@@ -191,7 +242,16 @@ if (!commander.args.length) {
   process.exit(1);
 }
 
-const knownSubCommands = ['start', 'remove', 'list', 'promote', 'reset'];
+const knownSubCommands = [
+  'start',
+  'remove',
+  'list',
+  'promote',
+  'reset',
+  'setconf',
+  'getconf',
+  'remconf'
+];
 
 if (!commandFound) {
   notFoundCommand.printCommandHelp(knownSubCommands, commander);
