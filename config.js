@@ -2,7 +2,9 @@ const nconf = require('nconf');
 const untildify = require('untildify');
 const { ensureFolder } = require('./helpers');
 
-nconf.file('~/.siderrc').defaults({
+const siderRcPath = untildify('~/.siderrc');
+
+nconf.file({ file: siderRcPath }).defaults({
   basePath: '~/.sider',
   snapshotsFolder: 'snapshots/',
   dbsFolder: 'dbs/',
@@ -21,7 +23,7 @@ const enginesFullPath = `${baseDir}${ensureFolder(nconf.get('engineFolder'))}`;
 
 const snapshotsStoragePath = untildify(snapshotsFullPath);
 const dbsStoragePath = untildify(dbsFullPath);
-const engineStoragePath = untildify(enginesFullPath)
+const engineStoragePath = untildify(enginesFullPath);
 
 module.exports = {
   snapshotsStoragePath,
