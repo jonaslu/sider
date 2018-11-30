@@ -217,7 +217,7 @@ the same goes for dbs and stores settings for the engines.
 If there are any breaking changes, there will be some sort
 of automated migration. Here's how you run them.
 
-# v0.0.1 -> v0.0.2
+## v0.0.1 -> v0.0.2
 What changed:
 Port is no longer included in the db path, but stored as a config parameter.
 This script gets the port and stores it in the db config then moving
@@ -225,3 +225,79 @@ the files in the port folder to a level above.
 
 To run it:
 `curl -sS https://raw.githubusercontent.com/jonaslu/sider/master/migrations/v0.0.1-v0.0.2/index.js | node`
+
+# Implementing your own engine
+Technically sider handles the juggling of paths and configs. It stores loaded
+dumps as snapshots, copies files to run as dbs and merges configs. The engine
+runner (if you opt to use docker) needs to
+
+## Assumptions
+Sider is built upon one assumptions: there is one data-file or data-folder that
+can be used repeatedly via docker (for now).
+
+## Three methods you should know about
+In order to add your missing engine to sider you need to implement three methods for that specific engine.
+
+## Loading a database
+```javascript
+load(dumpBasePath, snapshotStoreFolder, config)
+```
+This is where files gets imported into sider.
+The engine will know about any coversion that
+needs to be done and should probably do some
+basic sanity checking on the given files
+or folders (such as the files having the
+right extension and format).
+
+The load method takes three arguments: where the file(s)
+are currently located on the file-system, the output folder
+where any processed files are put.
+
+The config parameter is not yet used but will in the future
+contain any settings done on the engine affecting the import
+(such as version)
+
+No return values are expected.
+
+## Get default config
+```javascript
+getConfig(storedSettings)
+```
+
+Handles merging of default config with
+any stored settings on that engine.
+
+The getConfig has one argument: any stored
+settings on the engine (done my running
+`sider engine setconf <engine> <some=setting>).
+
+Expected to return the merged stored settings
+with any default settings. These settings
+are used for merging with db settings and
+cli settings when passed back starting the database.
+
+## Starting a database
+```javascript
+start(dbPath, dbName, config)
+```
+
+The magic of actually starting the database. This is where you'd figure out
+the docker incantation for running a database against a given data-folder provided by sider.
+
+Takes three arguments: the path to where the data-files are located on
+disk (sider copies the snapshot folder on start). If you're using
+docker this would be the folder mounted in as a docker volume at
+the corret database data-directory.
+
+The second parameter is the name of the database. This should
+be used for naming a docker-container so it's identifiable via
+the `docker ps` command. This is useful for any external access
+and manipulation of the running container via docker commands.
+
+The third parameter is the resulting config of merging the
+engine defaults given in `getConfig` with any database or
+command-line overrides. The engine should perform some validation
+on the given parameters issuing warnings or errors.
+
+The method is expected to return promise that resolves when
+the user shuts down the engine (presses ctrl+c).
