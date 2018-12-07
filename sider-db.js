@@ -1,6 +1,7 @@
 const commander = require('commander');
 const CliTable = require('cli-table');
 const moment = require('moment');
+const untildify = require('untildify');
 
 require('./global-error-handler');
 const engines = require('./engines');
@@ -61,10 +62,7 @@ function startDb(dbName, snapshotName, configKeyValues, cmd) {
 
   if (persist) {
     const storedConfig = fileDb.getDbConfig(dbName);
-    const newSettings = configDb.mergeConfig(
-      configKeyValues,
-      storedConfig
-    );
+    const newSettings = configDb.mergeConfig(configKeyValues, storedConfig);
 
     fileDb.setDbConfig(dbName, newSettings);
   } else {
@@ -190,10 +188,7 @@ function setConfig(dbName, configKeyValues) {
   commandFound = true;
 
   const storedConfig = fileDb.getDbConfig(dbName);
-  const newSettings = configDb.mergeConfig(
-    configKeyValues,
-    storedConfig
-  );
+  const newSettings = configDb.mergeConfig(configKeyValues, storedConfig);
 
   fileDb.setDbConfig(dbName, newSettings);
 }
@@ -205,6 +200,20 @@ function removeConfig(dbName, keys) {
   const newSettings = configDb.removeConfig(keys, storedConfig);
 
   fileDb.setDbConfig(dbName, newSettings);
+}
+
+function ejectDb(dbName, ejectPath) {
+  commandFound = true;
+  const db = fileDb.getDb(dbName);
+
+  if (!db) {
+    // !! TODO !! Did you mean?
+    console.error(`Error: db ${dbName} not found`);
+    process.exit(1);
+  }
+
+  const fullEjectPath = untildify(ejectPath);
+  fileDb.ejectDb(dbName, fullEjectPath);
 }
 
 function setupCommanderArguments() {
@@ -251,6 +260,11 @@ function setupCommanderArguments() {
     .action(removeConfig);
 
   commander
+    .command('eject <dbname> <ejectPath>')
+    .description('ejects the files stored in the db')
+    .action(ejectDb);
+
+  commander
     .name('sider db')
     .description('controls dbs')
     .usage('<command> [arguments]');
@@ -272,7 +286,8 @@ const knownSubCommands = [
   'reset',
   'setconf',
   'getconf',
-  'remconf'
+  'remconf',
+  'eject'
 ];
 
 if (!commandFound) {

@@ -77,7 +77,8 @@ function getDirsAtDepth(dirToWalk, depthLimit) {
   return dirContent
     .filter(
       file =>
-        file.stats.isDirectory() && isDirAtDepth(file.path, dirToWalk, depthLimit)
+        file.stats.isDirectory() &&
+        isDirAtDepth(file.path, dirToWalk, depthLimit)
     )
     .map(file => ({ ...file, path: ensureFolder(file.path) }));
 }
@@ -176,6 +177,10 @@ function setConfig(configStoragePath, config) {
   fs.outputJsonSync(filePath, config, { spaces: 2 });
 }
 
+function getDb(dbName) {
+  return dbs[dbName];
+}
+
 loadSnapshots();
 loadDbs();
 
@@ -226,9 +231,16 @@ module.exports = {
     loadDbs();
   },
 
-  getDb(dbName) {
-    return dbs[dbName];
+  ejectDb(dbName, ejectPath) {
+    const { dbPath } = getDb(dbName);
+
+    const ejectFullPath = path.join(ejectPath, `${dbName}-eject`);
+
+    fs.ensureDirSync(ejectFullPath);
+    fs.copySync(dbPath, ejectFullPath);
   },
+
+  getDb,
 
   getDbsAsArray() {
     return Object.keys(dbs).map(dbName =>
