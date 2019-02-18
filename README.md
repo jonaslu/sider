@@ -89,7 +89,7 @@ $> sider --help
 ## ...snapshots
 A snapshot is like a commit or errr... snapshot
 of a database. This is what you export from somehwere (most often your prod database)
-and add into sider. This is then what you then run a db from (via an engine).
+and add into sider. This is then what you then run a db from (via an engine). There is also an option to start with an empty database (no import dump required).
 
 ## ...dbs
 Dbs is the database files that the engine manipulates.
@@ -163,6 +163,11 @@ now have a snapshot loaded which can be listed with: `sider snapshot list`.
 When you're done with a snapshot you can issue
 `sider snapshot remove <snapshot-name>`. This will delete the
 snapshot and any associated dbs with it.
+
+If you want do start working with an entirely empty database and
+no dump is required you can start sider with the `sider snapshot add -e <engine-type> <snapshot-name> switch to let the database create an empty database as a snapshot.
+Do anything you need with the empty snapshot (such as setting up base-data)
+and then hit ctrl+c to stop and save it as a snapshot.
 
 ## Working with dbs
 First of all a db has to be cloned out from a snapshot. This makes snapshots

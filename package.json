@@ -12,7 +12,7 @@
     "untildify": "^3.0.2"
   },
   "name": "@jonaslu/sider",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Sider - database dumps made tolerable",
   "main": "sider.js",
   "repository": {

@@ -1,17 +1,40 @@
 const CliTable = require('cli-table');
 const commander = require('commander');
+const fs = require('fs-extra');
 const moment = require('moment');
 
 require('./global-error-handler');
+const engines = require('./engines');
 const fileDb = require('./storage/file-db');
 const snapshots = require('./snapshots');
 const notFoundCommand = require('./not-found-command');
 
 let commandFound = false;
 
-function addSnapshot(engineName, snapshotName, importSnapshotDiskPath, _) {
+function addSnapshot(engineName, snapshotName, importSnapshotDiskPath, options) {
   commandFound = true;
-  snapshots.addSnapshot(snapshotName, engineName, importSnapshotDiskPath);
+
+  const { empty } = options;
+  if (empty && importSnapshotDiskPath) {
+    console.error('Cannot create empty database with import path -e (empty flag)');
+    process.exit(1);
+  }
+
+  if (empty) {
+    const engineSnapshotFolder = fileDb.getSnapshotFolder(
+      snapshotName,
+      engineName,
+    );
+
+
+    // Will check engine for compilation errors at the same time
+    engines.getEngine(engineName);
+    fs.ensureDirSync(engineSnapshotFolder);
+
+    engines.start(engineName, engineSnapshotFolder, snapshotName);
+  } else {
+    snapshots.addSnapshot(snapshotName, engineName, importSnapshotDiskPath);
+  }
 }
 
 function removeSnapshot(snapshotName) {
@@ -59,7 +82,8 @@ function listSnapshots() {
 
 function setupCommanderArguments() {
   commander
-    .command('add <engineName> <snapshotName> <path> [engineParameters]')
+    .command('add <engineName> <snapshotName> [path]')
+    .option('-e, --empty', 'Ignore any path and create an empty database')
     .description('adds the named snapshot')
     .action(addSnapshot);
 
