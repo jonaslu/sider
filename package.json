@@ -1,18 +1,18 @@
 {
   "bin": "./sider.js",
   "dependencies": {
-    "chalk": "^2.3.0",
-    "cli-table": "^0.3.1",
-    "commander": "^2.11.0",
-    "fast-levenshtein": "^2.0.6",
-    "fs-extra": "^4.0.2",
-    "klaw-sync": "^3.0.2",
-    "moment": "^2.19.2",
-    "nconf": "^0.9.1",
-    "untildify": "^3.0.2"
+    "chalk": "2.3.0",
+    "cli-table": "0.3.1",
+    "commander": "2.11.0",
+    "fast-levenshtein": "2.0.6",
+    "fs-extra": "4.0.2",
+    "klaw-sync": "3.0.2",
+    "moment": "2.19.2",
+    "nconf": "0.9.1",
+    "untildify": "3.0.2"
   },
   "name": "@jonaslu/sider",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Sider - database dumps made tolerable",
   "main": "sider.js",
   "repository": {
@@ -24,10 +24,10 @@
   },
   "homepage": "https://github.com/jonaslu/sider",
   "devDependencies": {
-    "eslint": "^5.4.0",
-    "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-config-prettier": "^3.0.1",
-    "eslint-plugin-import": "^2.14.0"
+    "eslint": "5.4.0",
+    "eslint-config-airbnb-base": "13.1.0",
+    "eslint-config-prettier": "3.0.1",
+    "eslint-plugin-import": "2.14.0"
   },
   "scripts": {
     "lint": "eslint ."

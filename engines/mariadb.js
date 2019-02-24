@@ -2,8 +2,6 @@ const fs = require('fs-extra');
 const os = require('os');
 const { spawn } = require('child_process');
 
-// !! TODO !! Create a docker-runner helper - unify this and redis
-// !! TODO !! Make ports and other stuff configurable
 function runDb(dbPath, dbName, config, echoOutput = true) {
   let osSpecificArgs = [];
   const { port } = config;
@@ -17,24 +15,35 @@ function runDb(dbPath, dbName, config, echoOutput = true) {
       '-v',
       '/etc/passwd:/etc/passwd:ro',
       '-u',
-      `${uid}:${gid}`
+      `${uid}:${gid}`,
+      '-e',
+      `MYSQL_USER=${uid}`
     ];
   }
 
-  const args = [
+  const { password } = config;
+
+  const dockerArgs = [
     'run',
     '--rm',
     ...osSpecificArgs,
     '-v',
-    `${dbPath}:/var/lib/postgresql/data`,
+    `${dbPath}:/var/lib/mysql`,
     '-p',
-    `${port}:5432`,
+    `${port}:3306`,
     '--name',
     dbName,
-    'postgres'
   ];
 
-  const childProcess = spawn('docker', args);
+  if (password) {
+    dockerArgs.push('-e', `MYSQL_ROOT_PASSWORD=${password}`);
+  } else {
+    dockerArgs.push('-e', 'MYSQL_ALLOW_EMPTY_PASSWORD=yes')
+  }
+
+  dockerArgs.push('mariadb');
+
+  const childProcess = spawn('docker', dockerArgs);
 
   if (echoOutput) {
     childProcess.stdout.on('data', data =>
@@ -42,16 +51,14 @@ function runDb(dbPath, dbName, config, echoOutput = true) {
     );
 
     childProcess.stderr.on('data', data => {
-      process.stderr.write(`${data.toString('utf-8')}`);
+      process.stdout.write(`${data.toString('utf-8')}`);
     });
   }
 
   return new Promise(resolve => {
-    childProcess.on('close', resolve);
+    childProcess.on('close', () => resolve());
   });
 }
-
-// Start batch calls the above with printStdout = false
 
 module.exports = {
   // !! TODO !! Make this return a promise (or have a done callback)
@@ -61,7 +68,7 @@ module.exports = {
 
     if (!dumpBasePathStats.isDirectory()) {
       console.error(
-        `Postgres currently only loads entire data-dirs, cannot find directory at ${dumpBasePath}`
+        `Mariadb currently only loads entire data-dirs, cannot find directory at ${dumpBasePath}`
       );
       process.exit(1);
     }
@@ -70,11 +77,24 @@ module.exports = {
   },
   getConfig(storedSettings) {
     return {
-      port: 5432,
+      port: 3306,
       ...storedSettings
     };
   },
   start(dbPath, dbName, config) {
     return runDb(dbPath, dbName, config);
+  },
+  stop(dbName, config) {
+    const { password } = config;
+
+    const dockerArgs = ['exec', dbName, '/usr/bin/mysqladmin', '-uroot'];
+
+    if (password) {
+      dockerArgs.push(`-p${password}`);
+    }
+
+    dockerArgs.push('shutdown');
+
+    spawn('docker', dockerArgs);
   }
 };

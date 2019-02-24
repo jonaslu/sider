@@ -6,7 +6,8 @@ require('./global-error-handler');
 const notFoundCommand = require('./not-found-command');
 
 commander
-  .description('redis dump manager')
+  .version('0.0.4')
+  .description('Database dump manager')
   .command('snapshot', 'manages snapshots')
   .command('db', 'controls the installed dbs')
   .command('engine', 'manage settings on engines')

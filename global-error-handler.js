@@ -3,5 +3,5 @@ function printErrorAndExit(error) {
   process.exit(1);
 }
 
-process.on('unhandledRejection', printErrorAndExit);
-process.on('uncaughtException', printErrorAndExit);
+process.on('unhandledRejection', error => printErrorAndExit(error));
+process.on('uncaughtException', error => printErrorAndExit(error));

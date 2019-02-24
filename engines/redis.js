@@ -46,7 +46,7 @@ function runDb(dbPath, dbName, config, echoOutput = true) {
   if (echoOutput) {
     // !! TODO !! Maybe always print errors? Or have a debug flag?
     childProcess.stderr.on('data', data =>
-      process.stdout.write(`${data.toString('utf-8')}`)
+      process.stderr.write(`${data.toString('utf-8')}`)
     );
 
     childProcess.stdout.on('data', data =>

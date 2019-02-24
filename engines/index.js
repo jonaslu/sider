@@ -38,11 +38,6 @@ module.exports = {
     engine.load(importSnapshotDiskPath, engineSnapshotFolder);
   },
   start(engineName, dbPath, dbName, cliConfig) {
-    // I need this but it can be empty.
-    // This causes any child-processes to receive SIGINT on ctrl+c and shut down before we do
-    // Without this redis is killed hard without a chance to save background data
-    process.on('SIGINT', () => {});
-
     const engine = getEngine(engineName);
 
     const storedEngineConfig = fileDb.getEngineConfig(engineName);
@@ -62,8 +57,25 @@ module.exports = {
       chalk.green(`✨ Starting db ${dbNameInBlue} on port ${port} 🚀`)
     );
 
+    // commanderjs forwards any signals caught to the
+    // it's spawned child process - but the child
+    // process also get's the signal so we're
+    // called twice in the handler. Use this
+    // lo-fi flag to signal we've called stop
+    // already. .once() doesn't work.
+    let stopCalled = false;
+
+    // That ctrl+c magic
+    process.on('SIGINT', () => {
+      if (!stopCalled && engine.stop) {
+        engine.stop(dbName, config);
+        stopCalled = true;
+      }
+    });
+
+    // !! TODO !! Check exit-value
     engine.start(dbPath, dbName, config).then(() => {
-      console.log(chalk.green(`Successfully shut down db ${dbNameInBlue}`));
+      console.log(chalk.green(`Sucessfully shut down db ${dbNameInBlue}`));
     });
   },
   loadConfigJson(engineName) {

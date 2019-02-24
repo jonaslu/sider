@@ -1,3 +1,4 @@
+
 const commander = require('commander');
 const CliTable = require('cli-table');
 const moment = require('moment');
@@ -13,6 +14,7 @@ const snapshots = require('./snapshots');
 let commandFound = false;
 
 function cloneSnapshotToDb(dbName, snapshotName) {
+  commandFound = true
   const snapshot = fileDb.getSnapshot(snapshotName);
 
   if (!snapshot) {

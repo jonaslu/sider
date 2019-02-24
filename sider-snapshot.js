@@ -21,15 +21,10 @@ function addSnapshot(engineName, snapshotName, importSnapshotDiskPath, options) 
   }
 
   if (empty) {
-    const engineSnapshotFolder = fileDb.getSnapshotFolder(
-      snapshotName,
-      engineName,
-    );
+    const engineSnapshotFolder = snapshots.addSnapshot(snapshotName, engineName, importSnapshotDiskPath);
 
-
-    // Will check engine for compilation errors at the same time
-    engines.getEngine(engineName);
     fs.ensureDirSync(engineSnapshotFolder);
+    engines.getEngine(engineName);
 
     engines.start(engineName, engineSnapshotFolder, snapshotName);
   } else {
@@ -43,7 +38,7 @@ function removeSnapshot(snapshotName) {
   const snapshot = fileDb.getSnapshot(snapshotName);
 
   if (!snapshot) {
-    console.error(`Cannot find snapshot ${snapshot}`);
+    console.error(`Cannot find snapshot ${snapshotName}`);
     process.exit(1);
   }
 

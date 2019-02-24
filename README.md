@@ -84,6 +84,11 @@ $> sider db list -s
 $> sider --help
 ```
 
+# Supported databases
+- Redis
+- Postgres
+- Mariadb
+
 # Before we install: a word on
 
 ## ...snapshots
@@ -99,7 +104,7 @@ It's the running live version of a database.
 An engine is the type of database.
 Examples of types of databases are mysql, postgres, redis or what have you.
 An engine knows how to run a particular type of dump. Sider currently
-supports redis and postgres (more on the way).
+supports redis, postgres and mariadb (with more on the way).
 
 ## ...settings
 Setting govern what port the db starts up at and can hold other settings too depending on what
@@ -142,14 +147,14 @@ The settings can be removed on an engine and db via `remconf`.
 
 # Installation
 
-## Prerequisistes
+## Prerequisites
 Sider currently only depends on [docker](https://www.docker.com/) for running the different
 supported database engines. You must have docker installed
 and on your path. Test it by issuing: `docker info` in  a terminal.
 If there is some output from docker you're good to go.
 
 ## Getting it
-`npm install -g jonaslu/sider`
+`npm install -g @jonaslu/sider`
 
 ## Working with snapshots
 `sider snapshot add <engine-type> <snapshot-name> <path-to-snapshot>`
@@ -248,7 +253,7 @@ In order to add your missing engine to sider you need to implement three methods
 load(dumpBasePath, snapshotStoreFolder, config)
 ```
 This is where files gets imported into sider.
-The engine will know about any coversion that
+The engine will know about any conversion that
 needs to be done and should probably do some
 basic sanity checking on the given files
 or folders (such as the files having the
@@ -292,7 +297,7 @@ the docker incantation for running a database against a given data-folder provid
 Takes three arguments: the path to where the data-files are located on
 disk (sider copies the snapshot folder on start). If you're using
 docker this would be the folder mounted in as a docker volume at
-the corret database data-directory.
+the correct database data-directory.
 
 The second parameter is the name of the database. This should
 be used for naming a docker-container so it's identifiable via
@@ -306,3 +311,25 @@ on the given parameters issuing warnings or errors.
 
 The method is expected to return promise that resolves when
 the user shuts down the engine (presses ctrl+c).
+
+## Stopping
+```javascript
+stop(dbName, config)
+```
+
+If your database does not listen to the SIGINT (ctrl+c) signal
+there is a stop method you can implement to do
+any custom shutdown.
+
+# File permissions and using docker host volumes
+Whatever user you're using to run sider with has
+to have permissions to the files in the snapshot and
+db folder.
+
+On Linux this is currently for implemented engines this is done via
+running docker as the sider invoked user and
+mounting in /etc/group and /etc/passwd into the
+container (as per https://stackoverflow.com/a/45959754).
+
+This will give any written files the correct permissions
+on the host side.

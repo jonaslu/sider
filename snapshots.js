@@ -5,12 +5,14 @@ const engines = require('./engines');
 const fileDb = require('./storage/file-db');
 
 function addSnapshot(snapshotName, engineName, importSnapshotDiskPath) {
-  const importSnapshotPathExists = fs.pathExistsSync(importSnapshotDiskPath);
+  if (importSnapshotDiskPath) {
+    const importSnapshotPathExists = fs.pathExistsSync(importSnapshotDiskPath);
 
-  if (!importSnapshotPathExists) {
-    // !! TODO !! Factor these out to an error-file
-    console.error(`File ${chalk.blue(importSnapshotDiskPath)} not found`);
-    process.exit(1);
+    if (!importSnapshotPathExists) {
+      // !! TODO !! Factor these out to an error-file
+      console.error(`File ${chalk.blue(importSnapshotDiskPath)} not found`);
+      process.exit(1);
+    }
   }
 
   const existingSnapshot = fileDb.getSnapshot(snapshotName);
@@ -29,8 +31,12 @@ function addSnapshot(snapshotName, engineName, importSnapshotDiskPath) {
     engineName,
   );
 
-  engines.loadFiles(engineName, importSnapshotDiskPath, engineSnapshotFolder);
+  if (importSnapshotDiskPath) {
+    engines.loadFiles(engineName, importSnapshotDiskPath, engineSnapshotFolder);
+  }
   // !! TODO !! Add after-check of permissons et al
+
+  return engineSnapshotFolder;
 }
 
 module.exports = {
