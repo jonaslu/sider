@@ -6,7 +6,7 @@ in my database only to have a slip of the "continue"
 finger botch all of that setup overwriting the data.
 
 The thing is exacerbated by database dumps often being
-complicated to restore or reset with scarry sudo-rights
+complicated to restore or reset with scary sudo-rights
 writing into the wrong directory. Same with running two databases side by side - sudoisms abound!
 
 Enter **sider** which is a cli-tool that turns this juggling into a breeze by
