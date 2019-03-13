@@ -7,12 +7,12 @@
     "fast-levenshtein": "2.0.6",
     "fs-extra": "4.0.2",
     "klaw-sync": "3.0.2",
-    "moment": "2.19.2",
+    "moment": "2.24.0",
     "nconf": "0.9.1",
     "untildify": "3.0.2"
   },
   "name": "@jonaslu/sider",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Sider - database dumps made tolerable",
   "main": "sider.js",
   "repository": {
