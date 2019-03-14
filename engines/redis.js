@@ -64,7 +64,7 @@ function runDb(dbPath, dbName, config, echoOutput = true) {
 module.exports = {
   // !! TODO !! Make this return a promise (or have a done callback)
   // for things that are async
-  load(dumpBasePath, snapshotStoreFolder, config) {
+  load(dumpBasePath, snapshotStoreFolder, _config) {
     let copyFilePath;
 
     const dumpBasePathStats = fs.statSync(dumpBasePath);

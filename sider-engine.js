@@ -34,7 +34,7 @@ function removeConfig(engineName, keys) {
   commandFound = true;
 
   const storedConfig = engines.loadConfigJson(engineName);
-  const newSettings = configDb.removeConfig(keys, storedConfig);
+  configDb.removeConfig(keys, storedConfig);
 
   fileDb.setEngineConfig(engineName, storedConfig);
 }

@@ -1,13 +1,13 @@
 module.exports = {
   // !! TODO !! Make this return a promise (or have a done callback)
   // for things that are async
-  load(dumpBasePath, snapshotStoreFolder, config) {
-    console.log(arguments);
+  load(...args) {
+    console.log(args);
   },
-  getConfig(storedSettings) {
-    console.log(arguments);
+  getConfig(...args) {
+    console.log(args);
   },
-  start(dbPath, dbName, config) {
-    console.log(arguments);
+  start(...args) {
+    console.log(args);
   }
 };
