@@ -18,7 +18,7 @@ handling setup, running and restoring databases for you.
 Here's a every day usage scenario to get your appetite up:
 
 ```
-$> sider add snapshot redis prod-180922 /home/jonas/temp/dump.rdb
+$> sider snapshot add redis prod-180922 /home/jonas/temp/dump.rdb
 
 $> sider snapshot list
 ┌─────────────┬────────┬──────────────┬──────────────┬─────┐
