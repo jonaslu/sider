@@ -9,6 +9,7 @@
     "klaw-sync": "3.0.2",
     "moment": "2.24.0",
     "nconf": "0.9.1",
+    "tabtab": "^3.0.2",
     "untildify": "3.0.2"
   },
   "name": "@jonaslu/sider",

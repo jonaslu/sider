@@ -1,4 +1,3 @@
-
 const commander = require('commander');
 const CliTable = require('cli-table');
 const moment = require('moment');
@@ -14,7 +13,7 @@ const snapshots = require('./snapshots');
 let commandFound = false;
 
 function cloneSnapshotToDb(dbName, snapshotName) {
-  commandFound = true
+  commandFound = true;
   const snapshot = fileDb.getSnapshot(snapshotName);
 
   if (!snapshot) {
@@ -218,10 +217,14 @@ function ejectDb(dbName, ejectPath) {
   fileDb.ejectDb(dbName, fullEjectPath);
 }
 
+const completions = require('./completions.js');
+
 function setupCommanderArguments() {
+  const { start } = completions.db;
+
   commander
-    .command('start <name> [snapshot] [parameters...]')
-    .option('-p, --persist', 'Persist the parameters')
+    .command(start.commanderLine)
+    .option(completions.db.start.options.join(', '), 'Persist the parameters')
     .description('starts the named db')
     .action(startDb);
 
