@@ -1,6 +1,16 @@
 const fileDb = require('./storage/file-db');
+const engines = require('./engines')
 
 const emptyReturnValue = [];
+
+function getEngines(words) {
+  // If first word is set we're at the end...
+  if (words.length > 0) {
+    return emptyReturnValue;
+  }
+
+  return engines.listEngines()
+}
 
 function getDbNameWithSnapshotAndParameters(words) {
   switch (words.length) {
@@ -28,6 +38,20 @@ function getDbNameWithSnapshotAndParameters(words) {
 }
 
 module.exports = {
+  engine: {
+    setconf: {
+      commanderLine: 'setconf <engineName> [keyvalues...]',
+      complete: getEngines
+    },
+    getconf: {
+      commanderLine: 'getconf <engineName>',
+      complete: getEngines
+    },
+    remconf: {
+      commanderLine: 'remconf <engineName> [keys...]',
+      complete: getEngines
+    }
+  },
   db: {
     start: {
       commanderLine: 'start <name> [snapshot] [parameters...]',

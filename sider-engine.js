@@ -39,19 +39,21 @@ function removeConfig(engineName, keys) {
   fileDb.setEngineConfig(engineName, storedConfig);
 }
 
+const { engine } = require('./completions.js');
+
 function setupCommanderArguments() {
   commander
-    .command('getconf <engineName>')
+    .command(engine.getconf.commanderLine)
     .description('lists stored and default config on an engine')
     .action(getConfig);
 
   commander
-    .command('setconf <engineName> [keyvalues...]')
+    .command(engine.setconf.commanderLine)
     .description('sets config(s) on an engine')
     .action(setConfig);
 
   commander
-    .command('remconf <engineName> [keys...]')
+    .command(engine.remconf.commanderLine)
     .description('removes config(s) on an engine')
     .action(removeConfig);
 
@@ -69,7 +71,7 @@ if (!commander.args.length) {
   process.exit(1);
 }
 
-const knownSubCommands = ['config', 'setconf', 'getconf', 'remconf'];
+const knownSubCommands = Object.keys(engine);
 
 if (!commandFound) {
   notFoundCommand.printCommandHelp(knownSubCommands, commander);

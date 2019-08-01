@@ -32,6 +32,12 @@ function getEngine(engineName) {
 
 module.exports = {
   getEngine,
+  listEngines() {
+    return fs
+      .readdirSync(__dirname)
+      .filter(file => file !== 'index.js')
+      .map(file => path.parse(file).name);
+  },
   loadFiles(engineName, importSnapshotDiskPath, engineSnapshotFolder) {
     const engine = getEngine(engineName);
     // !! TODO !! Make a bit more chatty
