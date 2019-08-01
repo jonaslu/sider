@@ -220,7 +220,7 @@ function ejectDb(dbName, ejectPath) {
 const completions = require('./completions.js');
 
 function setupCommanderArguments() {
-  const { start } = completions.db;
+  const { start, remove } = completions.db;
 
   commander
     .command(start.commanderLine)
@@ -229,7 +229,7 @@ function setupCommanderArguments() {
     .action(startDb);
 
   commander
-    .command('remove <name>')
+    .command(remove.commanderLine)
     .description('removes the named db')
     .action(removeDb);
 

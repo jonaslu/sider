@@ -1,5 +1,5 @@
 const fileDb = require('./storage/file-db');
-const engines = require('./engines')
+const engines = require('./engines');
 
 const emptyReturnValue = [];
 
@@ -9,16 +9,18 @@ function getEngines(words) {
     return emptyReturnValue;
   }
 
-  return engines.listEngines()
+  return engines.listEngines();
+}
+
+function getDbName() {
+  return fileDb.getDbsAsArray().map(value => value.dbName);
 }
 
 function getDbNameWithSnapshotAndParameters(words) {
   switch (words.length) {
     case 0: {
       let returnValue = module.exports.db.start.options;
-      returnValue = returnValue.concat(
-        fileDb.getDbsAsArray().map(value => value.dbName)
-      );
+      returnValue = returnValue.concat(getDbName());
       return returnValue;
     }
     case 1: // if -p, --persist
@@ -27,7 +29,7 @@ function getDbNameWithSnapshotAndParameters(words) {
           value => value === words[words.length - 1]
         )
       ) {
-        return fileDb.getDbsAsArray().map(value => value.dbName);
+        return getDbName();
       }
       return fileDb.getSnapshotsAsArray().map(value => value.snapshotName);
     case 2:
@@ -57,6 +59,10 @@ module.exports = {
       commanderLine: 'start <name> [snapshot] [parameters...]',
       options: ['-p', '--persist'],
       complete: getDbNameWithSnapshotAndParameters
+    },
+    remove: {
+      commanderLine: 'remove <name>',
+      complete: getDbName
     }
   }
 };
