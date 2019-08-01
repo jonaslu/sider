@@ -63,6 +63,16 @@ module.exports = {
     remove: {
       commanderLine: 'remove <name>',
       complete: getDbName
+    },
+    list: {
+      commanderLine: 'list',
+      options: ['-s', '--settings'],
+      complete: words => {
+        if (words.length > 0) {
+          return emptyReturnValue;
+        }
+        return module.exports.db.list.options;
+      }
     }
   }
 };

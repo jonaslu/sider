@@ -220,7 +220,7 @@ function ejectDb(dbName, ejectPath) {
 const completions = require('./completions.js');
 
 function setupCommanderArguments() {
-  const { start, remove } = completions.db;
+  const { start, remove, list } = completions.db;
 
   commander
     .command(start.commanderLine)
@@ -234,8 +234,8 @@ function setupCommanderArguments() {
     .action(removeDb);
 
   commander
-    .command('list')
-    .option('-s, --settings', 'Lists out settings')
+    .command(list.commanderLine)
+    .option(list.options.join(', '), 'Lists out settings')
     .description('lists all dbs')
     .action(listDbs);
 
