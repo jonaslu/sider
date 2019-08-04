@@ -220,7 +220,7 @@ function ejectDb(dbName, ejectPath) {
 const completions = require('./completions.js');
 
 function setupCommanderArguments() {
-  const { start, remove, list } = completions.db;
+  const { start, remove, list, promote } = completions.db;
 
   commander
     .command(start.commanderLine)
@@ -240,7 +240,7 @@ function setupCommanderArguments() {
     .action(listDbs);
 
   commander
-    .command('promote <name> <newSnapshotName>')
+    .command(promote.commanderLine)
     .description('promotes a db to a snapshot')
     .action(promoteToSnapshot);
 

@@ -16,6 +16,10 @@ function getDbName() {
   return fileDb.getDbsAsArray().map(value => value.dbName);
 }
 
+function getSnapshots() {
+  return fileDb.getSnapshotsAsArray().map(value => value.snapshotName);
+}
+
 function getDbNameWithSnapshotAndParameters(words) {
   switch (words.length) {
     case 0: {
@@ -31,9 +35,21 @@ function getDbNameWithSnapshotAndParameters(words) {
       ) {
         return getDbName();
       }
-      return fileDb.getSnapshotsAsArray().map(value => value.snapshotName);
+      return getSnapshots();
     case 2:
-      return fileDb.getSnapshotsAsArray().map(value => value.snapshotName);
+      return getSnapshots();
+    default:
+      return emptyReturnValue;
+  }
+}
+
+function getDbNameAndSnapshot(words) {
+  switch (words.length) {
+    case 0: {
+      return getDbName();
+    }
+    case 1:
+      return getSnapshots();
     default:
       return emptyReturnValue;
   }
@@ -73,6 +89,10 @@ module.exports = {
         }
         return module.exports.db.list.options;
       }
+    },
+    promote: {
+      commanderLine: 'promote <name> <snapshotName>',
+      complete: getDbNameAndSnapshot
     }
   }
 };
