@@ -12,7 +12,11 @@ function getEngines(words) {
   return engines.listEngines();
 }
 
-function getDbName() {
+function getDbName(words) {
+  if (words && words.length > 0) {
+    return emptyReturnValue;
+  }
+
   return fileDb.getDbsAsArray().map(value => value.dbName);
 }
 
@@ -37,7 +41,15 @@ function getDbNameWithSnapshotAndParameters(words) {
       }
       return getSnapshots();
     case 2:
-      return getSnapshots();
+      if (
+        module.exports.db.start.options.find(
+          value => value === words[words.length - 2]
+        )
+      ) {
+        return getSnapshots();
+      }
+
+      return emptyReturnValue;
     default:
       return emptyReturnValue;
   }
@@ -93,6 +105,26 @@ module.exports = {
     promote: {
       commanderLine: 'promote <name> <snapshotName>',
       complete: getDbNameAndSnapshot
+    },
+    reset: {
+      commanderLine: 'reset <name>',
+      complete: getDbName
+    },
+    setconf: {
+      commanderLine: 'setconf <name> [keyvalues...]',
+      complete: getDbName
+    },
+    getconf: {
+      commanderLine: 'getconf <name>',
+      complete: getDbName
+    },
+    remconf: {
+      commanderLine: 'remconf <name> [keys...]',
+      complete: getDbName
+    },
+    eject: {
+      commanderLine: 'eject <name> <ejectPath>',
+      complete: getDbName
     }
   }
 };

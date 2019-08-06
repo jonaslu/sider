@@ -220,7 +220,7 @@ function ejectDb(dbName, ejectPath) {
 const completions = require('./completions.js');
 
 function setupCommanderArguments() {
-  const { start, remove, list, promote } = completions.db;
+  const { start, remove, list, promote, reset, setconf, getconf, remconf, eject } = completions.db;
 
   commander
     .command(start.commanderLine)
@@ -245,27 +245,27 @@ function setupCommanderArguments() {
     .action(promoteToSnapshot);
 
   commander
-    .command('reset <name>')
+    .command(reset.commanderLine)
     .description("resets a db to it's cloned snapshot state")
     .action(resetDb);
 
   commander
-    .command('setconf <name> [keyvalues...]')
+    .command(setconf.commanderLine)
     .description('sets config(s) on a db')
     .action(setConfig);
 
   commander
-    .command('getconf <name>')
+    .command(getconf.commanderLine)
     .description('gets config on a db')
     .action(getConfig);
 
   commander
-    .command('remconf <name> [keys...]')
+    .command(remconf.commanderLine)
     .description('removes config(s) on a db')
     .action(removeConfig);
 
   commander
-    .command('eject <dbname> <ejectPath>')
+    .command(eject.commanderLine)
     .description('ejects the files stored in the db')
     .action(ejectDb);
 
@@ -283,17 +283,7 @@ if (!commander.args.length) {
   process.exit(1);
 }
 
-const knownSubCommands = [
-  'start',
-  'remove',
-  'list',
-  'promote',
-  'reset',
-  'setconf',
-  'getconf',
-  'remconf',
-  'eject'
-];
+const knownSubCommands = Object.keys(completions.db);
 
 if (!commandFound) {
   notFoundCommand.printCommandHelp(knownSubCommands, commander);
