@@ -20,32 +20,34 @@ function getDbName(words) {
   return fileDb.getDbsAsArray().map(value => value.dbName);
 }
 
-function getSnapshots() {
+function getSnapshots(words) {
+  if (words && words.length > 0) {
+    return emptyReturnValue;
+  }
+
   return fileDb.getSnapshotsAsArray().map(value => value.snapshotName);
 }
 
 function getDbNameWithSnapshotAndParameters(words) {
+  let validParameter = false;
+  if (words && words.length > 0) {
+    validParameter = module.exports.db.start.options.find(
+      value => value === words[0]
+    );
+  }
+
   switch (words.length) {
     case 0: {
-      let returnValue = module.exports.db.start.options;
-      returnValue = returnValue.concat(getDbName());
-      return returnValue;
+      const returnValue = module.exports.db.start.options;
+      return returnValue.concat(getDbName());
     }
     case 1: // if -p, --persist
-      if (
-        module.exports.db.start.options.find(
-          value => value === words[words.length - 1]
-        )
-      ) {
+      if (validParameter) {
         return getDbName();
       }
       return getSnapshots();
     case 2:
-      if (
-        module.exports.db.start.options.find(
-          value => value === words[words.length - 2]
-        )
-      ) {
+      if (validParameter) {
         return getSnapshots();
       }
 
@@ -62,6 +64,37 @@ function getDbNameAndSnapshot(words) {
     }
     case 1:
       return getSnapshots();
+    default:
+      return emptyReturnValue;
+  }
+}
+
+function getSnapshotWithParameters(words) {
+  let validParameter = false;
+  if (words && words.length > 0) {
+    validParameter = module.exports.snapshot.add.options.find(
+      value => value === words[0]
+    );
+  }
+
+  switch (words.length) {
+    case 0: {
+      const returnValue = module.exports.snapshot.add.options;
+      return returnValue.concat(engines.listEngines());
+    }
+    case 1: {
+      if (validParameter) {
+        return engines.listEngines();
+      }
+      return getSnapshots();
+    }
+    case 2: {
+      if (validParameter) {
+        return getSnapshots();
+      }
+
+      return emptyReturnValue;
+    }
     default:
       return emptyReturnValue;
   }
@@ -125,6 +158,21 @@ module.exports = {
     eject: {
       commanderLine: 'eject <name> <ejectPath>',
       complete: getDbName
+    }
+  },
+  snapshot: {
+    add: {
+      commanderLine: 'add <engineName> <snapshotName> [path]',
+      options: ['-e', '--empty'],
+      complete: getSnapshotWithParameters
+    },
+    remove: {
+      commanderLine: 'remove <snapshotName>',
+      complete: getSnapshots
+    },
+    list: {
+      commanderLine: 'list',
+      complete: () => emptyReturnValue
     }
   }
 };

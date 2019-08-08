@@ -75,20 +75,24 @@ function listSnapshots() {
   console.log(table.toString());
 }
 
+const { snapshot } = require('./completions')
+
+const { add, remove, list } = snapshot;
+
 function setupCommanderArguments() {
   commander
-    .command('add <engineName> <snapshotName> [path]')
-    .option('-e, --empty', 'Ignore any path and create an empty database')
+    .command(add.commanderLine)
+    .option(add.options.join(', '), 'Ignore any path and create an empty database')
     .description('adds the named snapshot')
     .action(addSnapshot);
 
   commander
-    .command('remove <snapshotName>')
+    .command(remove.commanderLine)
     .description('removes the snapshot and associated dbs')
     .action(removeSnapshot);
 
   commander
-    .command('list')
+    .command(list.commanderLine)
     .description('lists all snapshots')
     .action(listSnapshots);
 
@@ -106,7 +110,7 @@ if (!commander.args.length) {
   process.exit(1);
 }
 
-const knownSubCommands = ['add', 'remove', 'list'];
+const knownSubCommands = Object.keys(snapshot);
 
 if (!commandFound) {
   notFoundCommand.printCommandHelp(knownSubCommands, commander);
