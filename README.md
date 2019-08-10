@@ -12,7 +12,22 @@ writing into the wrong directory. Same with running two databases side by side -
 Enter **sider** which is a cli-tool that turns this juggling into a breeze by
 handling setup, running and restoring databases for you.
 
-# How to use it
+# TL;DR
+Say to yourself: "I have docker installed" three times.
+
+```
+npm i -g @jonaslu/sider
+sider install-completion
+sider <tab><tab>
+```
+
+Check the [wiki](/wiki):
+
+# Supported databases
+- Redis
+- Postgres
+- Mariadb
+
 
 ## Common use case scenario:
 Here's a every day usage scenario to get your appetite up:
@@ -80,14 +95,13 @@ $> sider db list -s
 │                │             │        │             │             │ version=3.2.6 │
 └────────────────┴─────────────┴────────┴─────────────┴─────────────┴───────────────┘
 
+$> sider snapshot add -e postgres emptydb
+...Set up a empty database with some schema...
+...Go back when the data is botched to a clean slate...
+
 ...Oh, I wrote the program but can't remember that command-line switch...
 $> sider --help
 ```
-
-# Supported databases
-- Redis
-- Postgres
-- Mariadb
 
 # Before we install: a word on
 
@@ -150,11 +164,20 @@ The settings can be removed on an engine and db via `remconf`.
 ## Prerequisites
 Sider currently only depends on [docker](https://www.docker.com/) for running the different
 supported database engines. You must have docker installed
-and on your path. Test it by issuing: `docker info` in  a terminal.
+and on your path.
+
+Test it by issuing: `docker info` in  a terminal.
 If there is some output from docker you're good to go.
 
 ## Getting it
 `npm install -g @jonaslu/sider`
+
+## If you're upgrading
+Check [migrations](#Migrating) if there's anything to do.
+
+## Installing tab-completion
+Sider now supports tab-completion. Type `sider install-completion` and tab-tab
+away to your hearts content.
 
 ## Working with snapshots
 `sider snapshot add <engine-type> <snapshot-name> <path-to-snapshot>`
