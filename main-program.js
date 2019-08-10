@@ -4,7 +4,7 @@ require('./global-error-handler');
 const notFoundCommand = require('./not-found-command');
 
 commander
-  .version('0.0.5')
+  .version('0.0.8')
   .description('Database dump manager')
   .command('snapshot', 'manages snapshots')
   .command('db', 'controls the installed dbs')
