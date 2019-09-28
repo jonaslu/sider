@@ -33,9 +33,9 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "prepublishOnly": "npm run lint && git diff-index --quiet HEAD --"
+    "prepublishOnly": "npm run lint && ./pre-publish.sh"
   },
-  "pre-push": ["prepublishOnly"],
+  "pre-push": ["lint"],
   "keywords": [
     "cli",
     "docker",
