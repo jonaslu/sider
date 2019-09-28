@@ -1,5 +1,5 @@
 # What the heck is this?
-It's like a VCS for your database dumps with batteries included.
+It's a VCS for your local database dumps.
 
 I've often set up a complicated test-scenario
 in my database only to have a slip of the "continue"
@@ -10,7 +10,7 @@ complicated to restore or reset with scary sudo-rights
 writing into the wrong directory. Same with running two databases side by side - sudoisms abound!
 
 Enter **sider** which is a cli-tool that turns this juggling into a breeze by
-handling setup, running and restoring databases for you.
+handling importing, running and restoring databases for you.
 
 # TL;DR
 Say to yourself: "I have docker installed" three times.
@@ -57,7 +57,7 @@ ctrl + c
 $> sider db reset test-feature-2
 
 $> sider db start test-feature-2
-✨ Starting db test-feature-1 on port 6379
+✨ Starting db test-feature-2 on port 6379
 ... hack hack ...
 ... Yes, I figured out how to solve feature-1 ...
 
@@ -95,9 +95,12 @@ $> sider db list -s
 │                │             │        │             │             │ version=3.2.6 │
 └────────────────┴─────────────┴────────┴─────────────┴─────────────┴───────────────┘
 
-$> sider snapshot add -e postgres emptydb
+$> sider snapshot add -e postgres my-own-snapshot
 ...Set up a empty database with some schema...
-...Go back when the data is botched to a clean slate...
+...And insert some data...
+.... ctrl + c ...
+
+$ sider db start my-own-db my-own-snapshot
 
 ...Oh, I wrote the program but can't remember that command-line switch...
 $> sider --help
@@ -107,18 +110,18 @@ $> sider --help
 
 ## ...snapshots
 A snapshot is like a commit or errr... snapshot
-of a database. This is what you export from somehwere (most often your prod database)
-and add into sider. This is then what you then run a db from (via an engine). There is also an option to start with an empty database (no import dump required).
+of a database. This is what you export from somewhere most often some running test or prod database.
+and add into sider. A copy fo this is then what you then run as a db.
+There is also an option to start with an empty database with no import dump required.
 
 ## ...dbs
 Dbs is the database files that the engine manipulates.
 It's the running live version of a database.
 
 ## ...engines
-An engine is the type of database.
-Examples of types of databases are mysql, postgres, redis or what have you.
-An engine knows how to run a particular type of dump. Sider currently
-supports redis, postgres and mariadb (with more on the way).
+An engine is the type of database currently being redis, mariadb and postgres.
+An engine knows how to run a particular type of dump which is associated when
+importing the snapshot.
 
 ## ...settings
 Setting govern what port the db starts up at and can hold other settings too depending on what
@@ -185,17 +188,21 @@ away to your hearts content.
 This will load the database dump into sider using the specified engine-type
 to load and process the database dump files.
 
-It will not touch or alter any of the original files. When done you will
-now have a snapshot loaded which can be listed with: `sider snapshot list`.
+It will not touch or alter any of the original files (simplu copy them)
+and after completion you'll have a snapshot loaded which
+can be listed with: `sider snapshot list`.
 
 When you're done with a snapshot you can issue
 `sider snapshot remove <snapshot-name>`. This will delete the
 snapshot and any associated dbs with it.
 
 If you want do start working with an entirely empty database and
-no dump is required you can start sider with the `sider snapshot add -e <engine-type> <snapshot-name> switch to let the database create an empty database as a snapshot.
-Do anything you need with the empty snapshot (such as setting up base-data)
-and then hit ctrl+c to stop and save it as a snapshot.
+no dump is required you can start sider with the `sider snapshot add -e <engine-type> <snapshot-name>`
+switch to let the database create an empty database as a snapshot.
+
+Do anything you need with the empty snapshot (such as setting up a schema and base-data)
+and then hit ctrl+c to stop and save it as a snapshot. This
+can now be used as a starting point (akin to a commit in git).
 
 ## Working with dbs
 First of all a db has to be cloned out from a snapshot. This makes snapshots
@@ -229,7 +236,7 @@ issuing: `sider db promote <db-name> <new-snapshot-name>`.
 
 And if you've f-ed up some data and like to go back to where you came from
 you can issue: `sider db reset <db-name>`. This will reset the database
-back to the snapshot from where it was cloned.
+back to the state of the snapshot from where it was cloned.
 
 ## Configuring it
 Sider can be configured by adding a .siderrc to your home-folder. The .siderrc
@@ -261,8 +268,8 @@ To run it:
 
 # Implementing your own engine
 Technically sider handles the juggling of paths and configs. It stores loaded
-dumps as snapshots, copies files to run as dbs and merges configs. The engine
-runner (if you opt to use docker) needs to
+dumps as snapshots, copies files to run as dbs and merges configs. Then it
+launches docker with those files bind-mounted in.
 
 ## Assumptions
 Sider is built upon one assumptions: there is one data-file or data-folder that
@@ -284,11 +291,12 @@ right extension and format).
 
 The load method takes three arguments: where the file(s)
 are currently located on the file-system, the output folder
-where any processed files are put.
+where any processed files are put (this is where you'd
+put them when done sanitizing and copying them).
 
 The config parameter is not yet used but will in the future
 contain any settings done on the engine affecting the import
-(such as version)
+(such as version).
 
 No return values are expected.
 
@@ -301,7 +309,7 @@ Handles merging of default config with
 any stored settings on that engine.
 
 The getConfig has one argument: any stored
-settings on the engine (done my running
+settings on the engine (done by running
 `sider engine setconf <engine> <some=setting>).
 
 Expected to return the merged stored settings
