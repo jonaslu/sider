@@ -55,5 +55,13 @@ Have you tampered with the contents in the ${dbBasePath} folder?`,
     }
 
     return undefined;
+  },
+  async getAllDbs() {
+    const anyDbExists = await fsExtra.pathExists(dbsStoragePath);
+    if (anyDbExists) {
+      return fsExtra.readdir(dbsStoragePath);
+    }
+
+    return [];
   }
 };
