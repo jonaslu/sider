@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const fastLevenshtein = require('fast-levenshtein');
 
 const maxLevenshteinDistanceForCompletion = 3;
@@ -8,18 +9,13 @@ module.exports = {
    * console and then process.exit(1)
    */
   errorAndDie(message, error) {
-    console.error(`Internal error:`);
+    console.error(chalk.red(`Internal error:`));
     console.error(message);
-    console.error(`Error was: ${error}`);
+    console.error(`${chalk.red('Error was')}: ${error}`);
 
     process.exit(1);
   },
-  didYouMean(
-    name,
-    completions,
-    completionFoundMessage,
-    completionNotFoundMessage
-  ) {
+  didYouMean(name, completions, messagePrefix) {
     const foundCompletion = completions.find(
       completion =>
         fastLevenshtein.get(name, completion) <=
@@ -27,9 +23,11 @@ module.exports = {
     );
 
     if (foundCompletion) {
-      console.error(completionFoundMessage.replace('$1', foundCompletion));
+      console.error(
+        `${messagePrefix} ${chalk.red(name)} not found, did you mean ${chalk.green(foundCompletion)}?`
+      );
     } else {
-      console.error(completionNotFoundMessage);
+      console.error(`${chalk.red(messagePrefix)} not found`);
     }
 
     process.exit(1);
