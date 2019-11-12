@@ -3,6 +3,7 @@ const path = require('path');
 
 const { errorAndDie } = require('../utils');
 const { dbsStoragePath } = require('../config');
+const settings = require('../settings');
 
 /**
  * {
@@ -63,5 +64,28 @@ Have you tampered with the contents in the ${dbBasePath} folder?`,
     }
 
     return [];
+  },
+
+  async saveSettings(db, newCliSettings) {
+    const { dbConfigFile } = db;
+
+    try {
+      // !! TODO !! I cannot use the db straight off,
+      // first I need a deep copy, lest it goes elsewhere
+      // Then i need to pop off the synthetic properties
+      const storedSettintgs = await fsExtra.readJSON(dbConfigFile);
+      const newSettings = settings.mergeSettings(
+        storedSettintgs.config,
+        newCliSettings
+      );
+
+      storedSettintgs.config = newSettings;
+
+      return await fsExtra.writeJSON(dbConfigFile, storedSettintgs, {
+        spaces: 2
+      });
+    } catch (e) {
+      errorAndDie(`Error persisting new settings to file ${dbConfigFile}`, e);
+    }
   }
 };
