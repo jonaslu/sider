@@ -7,7 +7,6 @@ function getEngineFile(engineName) {
   return path.join(__dirname, `${engineName}.js`);
 }
 
-// eslint-disable-next-line consistent-return
 async function getEngine(engineName) {
   const enginePath = getEngineFile(engineName);
   const engineExists = await fsExtra.pathExists(enginePath);
