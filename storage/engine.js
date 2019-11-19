@@ -19,7 +19,7 @@ const settingsFileName = 'settings.json';
 
 module.exports = {
   async getEngineConfig(engineName) {
-    const engine = await engines.getEngine(engineName);
+    const engine = await engines.getEngineOrDie(engineName);
     const defaultSettings = engine.getConfig();
 
     const engineConfigFile = path.join(
