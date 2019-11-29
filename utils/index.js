@@ -9,6 +9,12 @@ function printFatalInternalError(message) {
 }
 
 module.exports = {
+  printUserErrorAndDie(message) {
+    console.error(chalk.red(`Fatal:`));
+    console.error(message);
+
+    process.exit(1);
+  },
   printInternalAndDie(message) {
     printFatalInternalError(message);
 
