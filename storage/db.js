@@ -1,7 +1,7 @@
 const fsExtra = require('fs-extra');
 const path = require('path');
 
-const { errorAndDie } = require('../utils');
+const { internalErrorAndDie } = require('../utils');
 const { dbsStoragePath } = require('../config');
 const settings = require('../settings');
 
@@ -48,7 +48,7 @@ module.exports = {
         ...dbConfigContents
       };
     } catch (e) {
-      errorAndDie(
+      internalErrorAndDie(
         `Could not read file ${dbConfigFile}.
 Have you tampered with the contents in the ${dbBasePath} folder?`,
         e
@@ -85,7 +85,7 @@ Have you tampered with the contents in the ${dbBasePath} folder?`,
         spaces: 2
       });
     } catch (e) {
-      errorAndDie(`Error persisting new settings to file ${dbConfigFile}`, e);
+      internalErrorAndDie(`Error persisting new settings to file ${dbConfigFile}`, e);
     }
   }
 };

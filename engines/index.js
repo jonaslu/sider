@@ -1,7 +1,7 @@
 const fsExtra = require('fs-extra');
 const path = require('path');
 
-const { errorAndDie, printAndDie } = require('../utils');
+const { internalErrorAndDie, printInternalAndDie } = require('../utils');
 
 function getEngineFile(engineName) {
   return path.join(__dirname, `${engineName}.js`);
@@ -16,7 +16,7 @@ async function getEngine(engineName) {
       // eslint-disable-next-line
       return require(enginePath);
     } catch (e) {
-      errorAndDie(
+      internalErrorAndDie(
         `Could not require file ${enginePath}
 It's probably a compile error in the file`,
         e
@@ -30,7 +30,7 @@ It's probably a compile error in the file`,
 async function getEngineOrDie(engineName) {
   const engine = await getEngine(engineName);
   if (!engine) {
-    printAndDie(`Could not find engine ${engineName},
+    printInternalAndDie(`Could not find engine ${engineName},
 has the db settings file been tampered with?`);
   }
   return engine;
