@@ -1,7 +1,7 @@
 const fsExtra = require('fs-extra');
 const path = require('path');
 
-const { errorAndDie } = require('../utils');
+const { internalErrorAndDie } = require('../utils');
 const { snapshotsStoragePath } = require('../config');
 
 /**
@@ -52,7 +52,7 @@ module.exports = {
         };
       }
     } catch (e) {
-      errorAndDie(
+      internalErrorAndDie(
         `Could not read file ${snapshotsConfigFile}.
 Have you tampered with the contents in the ${snapshotsBasePath} folder?`,
         e

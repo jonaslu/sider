@@ -4,7 +4,7 @@ const path = require('path');
 const engines = require('../engines');
 const settings = require('../settings');
 
-const { errorAndDie } = require('../utils');
+const { internalErrorAndDie } = require('../utils');
 const { engineStoragePath } = require('../config');
 
 /**
@@ -34,7 +34,7 @@ module.exports = {
       try {
         diskConfig = await fsExtra.readJSON(engineConfigFile, 'utf-8');
       } catch (e) {
-        errorAndDie(
+        internalErrorAndDie(
           `Could not read engine ${engineName} setings.json ${engineConfigFile}`,
           e
         );
