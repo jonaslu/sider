@@ -42,7 +42,7 @@ module.exports = {
         `${messagePrefix} ${chalk.red(name)} not found, did you mean ${chalk.green(foundCompletion)}?`
       );
     } else {
-      console.error(`${chalk.red(messagePrefix)} not found`);
+      console.error(`${chalk.red(messagePrefix)} ${chalk.green(name)} not found`);
     }
 
     process.exit(1);
