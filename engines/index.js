@@ -39,8 +39,8 @@ has the db settings file been tampered with?`);
 module.exports = {
   getEngine,
   getEngineOrDie,
-  start(engineName, db, settings) {
-    const engine = getEngineOrDie(engineName);
+  async start(engineName, db, settings) {
+    const engine = await getEngineOrDie(engineName);
 
     // !! TODO !! Let engines validate the sent config
 
