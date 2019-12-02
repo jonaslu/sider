@@ -60,5 +60,13 @@ Have you tampered with the contents in the ${snapshotsBasePath} folder?`,
     }
 
     return undefined;
+  },
+  async getAllDbs() {
+    const anySnapshotExists = await fsExtra.pathExists(snapshotsStoragePath);
+    if (anySnapshotExists) {
+      return fsExtra.readdir(snapshotsStoragePath);
+    }
+
+    return [];
   }
 };
