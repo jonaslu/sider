@@ -5,7 +5,7 @@ const engines = require('../engines');
 const settings = require('../settings');
 
 const { internalErrorAndDie } = require('../utils');
-const { engineStoragePath } = require('../config');
+const { engineStoragePath } = require('../siderrc');
 
 /**
  * {
