@@ -2,7 +2,7 @@ const fsExtra = require('fs-extra');
 const path = require('path');
 
 const { internalErrorAndDie } = require('../utils');
-const { dbsStoragePath } = require('../config');
+const { dbsStoragePath } = require('../siderrc');
 const settings = require('../settings');
 
 /**
