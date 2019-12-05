@@ -3,7 +3,7 @@ const path = require('path');
 
 const { internalErrorAndDie } = require('../utils');
 const { dbsStoragePath } = require('../siderrc');
-const settings = require('../settings');
+const { mergeRuntimeConfig } = require('../runtime/config');
 
 /**
  * {
@@ -16,14 +16,14 @@ const settings = require('../settings');
  *    created:
  *    lastUsed: <- set this on run
  *  },
- *  config: {
+ *  runtimeConfig: {
  *  },
  *  engineName: 'redis' <- won't change
  * }
  */
 
 const dbFilesFolder = 'files';
-const settingsFileName = 'settings.json';
+const specsFileName = 'specs.json';
 
 module.exports = {
   async getDb(dbName) {
@@ -35,28 +35,29 @@ module.exports = {
     }
 
     const dbFileFolder = path.join(dbBasePath, dbFilesFolder);
-    const dbConfigFile = path.join(dbBasePath, settingsFileName);
+    const dbSpecsFile = path.join(dbBasePath, specsFileName);
 
     try {
-      const dbConfigContents = await fsExtra.readJSON(dbConfigFile, 'utf-8');
+      const dbSpecsContents = await fsExtra.readJSON(dbSpecsFile, 'utf-8');
 
       return {
         dbName,
         dbFileFolder,
         // !! TODO !! Should this go out or not?
-        dbConfigFile,
-        ...dbConfigContents
+        dbSpecsFile,
+        ...dbSpecsContents
       };
     } catch (e) {
       internalErrorAndDie(
-        `Could not read file ${dbConfigFile}.
-Have you tampered with the contents in the ${dbBasePath} folder?`,
+        `Could not read file ${dbSpecsFile}.
+Have you tampered with the contents?`,
         e
       );
     }
 
     return undefined;
   },
+
   async getAllDbs() {
     const anyDbExists = await fsExtra.pathExists(dbsStoragePath);
     if (anyDbExists) {
@@ -66,26 +67,29 @@ Have you tampered with the contents in the ${dbBasePath} folder?`,
     return [];
   },
 
-  async saveSettings(db, newCliSettings) {
-    const { dbConfigFile } = db;
+  async saveRuntimeConfig(db, newCliRuntimeConfig) {
+    const { dbSpecsFile } = db;
 
     try {
       // !! TODO !! I cannot use the db straight off,
       // first I need a deep copy, lest it goes elsewhere
       // Then i need to pop off the synthetic properties
-      const storedSettintgs = await fsExtra.readJSON(dbConfigFile);
-      const newSettings = settings.mergeSettings(
-        storedSettintgs.config,
-        newCliSettings
+      const storedSpecs = await fsExtra.readJSON(dbSpecsFile);
+      const newRuntimeConfig = mergeRuntimeConfig(
+        storedSpecs.runtimeConfig,
+        newCliRuntimeConfig
       );
 
-      storedSettintgs.config = newSettings;
+      storedSpecs.runtimeConfig = newRuntimeConfig;
 
-      return await fsExtra.writeJSON(dbConfigFile, storedSettintgs, {
+      return await fsExtra.writeJSON(dbSpecsFile, storedSpecs, {
         spaces: 2
       });
     } catch (e) {
-      internalErrorAndDie(`Error persisting new settings to file ${dbConfigFile}`, e);
+      internalErrorAndDie(
+        `Error persisting new runtime config to file ${dbSpecsFile}`,
+        e
+      );
     }
   }
 };

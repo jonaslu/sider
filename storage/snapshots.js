@@ -8,18 +8,18 @@ const { snapshotsStoragePath } = require('../siderrc');
  * {
  *  snapshotName: <- synthetic, not saved
  *  snapshotFileFolder: <- synthetic, not saved
- *  snapshotConfigFile: <- synthetic, not saved
+ *  snapshotSoecsFile: <- synthetic, not saved
 
  *  engine: 'redis',
  *  fstats: {
  *    created
  *  },
- *  config: {
+ *  runtimeConfig: {
  *  }
  * }
  */
 const snapshotFilesFolder = 'files';
-const settingsFileName = 'settings.json';
+const specsFileName = 'specs.json';
 
 module.exports = {
   async getSnapshot(snapshotName) {
@@ -35,33 +35,33 @@ module.exports = {
       snapshotFilesFolder
     );
 
-    const snapshotsConfigFile = path.join(snapshotsBasePath, settingsFileName);
+    const snapshotsSpecsFile = path.join(snapshotsBasePath, specsFileName);
 
     try {
-      const snapshotConfigContents = await fsExtra.readJSON(
-        snapshotsConfigFile,
+      const snapshotSpecsContents = await fsExtra.readJSON(
+        snapshotsSpecsFile,
         'utf-8'
       );
 
-      if (snapshotConfigContents) {
+      if (snapshotSpecsContents) {
         return {
           snapshotName,
           snapshotsFileFolder,
-          snapshotsConfigFile,
-          ...snapshotConfigContents
+          snapshotsSpecsFile,
+          ...snapshotSpecsContents
         };
       }
     } catch (e) {
       internalErrorAndDie(
-        `Could not read file ${snapshotsConfigFile}.
-Have you tampered with the contents in the ${snapshotsBasePath} folder?`,
+        `Could not read file ${snapshotsSpecsFile}.
+Has the contents been tampered with?`,
         e
       );
     }
 
     return undefined;
   },
-  async getAllDbs() {
+  async getAllSnapshots() {
     const anySnapshotExists = await fsExtra.pathExists(snapshotsStoragePath);
     if (anySnapshotExists) {
       return fsExtra.readdir(snapshotsStoragePath);

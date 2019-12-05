@@ -2,7 +2,7 @@ const fsExtra = require('fs-extra');
 const path = require('path');
 
 const engines = require('../engines');
-const settings = require('../settings');
+const { mergeRuntimeConfig } = require('../runtime/config');
 
 const { internalErrorAndDie } = require('../utils');
 const { engineStoragePath } = require('../siderrc');
@@ -10,39 +10,40 @@ const { engineStoragePath } = require('../siderrc');
 /**
  * {
  * // For the config file2
- *  config: {
+ *  runtimeConfig: {
  *  }
  * }
  */
 
-const settingsFileName = 'settings.json';
+const specsFileName = 'specs.json';
 
 module.exports = {
-  async getEngineConfig(engineName) {
+  async getEngineRuntimeConfig(engineName) {
     const engine = await engines.getEngineOrDie(engineName);
-    const defaultSettings = engine.getConfig();
+    const defaultRuntimeConfig = engine.getConfig();
 
-    const engineConfigFile = path.join(
+    const engineSpecsFile = path.join(
       engineStoragePath,
       engineName,
-      settingsFileName
+      specsFileName
     );
 
-    let diskConfig = {};
-    const configExists = await fsExtra.exists(engineConfigFile);
-    if (configExists) {
+    let diskSpecs = {};
+    const specsExists = await fsExtra.exists(engineSpecsFile);
+    if (specsExists) {
       try {
-        diskConfig = await fsExtra.readJSON(engineConfigFile, 'utf-8');
+        diskSpecs = await fsExtra.readJSON(engineSpecsFile, 'utf-8');
       } catch (e) {
         internalErrorAndDie(
-          `Could not read engine ${engineName} setings.json ${engineConfigFile}`,
+          `Could not read file ${engineSpecsFile}.
+Has the contents been tampered with?`,
           e
         );
       }
     }
 
     return {
-      config: settings.mergeSettings(defaultSettings, diskConfig.config)
+      runtimeConfig: mergeRuntimeConfig(defaultRuntimeConfig, diskSpecs.runtimeConfig)
     };
   }
 };
