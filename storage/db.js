@@ -91,5 +91,24 @@ Have you tampered with the contents?`,
         e
       );
     }
+  },
+
+  async setLastUsed(db, dbStartTime) {
+    const { dbSpecsFile } = db;
+
+    try {
+      const storedSpecs = await fsExtra.readJSON(dbSpecsFile);
+      storedSpecs.fstats.lastUsed = dbStartTime;
+
+      return await fsExtra.writeJSON(dbSpecsFile, storedSpecs, {
+        spaces: 2
+      });
+    } catch (e) {
+      internalErrorAndDie(
+        `Error persisting last used time to file ${dbSpecsFile}`,
+        e
+      );
+    }
+  },
   }
 };
