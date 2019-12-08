@@ -5,11 +5,11 @@ const { spawn } = require('child_process');
 
 // !! TODO !! Meld this and the other two and squash them
 // !! TODO !! Create a docker-runner helper - unify this and postgres
-function runDb(dbPath, dbName, config, echoOutput = true) {
+function runDb(dbPath, dbName, runtimeConfig, echoOutput = true) {
   let osSpecificArgs = [];
 
-  const { port } = config;
-  let { version } = config;
+  const { port } = runtimeConfig;
+  let { version } = runtimeConfig;
 
   if (!version) {
     version = 'latest';
@@ -93,9 +93,9 @@ module.exports = {
       port: 6379
     };
   },
-  start(dbPath, dbName, config) {
+  start(dbPath, dbName, runtimeConfig) {
     // !! TODO !! Make this into a promise so
     // the outside can print starting and stopping messages
-    return runDb(dbPath, dbName, config);
+    return runDb(dbPath, dbName, runtimeConfig);
   }
 };

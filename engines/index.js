@@ -39,12 +39,10 @@ has the db settings file been tampered with?`);
 module.exports = {
   getEngine,
   getEngineOrDie,
-  async start(engineName, db, settings) {
+  async start(engineName, dbName,  dbFileFolder, runtimeConfig) {
     const engine = await getEngineOrDie(engineName);
 
     // !! TODO !! Let engines validate the sent config
-
-    const { dbName, dbFileFolder } = db;
 
     // commanderjs forwards any signals caught to the
     // it's spawned child process - but the child
@@ -57,12 +55,12 @@ module.exports = {
     // That ctrl+c magic
     process.on('SIGINT', () => {
       if (!stopCalled && engine.stop) {
-        engine.stop(dbName, settings);
+        engine.stop(dbName, runtimeConfig);
         stopCalled = true;
       }
     });
 
     // !! TODO !! Check exit-value
-    return engine.start(dbFileFolder, dbName, settings);
+    return engine.start(dbFileFolder, dbName, runtimeConfig);
   }
 };
