@@ -2,9 +2,9 @@ const fs = require('fs-extra');
 const os = require('os');
 const { spawn } = require('child_process');
 
-function runDb(dbPath, dbName, config, echoOutput = true) {
+function runDb(dbPath, dbName, runtimeConfig, echoOutput = true) {
   let osSpecificArgs = [];
-  const { port } = config;
+  const { port } = runtimeConfig;
 
   const platform = os.platform();
   if (platform === 'linux') {
@@ -21,7 +21,7 @@ function runDb(dbPath, dbName, config, echoOutput = true) {
     ];
   }
 
-  const { password } = config;
+  const { password } = runtimeConfig;
 
   const dockerArgs = [
     'run',
@@ -80,11 +80,11 @@ module.exports = {
       port: 3306
     };
   },
-  start(dbPath, dbName, config) {
-    return runDb(dbPath, dbName, config);
+  start(dbPath, dbName, runtimeConfig) {
+    return runDb(dbPath, dbName, runtimeConfig);
   },
-  stop(dbName, config) {
-    const { password } = config;
+  stop(dbName, runtimeConfig) {
+    const { password } = runtimeConfig;
 
     const dockerArgs = ['exec', dbName, '/usr/bin/mysqladmin', '-uroot'];
 
