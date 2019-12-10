@@ -8,7 +8,7 @@ const { snapshotsStoragePath } = require('../siderrc');
  * {
  *  snapshotName: <- synthetic, not saved
  *  snapshotFileFolder: <- synthetic, not saved
- *  snapshotSoecsFile: <- synthetic, not saved
+ *  snapshotSpecsFile: <- synthetic, not saved
 
  *  engine: 'redis',
  *  fstats: {
@@ -30,30 +30,30 @@ module.exports = {
       return undefined;
     }
 
-    const snapshotsFileFolder = path.join(
+    const snapshotFileFolder = path.join(
       snapshotsBasePath,
       snapshotFilesFolder
     );
 
-    const snapshotsSpecsFile = path.join(snapshotsBasePath, specsFileName);
+    const snapshotSpecsFile = path.join(snapshotsBasePath, specsFileName);
 
     try {
       const snapshotSpecsContents = await fsExtra.readJSON(
-        snapshotsSpecsFile,
+        snapshotSpecsFile,
         'utf-8'
       );
 
       if (snapshotSpecsContents) {
         return {
           snapshotName,
-          snapshotsFileFolder,
-          snapshotsSpecsFile,
+          snapshotFileFolder,
+          snapshotSpecsFile,
           ...snapshotSpecsContents
         };
       }
     } catch (e) {
       internalErrorAndDie(
-        `Could not read file ${snapshotsSpecsFile}.
+        `Could not read file ${snapshotSpecsFile}.
 Has the contents been tampered with?`,
         e
       );
