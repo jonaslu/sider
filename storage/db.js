@@ -1,4 +1,5 @@
 const fsExtra = require('fs-extra');
+const moment = require('moment');
 const path = require('path');
 
 const { internalErrorAndDie } = require('../utils');
@@ -9,7 +10,7 @@ const { mergeRuntimeConfig } = require('../runtime/config');
  * {
  *  dbName: <- synthetic, not saved
  *  dbFileFolder: <- synthetic, not saved
- *  dbConfigFile: <- synthetic, not saved
+ *  dbSpecsFile: <- synthetic, not saved
  *
  *  snapshotName:
  *  fstats: {
@@ -110,5 +111,60 @@ Have you tampered with the contents?`,
       );
     }
   },
+
+  // Expects is has been verified DB does not exist
+  async createDb(dbName, snapshot) {
+    const dbBasePath = path.join(dbsStoragePath, dbName);
+    const dbFileFolder = path.join(dbBasePath, dbFilesFolder);
+
+    const { snapshotFileFolder } = snapshot;
+    try {
+      await fsExtra.copy(snapshotFileFolder, dbFileFolder, { recursive: true });
+    } catch (e) {
+      internalErrorAndDie(
+        `Could not copy snapshot fileFolder: ${snapshotFileFolder} contents to ${dbFileFolder}`,
+        e
+      );
+    }
+
+    const dbSpecsFile = path.join(dbBasePath, specsFileName);
+    const { engineName, snapshotName } = snapshot;
+
+    const creationTime = moment().utc();
+
+    const dbSaveValues = {
+      runtimeConfig: {},
+      fstats: {
+        created: creationTime,
+        lastUsed: creationTime
+      },
+      engineName,
+      snapshotName
+    };
+
+    try {
+      await fsExtra.writeJSON(dbSpecsFile, dbSaveValues, {
+        spaces: 2
+      });
+    } catch (e) {
+      internalErrorAndDie(`Could not write ${dbSpecsFile} contents`);
+    }
+
+    const removeDb = async () => {
+      try {
+        await fsExtra.remove(dbBasePath);
+      } catch (e) {
+        internalErrorAndDie(`Could not remove db at ${dbBasePath}`);
+      }
+    };
+
+    const db = {
+      dbName,
+      dbFileFolder,
+      dbSpecsFile,
+      ...dbSaveValues
+    }
+
+    return { db, removeDb };
   }
 };
