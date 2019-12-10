@@ -10,7 +10,7 @@ const { snapshotsStoragePath } = require('../siderrc');
  *  snapshotFileFolder: <- synthetic, not saved
  *  snapshotSpecsFile: <- synthetic, not saved
 
- *  engine: 'redis',
+ *  engineName: 'redis',
  *  fstats: {
  *    created
  *  },
