@@ -155,12 +155,8 @@ Have you tampered with the contents?`,
       });
     } catch (e) {
       await cleanUpBeforeExit();
+
       internalErrorAndDie(`Could not write ${dbSpecsFile} contents`);
     }
   }
 };
-
-const snapshots = require('./snapshots');
-snapshots
-  .getSnapshot('snapshot1')
-  .then(snapshot => module.exports.createDb('yak', snapshot));
