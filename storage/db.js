@@ -117,10 +117,20 @@ Have you tampered with the contents?`,
     const dbBasePath = path.join(dbsStoragePath, dbName);
     const dbFileFolder = path.join(dbBasePath, dbFilesFolder);
 
+    const cleanUpBeforeExit = async () => {
+      try {
+        await fsExtra.remove(dbBasePath);
+      } catch (e) {
+        internalErrorAndDie(`Could not remove db at ${dbBasePath}`);
+      }
+    };
+
     const { snapshotFileFolder } = snapshot;
     try {
       await fsExtra.copy(snapshotFileFolder, dbFileFolder, { recursive: true });
     } catch (e) {
+      await cleanUpBeforeExit();
+
       internalErrorAndDie(
         `Could not copy snapshot fileFolder: ${snapshotFileFolder} contents to ${dbFileFolder}`,
         e
@@ -130,16 +140,13 @@ Have you tampered with the contents?`,
     const dbSpecsFile = path.join(dbBasePath, specsFileName);
     const { engineName, snapshotName } = snapshot;
 
-    const creationTime = moment().utc();
-
     const dbSaveValues = {
-      runtimeConfig: {},
+      snapshotName,
       fstats: {
-        created: creationTime,
-        lastUsed: creationTime
+        created: moment().utc()
       },
-      engineName,
-      snapshotName
+      runtimeConfig: {},
+      engineName
     };
 
     try {
@@ -147,24 +154,13 @@ Have you tampered with the contents?`,
         spaces: 2
       });
     } catch (e) {
+      await cleanUpBeforeExit();
       internalErrorAndDie(`Could not write ${dbSpecsFile} contents`);
     }
-
-    const removeDb = async () => {
-      try {
-        await fsExtra.remove(dbBasePath);
-      } catch (e) {
-        internalErrorAndDie(`Could not remove db at ${dbBasePath}`);
-      }
-    };
-
-    const db = {
-      dbName,
-      dbFileFolder,
-      dbSpecsFile,
-      ...dbSaveValues
-    }
-
-    return { db, removeDb };
   }
 };
+
+const snapshots = require('./snapshots');
+snapshots
+  .getSnapshot('snapshot1')
+  .then(snapshot => module.exports.createDb('yak', snapshot));
