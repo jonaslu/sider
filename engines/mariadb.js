@@ -1,64 +1,7 @@
 const fs = require('fs-extra');
 const os = require('os');
 const { spawn } = require('child_process');
-
-function runDb(dbPath, dbName, runtimeConfig, echoOutput = true) {
-  let osSpecificArgs = [];
-  const { port } = runtimeConfig;
-
-  const platform = os.platform();
-  if (platform === 'linux') {
-    const { uid, gid } = os.userInfo();
-    osSpecificArgs = [
-      '-v',
-      '/etc/group:/etc/group:ro',
-      '-v',
-      '/etc/passwd:/etc/passwd:ro',
-      '-u',
-      `${uid}:${gid}`,
-      '-e',
-      `MYSQL_USER=${uid}`
-    ];
-  }
-
-  const { password } = runtimeConfig;
-
-  const dockerArgs = [
-    'run',
-    '--rm',
-    ...osSpecificArgs,
-    '-v',
-    `${dbPath}:/var/lib/mysql`,
-    '-p',
-    `${port}:3306`,
-    '--name',
-    dbName
-  ];
-
-  if (password) {
-    dockerArgs.push('-e', `MYSQL_ROOT_PASSWORD=${password}`);
-  } else {
-    dockerArgs.push('-e', 'MYSQL_ALLOW_EMPTY_PASSWORD=yes');
-  }
-
-  dockerArgs.push('mariadb');
-
-  const childProcess = spawn('docker', dockerArgs);
-
-  if (echoOutput) {
-    childProcess.stdout.on('data', data =>
-      process.stdout.write(`${data.toString('utf-8')}`)
-    );
-
-    childProcess.stderr.on('data', data => {
-      process.stdout.write(`${data.toString('utf-8')}`);
-    });
-  }
-
-  return new Promise(resolve => {
-    childProcess.on('close', () => resolve());
-  });
-}
+const { runDb } = require('./docker-utils');
 
 module.exports = {
   // !! TODO !! Make this return a promise (or have a done callback)
@@ -81,7 +24,25 @@ module.exports = {
     };
   },
   start(dbPath, dbName, runtimeConfig) {
-    return runDb(dbPath, dbName, runtimeConfig);
+    const { port, password } = runtimeConfig;
+
+    const dockerArgs = ['-v', `${dbPath}:/var/lib/mysql`, '-p', `${port}:3306`];
+
+    const platform = os.platform();
+    if (platform === 'linux') {
+      const { uid } = os.userInfo();
+      dockerArgs.push('-e', `MYSQL_USER=${uid}`);
+    }
+
+    if (password) {
+      dockerArgs.push('-e', `MYSQL_ROOT_PASSWORD=${password}`);
+    } else {
+      dockerArgs.push('-e', 'MYSQL_ALLOW_EMPTY_PASSWORD=yes');
+    }
+
+    const dockerImageAndCommand = ['mariadb'];
+
+    return runDb(dbName, dockerArgs, dockerImageAndCommand);
   },
   stop(dbName, runtimeConfig) {
     const { password } = runtimeConfig;
@@ -97,3 +58,9 @@ module.exports = {
     spawn('docker', dockerArgs);
   }
 };
+
+module.exports.start(
+  '/home/jonasl/code/sider2/testnew/dbs/goat/files',
+  'goat',
+  { port: 666 }
+);
