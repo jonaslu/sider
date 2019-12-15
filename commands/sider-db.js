@@ -37,20 +37,19 @@ async function startDb(dbName, cliRuntimeConfig, persist) {
   );
 
   const { port } = dbRuntimeConfig;
+  const dbStartTime = moment().utc();
 
   console.log(chalk.green(`✨ Starting db ${dbName} on port ${port} 🚀`));
-  await engine.start(engineName, dbName, dbFileFolder, dbRuntimeConfig);
+  try {
+    await engine.start(engineName, dbName, dbFileFolder, dbRuntimeConfig);
+  } catch (e) {
+    printInternalAndDie(`Could not start db ${dbName}`, e);
+  }
+
   console.log(chalk.green(`Sucessfully shut down db ${chalk.blue(dbName)}`));
 
   if (persist) {
     await dbs.saveRuntimeConfig(db, cliRuntimeConfig);
-  }
-
-  const dbStartTime = moment().utc();
-  try {
-    await mergeRuntimeConfigAndStart(db, snapshots, cliRuntimeConfig, persist);
-  } catch (e) {
-    printInternalAndDie(`Could not start db ${dbName}`, e);
   }
 
   await dbs.setLastUsed(db, dbStartTime);
@@ -68,5 +67,9 @@ async function clone(dbName, snapshotName) {
   }
 
   await dbs.createDb(dbName, snapshot);
-  console.log(chalk.green(`✨ Sucessfully cloned db ${dbName} from snapshot ${snapshotName} 🚀`));
+  console.log(
+    chalk.green(
+      `✨ Sucessfully cloned db ${dbName} from snapshot ${snapshotName} 🚀`
+    )
+  );
 }
