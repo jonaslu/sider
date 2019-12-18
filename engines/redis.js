@@ -1,32 +1,29 @@
 const fs = require('fs-extra');
 const path = require('path');
 const { runDb } = require('./docker-utils');
+const { getUserError } = require('../utils');
 
 module.exports = {
-  // !! TODO !! Make this return a promise (or have a done callback)
-  // for things that are async
-  load(dumpBasePath, snapshotStoreFolder, _config) {
+  async load(dumpBasePath, snapshotStoreFolder) {
     let copyFilePath;
 
-    const dumpBasePathStats = fs.statSync(dumpBasePath);
+    const dumpBasePathStats = await fs.stat(dumpBasePath);
 
     if (dumpBasePathStats.isFile()) {
       copyFilePath = dumpBasePath;
     } else {
       copyFilePath = path.join(dumpBasePath, 'dump.rdb');
-      const dumpFileExists = fs.pathExistsSync(copyFilePath);
-
-      if (!dumpFileExists) {
-        console.error(`Cannot find a dump.rdb file in path ${dumpBasePath}`);
-        process.exit(1);
-      }
     }
 
+    const dumpFileExists = await fs.pathExists(copyFilePath);
+    if (!dumpFileExists) {
+      throw getUserError(`Cannot find a dump.rdb file in path ${dumpBasePath}`);
+    }
+
+    // Docker engine expects it to be called dump.rdb
     const dumpCopyFile = path.join(snapshotStoreFolder, 'dump.rdb');
 
-    // !! TODO !! Making this async would probably speed things up
-    // considerably
-    fs.copySync(copyFilePath, dumpCopyFile);
+    await fs.copy(copyFilePath, dumpCopyFile);
   },
   getConfig() {
     return {
