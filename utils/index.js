@@ -46,5 +46,14 @@ module.exports = {
     }
 
     process.exit(1);
+  },
+  getUserError(message) {
+    const userError = new Error(message);
+    userError.userError = true;
+
+    return userError;
+  },
+  isUserError(error) {
+    return error.userError || false;
   }
 };
