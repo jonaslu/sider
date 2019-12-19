@@ -30,8 +30,7 @@ It's probably a compile error in the file`,
 async function getEngineOrDie(engineName) {
   const engine = await getEngine(engineName);
   if (!engine) {
-    printInternalAndDie(`Could not find engine ${engineName},
-has the db settings file been tampered with?`);
+    printInternalAndDie(`Could not find engine ${engineName}`);
   }
   return engine;
 }
@@ -60,7 +59,6 @@ module.exports = {
       }
     });
 
-    // !! TODO !! Check exit-value
     return engine.start(dbFileFolder, dbName, runtimeConfig);
   }
 };
