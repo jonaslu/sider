@@ -1,20 +1,18 @@
 const fs = require('fs-extra');
 const { runDb } = require('./docker-utils');
+const { getUserError } = require('../utils');
 
 module.exports = {
-  // !! TODO !! Make this return a promise (or have a done callback)
-  // for things that are async
-  load(dumpBasePath, snapshotStoreFolder, _config) {
-    const dumpBasePathStats = fs.statSync(dumpBasePath);
+  async load(dumpBasePath, snapshotStoreFolder) {
+    const dumpBasePathStats = await fs.stat(dumpBasePath);
 
     if (!dumpBasePathStats.isDirectory()) {
-      console.error(
+      throw getUserError(
         `Postgres currently only loads entire data-dirs, cannot find directory at ${dumpBasePath}`
       );
-      process.exit(1);
     }
 
-    fs.copySync(dumpBasePath, snapshotStoreFolder);
+    await fs.copy(dumpBasePath, snapshotStoreFolder);
   },
   getConfig() {
     return {
