@@ -2,7 +2,7 @@ const fsExtra = require('fs-extra');
 const moment = require('moment');
 const path = require('path');
 
-const { internalErrorAndDie } = require('../utils');
+const { internalErrorAndDie, isUserError, printUserErrorAndDie } = require('../utils');
 const { snapshotsStoragePath } = require('../siderrc');
 
 /**
@@ -91,6 +91,10 @@ Has the contents been tampered with?`,
     } catch (e) {
       await cleanUpBeforeExit();
 
+      if (isUserError(e)) {
+        printUserErrorAndDie(e.message);
+      }
+
       internalErrorAndDie(
         `Could not load snapshot files from folder ${dumpBasePath}`,
         e
@@ -116,43 +120,3 @@ Has the contents been tampered with?`,
     }
   }
 };
-
-const engines = require('../engines');
-engines.getEngineOrDie('mariadb').then(engine => {
-  module.exports.createSnapshot(
-    'snapshot2',
-    engine,
-    'mariadb',
-    '/home/jonasl/.sider/snapshots/pfmegrnargs/postgres/'
-    // '/home/jonasl/code/sider2/yaya/'
-  );
-});
-
-/*
-Test plan:
-* Have some files that an engine
-  cannot load (such as the files are
-  not readable by this user). Verify
-  error message and snapshot path
-  is cleaned up properly.
-* Make writing to the snapshot specs
-  file fail (e g make the db-folder write
-  only). Verify an error-message and
-  the database cleaned up.
-* Verify happy-path that
-  a snapshot is created and
-  the specfile-saved.
-*/
-
-// WASHERE
-/*
-Had moved onto snapshots now.
-
-Adding snapshot add, because
-I want to see that snapshot add -e
-pans out well.
-
-Test the createSnapshot with
-all the different engines, then
-commit and start adding snapshot add -e
-*/
