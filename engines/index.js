@@ -38,7 +38,14 @@ async function getEngineOrDie(engineName) {
 module.exports = {
   getEngine,
   getEngineOrDie,
-  async start(engineName, dbName,  dbFileFolder, runtimeConfig) {
+  async getAllEngineNames() {
+    const allFiles = await fsExtra.readdir(__dirname);
+
+    return allFiles
+      .filter(file => file !== 'index.js')
+      .map(file => path.parse(file).name);
+  },
+  async start(engineName, dbName, dbFileFolder, runtimeConfig) {
     const engine = await getEngineOrDie(engineName);
 
     // !! TODO !! Let engines validate the sent config
