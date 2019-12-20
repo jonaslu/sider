@@ -2,7 +2,11 @@ const fsExtra = require('fs-extra');
 const moment = require('moment');
 const path = require('path');
 
-const { internalErrorAndDie, isUserError, printUserErrorAndDie } = require('../utils');
+const {
+  internalErrorAndDie,
+  isUserError,
+  printUserErrorAndDie
+} = require('../utils');
 const { snapshotsStoragePath } = require('../siderrc');
 
 /**
@@ -105,7 +109,7 @@ Has the contents been tampered with?`,
 
     const snapshotSaveValues = {
       engineName,
-      fstats: moment().utc(),
+      fstats: { created: moment().utc() },
       runtimeConfig: {}
     };
 
