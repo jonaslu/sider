@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const os = require('os');
 const { spawn } = require('child_process');
-const { runDb } = require('./docker-utils');
+const { runDb } = require('../utils/docker-utils');
 const { getUserError } = require('../utils');
 
 module.exports = {

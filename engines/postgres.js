@@ -1,5 +1,5 @@
 const fs = require('fs-extra');
-const { runDb } = require('./docker-utils');
+const { runDb } = require('../utils/docker-utils');
 const { getUserError } = require('../utils');
 
 module.exports = {
