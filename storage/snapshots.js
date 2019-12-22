@@ -1,6 +1,7 @@
 const fsExtra = require('fs-extra');
 const moment = require('moment');
 const path = require('path');
+const engine = require('../engines');
 
 const {
   internalErrorAndDie,
@@ -25,6 +26,42 @@ const { snapshotsStoragePath } = require('../siderrc');
  */
 const snapshotFilesFolder = 'files';
 const specsFileName = 'specs.json';
+
+// Expects it has been verified snapshot does not exist
+async function createSnapshot(snapshotName, engineName, loadFilesCb) {
+  const snapshotBasePath = path.join(snapshotsStoragePath, snapshotName);
+  const snapshotFileFolder = path.join(snapshotBasePath, snapshotFilesFolder);
+
+  const cleanUpBeforeExit = async () => {
+    try {
+      await fsExtra.remove(snapshotBasePath);
+    } catch (e) {
+      internalErrorAndDie(`Could not remove snapshot at ${snapshotBasePath}`);
+    }
+  };
+
+  await fsExtra.ensureDir(snapshotFileFolder);
+
+  loadFilesCb(snapshotFileFolder, cleanUpBeforeExit);
+
+  const snapshotSpecsFile = path.join(snapshotBasePath, specsFileName);
+
+  const snapshotSaveValues = {
+    engineName,
+    fstats: { created: moment().utc() },
+    runtimeConfig: {}
+  };
+
+  try {
+    await fsExtra.writeJSON(snapshotSpecsFile, snapshotSaveValues, {
+      spaces: 2
+    });
+  } catch (e) {
+    await cleanUpBeforeExit();
+
+    internalErrorAndDie(`Could not write ${snapshotSpecsFile} contents`);
+  }
+}
 
 module.exports = {
   async getSnapshot(snapshotName) {
@@ -76,51 +113,54 @@ Has the contents been tampered with?`,
   },
 
   // Expects it has been verified snapshot does not exist
-  async createSnapshot(snapshotName, engine, engineName, dumpBasePath) {
-    const snapshotBasePath = path.join(snapshotsStoragePath, snapshotName);
-    const snapshotFileFolder = path.join(snapshotBasePath, snapshotFilesFolder);
-
-    const cleanUpBeforeExit = async () => {
-      try {
-        await fsExtra.remove(snapshotBasePath);
-      } catch (e) {
-        internalErrorAndDie(`Could not remove snapshot at ${snapshotBasePath}`);
-      }
-    };
-
-    await fsExtra.ensureDir(snapshotFileFolder);
-
-    try {
-      await engine.load(dumpBasePath, snapshotFileFolder);
-    } catch (e) {
-      await cleanUpBeforeExit();
-
-      if (isUserError(e)) {
-        printUserErrorAndDie(e.message);
-      }
-
-      internalErrorAndDie(
-        `Could not load snapshot files from folder ${dumpBasePath}`,
-        e
-      );
-    }
-
-    const snapshotSpecsFile = path.join(snapshotBasePath, specsFileName);
-
-    const snapshotSaveValues = {
+  async createImportSnapshot(snapshotName, engine, engineName, dumpBasePath) {
+    return createSnapshot(
+      snapshotName,
       engineName,
-      fstats: { created: moment().utc() },
-      runtimeConfig: {}
-    };
+      async (snapshotFileFolder, cleanUpBeforeExit) => {
+        try {
+          await engine.load(dumpBasePath, snapshotFileFolder);
+        } catch (e) {
+          await cleanUpBeforeExit();
 
-    try {
-      await fsExtra.writeJSON(snapshotSpecsFile, snapshotSaveValues, {
-        spaces: 2
-      });
-    } catch (e) {
-      await cleanUpBeforeExit();
+          if (isUserError(e)) {
+            printUserErrorAndDie(e.message);
+          }
 
-      internalErrorAndDie(`Could not write ${snapshotSpecsFile} contents`);
-    }
+          internalErrorAndDie(
+            `Could not load snapshot files from folder ${dumpBasePath}`,
+            e
+          );
+        }
+      }
+    );
+  },
+
+  async createEmptySnapshot(snapshotName, engineName, runtimeConfig) {
+    return createSnapshot(
+      snapshotName,
+      engineName,
+      async (snapshotFileFolder, cleanUpBeforeExit) => {
+        try {
+          await engine.start(
+            engineName,
+            snapshotName,
+            snapshotFileFolder,
+            runtimeConfig
+          );
+        } catch (e) {
+          await cleanUpBeforeExit();
+
+          if (isUserError(e)) {
+            printUserErrorAndDie(e.message);
+          }
+
+          internalErrorAndDie(
+            `Could not create empty snapshot ${snapshotName}`,
+            e
+          );
+        }
+      }
+    );
   }
 };
