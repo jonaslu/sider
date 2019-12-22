@@ -1,7 +1,9 @@
 const fsExtra = require('fs-extra');
 const moment = require('moment');
 const path = require('path');
+
 const engine = require('../engines');
+const { mergeRuntimeConfig } = require('../runtime/config');
 
 const {
   internalErrorAndDie,
@@ -42,7 +44,7 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
 
   await fsExtra.ensureDir(snapshotFileFolder);
 
-  loadFilesCb(snapshotFileFolder, cleanUpBeforeExit);
+  await loadFilesCb(snapshotFileFolder, cleanUpBeforeExit);
 
   const snapshotSpecsFile = path.join(snapshotBasePath, specsFileName);
 
@@ -162,5 +164,28 @@ Has the contents been tampered with?`,
         }
       }
     );
+  },
+
+  async saveRuntimeConfig(snapshot, newCliRuntimeConfig) {
+    const { snapshotSpecsFile } = snapshot;
+
+    try {
+      const storedSpecs = await fsExtra.readJSON(snapshotSpecsFile);
+      const newRuntimeConfig = mergeRuntimeConfig(
+        storedSpecs.runtimeConfig,
+        newCliRuntimeConfig
+      );
+
+      storedSpecs.runtimeConfig = newRuntimeConfig;
+
+      return await fsExtra.writeJSON(snapshotSpecsFile, storedSpecs, {
+        spaces: 2
+      });
+    } catch (e) {
+      internalErrorAndDie(
+        `Error persisting new runtime config to file ${snapshotSpecsFile}`,
+        e
+      );
+    }
   }
 };
