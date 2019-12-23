@@ -38,7 +38,7 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
     try {
       await fsExtra.remove(snapshotBasePath);
     } catch (e) {
-      internalErrorAndDie(`Could not remove snapshot at ${snapshotBasePath}`);
+      internalErrorAndDie(`Could not remove snapshot at ${snapshotBasePath}`, e);
     }
   };
 
@@ -61,7 +61,7 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
   } catch (e) {
     await cleanUpBeforeExit();
 
-    internalErrorAndDie(`Could not write ${snapshotSpecsFile} contents`);
+    internalErrorAndDie(`Could not write ${snapshotSpecsFile} contents`, e);
   }
 }
 
