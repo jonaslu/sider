@@ -10,7 +10,7 @@ const dbs = require('../storage/db');
 const snapshots = require('../storage/snapshots');
 const { getEngineRuntimeConfig } = require('../storage/engine');
 const { mergeRuntimeConfig } = require('../runtime/config');
-const engine = require('../engines');
+const engines = require('../engines');
 
 async function startDb(dbName, cliRuntimeConfig, persist) {
   const db = await dbs.getDb(dbName);
@@ -41,7 +41,7 @@ async function startDb(dbName, cliRuntimeConfig, persist) {
 
   console.log(chalk.green(`✨ Starting db ${dbName} on port ${port} 🚀`));
   try {
-    await engine.start(engineName, dbName, dbFileFolder, dbRuntimeConfig);
+    await engines.start(engineName, dbName, dbFileFolder, dbRuntimeConfig);
   } catch (e) {
     printInternalAndDie(`Could not start db ${dbName}`, e);
   }
@@ -72,4 +72,25 @@ async function clone(dbName, snapshotName) {
       `✨ Sucessfully cloned db ${dbName} from snapshot ${snapshotName} 🚀`
     )
   );
+}
+
+async function promote(dbName, snapshotName) {
+  const db = await dbs.getDb(dbName);
+  if (!db) {
+    didYouMean(dbName, await dbs.getAllDbs(), 'Database');
+  }
+
+  const allSnapshots = await snapshots.getAllSnapshots();
+  const snapshotExists = allSnapshots.some(snapshotname => snapshotname === snapshotName);
+
+  if (snapshotExists) {
+    printUserErrorAndDie(`Cannot promote db ${chalk.red(dbName)}, snapshot ${chalk.green(snapshotName)} already exists`);
+  }
+
+  const { engineName, dbFileFolder } = db;
+  const engine = await engines.getEngineOrDie(engineName);
+
+  await snapshots.createImportSnapshot(snapshotName, engine, engineName, dbFileFolder);
+
+  console.log(`Successfully promoted db ${chalk.blue(dbName)} to snapshot ${chalk.green(snapshotName)}`);
 }
