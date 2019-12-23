@@ -5,6 +5,7 @@ const path = require('path');
 const { internalErrorAndDie } = require('../utils');
 const { dbsStoragePath } = require('../siderrc');
 const { mergeRuntimeConfig } = require('../runtime/config');
+const snapshots = require('./snapshots');
 
 /**
  * {
@@ -44,7 +45,6 @@ module.exports = {
       return {
         dbName,
         dbFileFolder,
-        // !! TODO !! Should this go out or not?
         dbSpecsFile,
         ...dbSpecsContents
       };
@@ -72,9 +72,6 @@ Have you tampered with the contents?`,
     const { dbSpecsFile } = db;
 
     try {
-      // !! TODO !! I cannot use the db straight off,
-      // first I need a deep copy, lest it goes elsewhere
-      // Then i need to pop off the synthetic properties
       const storedSpecs = await fsExtra.readJSON(dbSpecsFile);
       const newRuntimeConfig = mergeRuntimeConfig(
         storedSpecs.runtimeConfig,
@@ -112,7 +109,7 @@ Have you tampered with the contents?`,
     }
   },
 
-  // Expects is has been verified DB does not exist
+  // Expects it has been verified db does not exist
   async createDb(dbName, snapshot) {
     const dbBasePath = path.join(dbsStoragePath, dbName);
     const dbFileFolder = path.join(dbBasePath, dbFilesFolder);
@@ -121,13 +118,13 @@ Have you tampered with the contents?`,
       try {
         await fsExtra.remove(dbBasePath);
       } catch (e) {
-        internalErrorAndDie(`Could not remove db at ${dbBasePath}`);
+        internalErrorAndDie(`Could not remove db at ${dbBasePath}`, e);
       }
     };
 
     const { snapshotFileFolder } = snapshot;
     try {
-      await fsExtra.copy(snapshotFileFolder, dbFileFolder, { recursive: true });
+      await fsExtra.copy(snapshotFileFolder, dbFileFolder);
     } catch (e) {
       await cleanUpBeforeExit();
 
@@ -157,6 +154,36 @@ Have you tampered with the contents?`,
       await cleanUpBeforeExit();
 
       internalErrorAndDie(`Could not write ${dbSpecsFile} contents`);
+    }
+  },
+
+  // Expects it has been verified db exists
+  async removeDb(dbName) {
+    const dbBasePath = path.join(dbsStoragePath, dbName);
+
+    try {
+      await fsExtra.remove(dbBasePath);
+    } catch (e) {
+      internalErrorAndDie(`Could not remove some or all db files at ${dbBasePath}.
+Try removing them manually.`, e);
+    }
+  },
+
+  async resetDb(db) {
+    const { dbFileFolder, snapshotName, dbName } = db;
+    const snapshot = await snapshots.getSnapshot(snapshotName);
+
+    const { snapshotFileFolder } = snapshot;
+
+    try {
+      await fsExtra.remove(dbFileFolder);
+      await fsExtra.copy(snapshotFileFolder, dbFileFolder);
+    } catch (e) {
+      internalErrorAndDie(
+        `Could not reset db: ${dbName} to it's snapshot ${snapshotName}.
+The contents may have been corrupted. Try removing and cloning out the snapshot again.`,
+        e
+      );
     }
   }
 };
