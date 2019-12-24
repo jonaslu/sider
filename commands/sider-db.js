@@ -94,3 +94,15 @@ async function promote(dbName, snapshotName) {
 
   console.log(`Successfully promoted db ${chalk.blue(dbName)} to snapshot ${chalk.green(snapshotName)}`);
 }
+
+
+async function reset(dbName) {
+  const db = await dbs.getDb(dbName);
+  if (!db) {
+    didYouMean(dbName, await dbs.getAllDbs(), 'Database');
+  }
+
+  await dbs.resetDb(db);
+
+  console.log(`Successfully reset db ${chalk.green(dbName)}`);
+}
