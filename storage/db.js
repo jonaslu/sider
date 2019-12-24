@@ -164,8 +164,11 @@ Have you tampered with the contents?`,
     try {
       await fsExtra.remove(dbBasePath);
     } catch (e) {
-      internalErrorAndDie(`Could not remove some or all db files at ${dbBasePath}.
-Try removing them manually.`, e);
+      internalErrorAndDie(
+        `Could not remove some or all db files at ${dbBasePath}.
+Try removing them manually.`,
+        e
+      );
     }
   },
 
@@ -184,6 +187,18 @@ Try removing them manually.`, e);
 The contents may have been corrupted. Try removing and cloning out the snapshot again.`,
         e
       );
+    }
+  },
+
+  async ejectDb(db, ejectFolder) {
+    const { dbFileFolder, dbName } = db;
+    const ejectFullPath = path.join(ejectFolder, `${dbName}-eject`);
+
+    try {
+      await fsExtra.ensureDir(ejectFullPath);
+      await fsExtra.copy(dbFileFolder, ejectFullPath);
+    } catch (e) {
+      internalErrorAndDie(`Could not eject ${dbName} to path ${ejectFullPath}`, e);
     }
   }
 };
