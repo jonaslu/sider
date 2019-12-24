@@ -95,7 +95,6 @@ async function promote(dbName, snapshotName) {
   console.log(`Successfully promoted db ${chalk.blue(dbName)} to snapshot ${chalk.green(snapshotName)}`);
 }
 
-
 async function reset(dbName) {
   const db = await dbs.getDb(dbName);
   if (!db) {
@@ -105,4 +104,17 @@ async function reset(dbName) {
   await dbs.resetDb(db);
 
   console.log(`Successfully reset db ${chalk.green(dbName)}`);
+}
+
+async function remove(dbName) {
+  const allDbs = await dbs.getAllDbs();
+
+  const dbExists = allDbs.some(name => name === dbName);
+  if (!dbExists) {
+    didYouMean(dbName, await dbs.getAllDbs(), 'Database');
+  }
+
+  await dbs.removeDb(dbName);
+
+  console.log(`Successfully removed db ${chalk.green(dbName)}`);
 }
