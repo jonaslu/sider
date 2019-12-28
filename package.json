@@ -1,4 +1,6 @@
 {
+  "bin": "./sider.js",
+  "name": "@jonaslu/sider",
   "dependencies": {
     "chalk": "^3.0.0",
     "fast-levenshtein": "^2.0.6",
