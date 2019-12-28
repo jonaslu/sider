@@ -55,5 +55,9 @@ module.exports = {
   },
   isUserError(error) {
     return error.userError || false;
+  },
+  printUsageAndExit(usage) {
+    console.log(usage);
+    process.exit(0);
   }
 };
