@@ -57,14 +57,14 @@ async function start(dbName, cliRuntimeConfig, persist) {
   const { port } = dbRuntimeConfig;
   const dbStartTime = moment().utc();
 
-  console.log(chalk.green(`✨ Starting db ${dbName} on port ${port} 🚀`));
+  console.log(chalk.green(`✨ Starting database ${dbName} on port ${port} 🚀`));
   try {
     await engines.start(engineName, dbName, dbFileFolder, dbRuntimeConfig);
   } catch (e) {
-    internalErrorAndDie(`Could not start db ${dbName}`, e);
+    internalErrorAndDie(`Could not start database ${dbName}`, e);
   }
 
-  console.log(chalk.green(`Sucessfully shut down db ${chalk.blue(dbName)}`));
+  console.log(chalk.green(`Sucessfully shut down ddatabase ${chalk.blue(dbName)}`));
 
   if (persist) {
     await dbs.saveRuntimeConfig(db, cliRuntimeConfig);
@@ -87,7 +87,7 @@ async function processArgv(argv = []) {
 
   const [dbName, ...runtimeConfig] = rest;
   if (!dbName) {
-    printUserErrorAndDie(`Missing what db to start (parameter <name>)`)
+    printUserErrorAndDie(`Missing what database to start (parameter <name>)`)
   }
 
   if (persist && !runtimeConfig.length) {
