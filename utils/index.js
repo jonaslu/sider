@@ -10,8 +10,7 @@ function printFatalInternalError(message) {
 
 module.exports = {
   printUserErrorAndDie(message) {
-    console.error(chalk.yellow(`Error:`));
-    console.error(message);
+    console.error(`${chalk.yellow(`Error:`)} ${message}`);
 
     process.exit(1);
   },
@@ -39,10 +38,14 @@ module.exports = {
 
     if (foundCompletion) {
       console.error(
-        `${messagePrefix} ${chalk.red(name)} not found, did you mean ${chalk.green(foundCompletion)}?`
+        `${messagePrefix} ${chalk.red(
+          name
+        )} not found, did you mean ${chalk.green(foundCompletion)}?`
       );
     } else {
-      console.error(`${chalk.red(messagePrefix)} ${chalk.green(name)} not found`);
+      console.error(
+        `${chalk.red(messagePrefix)} ${chalk.green(name)} not found`
+      );
     }
 
     process.exit(1);
@@ -59,5 +62,18 @@ module.exports = {
   printUsageAndExit(usage) {
     console.log(usage);
     process.exit(0);
+  },
+  containsArguments(argv, ...arguments) {
+    const hasArgument = arguments.some(argument =>
+      argv.some(arg => arg === argument)
+    );
+    const rest = argv.filter(
+      arg => !arguments.some(argument => arg === argument)
+    );
+
+    return { hasArgument, rest };
+  },
+  printWarning(message) {
+    console.log(`${chalk.yellow("Warning:")} ${message}`);
   }
 };
