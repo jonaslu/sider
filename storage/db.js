@@ -118,7 +118,7 @@ Have you tampered with the contents?`,
       try {
         await fsExtra.remove(dbBasePath);
       } catch (e) {
-        internalErrorAndDie(`Could not remove db at ${dbBasePath}`, e);
+        internalErrorAndDie(`Could not remove ${dbName} at ${dbBasePath}`, e);
       }
     };
 
@@ -165,7 +165,7 @@ Have you tampered with the contents?`,
       await fsExtra.remove(dbBasePath);
     } catch (e) {
       internalErrorAndDie(
-        `Could not remove some or all db files at ${dbBasePath}.
+        `Could not remove some or all of ${dbName}:s files at ${dbBasePath}.
 Try removing them manually.`,
         e
       );
@@ -183,7 +183,7 @@ Try removing them manually.`,
       await fsExtra.copy(snapshotFileFolder, dbFileFolder);
     } catch (e) {
       internalErrorAndDie(
-        `Could not reset db: ${dbName} to it's snapshot ${snapshotName}.
+        `Could not reset ${dbName} to it's snapshot ${snapshotName}.
 The contents may have been corrupted. Try removing and cloning out the snapshot again.`,
         e
       );
