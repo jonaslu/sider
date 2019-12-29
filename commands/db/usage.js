@@ -15,7 +15,7 @@ Commands:
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['start'];
+const knownCommands = ['start', 'clone'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
