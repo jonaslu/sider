@@ -9,13 +9,14 @@ Options:
   -h, --help    Displays this help message
 
 Commands:
-  clone       clones a db from a snapshot
-  start       starts a previously cloned db
+  clone       clones a database from a snapshot
+  promote     promotes a database to a new snapshot
+  start       starts a previously cloned database
 
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['start', 'clone'];
+const knownCommands = ['start', 'clone', 'promote'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
