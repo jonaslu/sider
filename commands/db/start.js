@@ -1,53 +1,31 @@
 const chalk = require('chalk');
 const moment = require('moment');
 
-const {
-  printInternalAndDie,
-  internalErrorAndDie,
-  didYouMean,
-  printUsageAndExit,
-  containsArguments,
-  printWarning,
-  printUserErrorAndDie
-} = require('../../utils');
-
+const utils = require('../../utils');
 const dbs = require('../../storage/db');
 const snapshots = require('../../storage/snapshots');
 const { getEngineRuntimeConfig } = require('../../storage/engine');
-const {
-  mergeRuntimeConfig,
-  parseRuntimeConfigKeyValues
-} = require('../../runtime/config');
+const runtimeConfig = require('../../runtime/config');
 const engines = require('../../engines');
-
-const usage = `
-Usage: sider db start [options] <name> [parameters...]
-
-Starts the previously cloned database
-
-Options:
-  -p, --persist  Persist the parameters
-  -h, --help     output usage information
-`;
 
 async function start(dbName, cliRuntimeConfig, persist) {
   const db = await dbs.getDb(dbName);
   if (!db) {
-    didYouMean(dbName, await dbs.getAllDbs(), 'Database');
+    utils.didYouMean(dbName, await dbs.getAllDbs(), 'Database');
   }
 
   const { snapshotName, engineName, dbFileFolder } = db;
 
   const snapshot = await snapshots.getSnapshot(snapshotName);
   if (!snapshot) {
-    printInternalAndDie(
+    utils.printInternalAndDie(
       `Cannot find specs file for for snapshot: ${snapshotName}`
     );
   }
 
   const engineRuntimeConfig = await getEngineRuntimeConfig(engineName);
 
-  const dbRuntimeConfig = mergeRuntimeConfig(
+  const dbRuntimeConfig = runtimeConfig.mergeRuntimeConfig(
     engineRuntimeConfig.runtimeConfig,
     snapshot.runtimeConfig,
     db.runtimeConfig,
@@ -61,10 +39,12 @@ async function start(dbName, cliRuntimeConfig, persist) {
   try {
     await engines.start(engineName, dbName, dbFileFolder, dbRuntimeConfig);
   } catch (e) {
-    internalErrorAndDie(`Could not start database ${dbName}`, e);
+    utils.internalErrorAndDie(`Could not start database ${dbName}`, e);
   }
 
-  console.log(chalk.green(`Sucessfully shut down ddatabase ${chalk.blue(dbName)}`));
+  console.log(
+    chalk.green(`Sucessfully shut down ddatabase ${chalk.blue(dbName)}`)
+  );
 
   if (persist) {
     await dbs.saveRuntimeConfig(db, cliRuntimeConfig);
@@ -73,28 +53,46 @@ async function start(dbName, cliRuntimeConfig, persist) {
   await dbs.setLastUsed(db, dbStartTime);
 }
 
+const usage = `
+Usage: sider db start [options] <name> [parameters...]
+
+Starts the previously cloned database
+
+Options:
+  -p, --persist  Persist the parameters
+  -h, --help     output usage information
+`;
+
 async function processArgv(argv = []) {
   if (!argv.length) {
-    printUsageAndExit(usage);
+    utils.printUsageAndExit(usage);
   }
 
-  const { hasArgument: wantHelp } = containsArguments(argv, '-h', '--help');
+  const { hasArgument: wantHelp } = utils.containsArguments(argv, '-h', '--help');
   if (wantHelp) {
-    printUsageAndExit(usage);
+    utils.printUsageAndExit(usage);
   }
 
-  const { hasArgument: persist, rest } = containsArguments(argv, '-p', '--persist');
+  const { hasArgument: persist, rest } = utils.containsArguments(
+    argv,
+    '-p',
+    '--persist'
+  );
 
-  const [dbName, ...runtimeConfig] = rest;
+  const [dbName, ...runtimeConfigKeyValues] = rest;
   if (!dbName) {
-    printUserErrorAndDie(`Missing what database to start (parameter <name>)`)
+    utils.printUserErrorAndDie(`Missing what database to start (parameter <name>)`);
   }
 
   if (persist && !runtimeConfig.length) {
-    printWarning(`Persist flag set but no runtime parameters (e g -p but no port=666)`);
+    utils.printWarning(
+      `Persist flag set but no runtime parameters (e g -p but no port=666)`
+    );
   }
 
-  const cliRuntimeConfig = parseRuntimeConfigKeyValues(runtimeConfig);
+  const cliRuntimeConfig = runtimeConfig.parseRuntimeConfigKeyValues(
+    runtimeConfigKeyValues
+  );
 
   return start(dbName, cliRuntimeConfig, persist);
 }
