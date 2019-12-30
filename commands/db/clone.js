@@ -7,6 +7,9 @@ const {
   containsArguments
 } = require('../../utils');
 
+const dbs = require('../../storage/db');
+const snapshots = require('../../storage/snapshots');
+
 const usage = `
 Usage: sider db clone [options] <name> <snapshot>
 
@@ -15,9 +18,6 @@ Clones a database from a snapshot
 Options:
   -h, --help     output usage information
 `;
-
-const dbs = require('../../storage/db');
-const snapshots = require('../../storage/snapshots');
 
 async function clone(dbName, snapshotName) {
   const snapshot = await snapshots.getSnapshot(snapshotName);
