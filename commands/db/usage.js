@@ -11,12 +11,13 @@ Options:
 Commands:
   clone       clones a database from a snapshot
   promote     promotes a database to a new snapshot
+  reset       resets a database (clones the snapshot files anew)
   start       starts a previously cloned database
 
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['start', 'clone', 'promote'];
+const knownCommands = ['start', 'clone', 'promote', 'reset'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
