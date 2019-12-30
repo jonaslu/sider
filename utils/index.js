@@ -14,11 +14,13 @@ module.exports = {
 
     process.exit(1);
   },
+
   printInternalAndDie(message) {
     printFatalInternalError(message);
 
     process.exit(1);
   },
+
   /**
    * For unrecoverable errors, prints to the error
    * console and then process.exit(1)
@@ -29,51 +31,45 @@ module.exports = {
 
     process.exit(1);
   },
+
   didYouMean(name, completions, messagePrefix) {
     const foundCompletion = completions.find(
-      completion =>
-        fastLevenshtein.get(name, completion) <=
-        maxLevenshteinDistanceForCompletion
+      completion => fastLevenshtein.get(name, completion) <= maxLevenshteinDistanceForCompletion
     );
 
     if (foundCompletion) {
-      console.error(
-        `${messagePrefix} ${chalk.red(
-          name
-        )} not found, did you mean ${chalk.green(foundCompletion)}?`
-      );
+      console.error(`${messagePrefix} ${chalk.red(name)} not found, did you mean ${chalk.green(foundCompletion)}?`);
     } else {
-      console.error(
-        `${chalk.red(messagePrefix)} ${chalk.green(name)} not found`
-      );
+      console.error(`${chalk.red(messagePrefix)} ${chalk.green(name)} not found`);
     }
 
     process.exit(1);
   },
+
   getUserError(message) {
     const userError = new Error(message);
     userError.userError = true;
 
     return userError;
   },
+
   isUserError(error) {
     return error.userError || false;
   },
+
   printUsageAndExit(usage) {
     console.log(usage);
     process.exit(0);
   },
+
   containsArguments(argv, ...arguments) {
-    const hasArgument = arguments.some(argument =>
-      argv.some(arg => arg === argument)
-    );
-    const rest = argv.filter(
-      arg => !arguments.some(argument => arg === argument)
-    );
+    const hasArgument = arguments.some(argument => argv.some(arg => arg === argument));
+    const rest = argv.filter(arg => !arguments.some(argument => arg === argument));
 
     return { hasArgument, rest };
   },
+
   printWarning(message) {
-    console.log(`${chalk.yellow("Warning:")} ${message}`);
+    console.log(`${chalk.yellow('Warning:')} ${message}`);
   }
 };

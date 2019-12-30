@@ -12,33 +12,20 @@ async function promote(dbName, snapshotName) {
   }
 
   const allSnapshots = await snapshots.getAllSnapshots();
-  const snapshotExists = allSnapshots.some(
-    snapshotname => snapshotname === snapshotName
-  );
+  const snapshotExists = allSnapshots.some(snapshotname => snapshotname === snapshotName);
 
   if (snapshotExists) {
     utils.printUserErrorAndDie(
-      `Cannot promote ${chalk.red(dbName)}, snapshot ${chalk.green(
-        snapshotName
-      )} already exists`
+      `Cannot promote ${chalk.red(dbName)}, snapshot ${chalk.green(snapshotName)} already exists`
     );
   }
 
   const { engineName, dbFileFolder } = db;
   const engine = await engines.getEngineOrDie(engineName);
 
-  await snapshots.createImportSnapshot(
-    snapshotName,
-    engine,
-    engineName,
-    dbFileFolder
-  );
+  await snapshots.createImportSnapshot(snapshotName, engine, engineName, dbFileFolder);
 
-  console.log(
-    `Successfully promoted ${chalk.blue(dbName)} to snapshot ${chalk.green(
-      snapshotName
-    )}`
-  );
+  console.log(`Successfully promoted ${chalk.blue(dbName)} to snapshot ${chalk.green(snapshotName)}`);
 }
 
 const usage = `
@@ -55,20 +42,14 @@ async function processArgv(argv = []) {
     utils.printUsageAndExit(usage);
   }
 
-  const { hasArgument: wantHelp } = utils.containsArguments(
-    argv,
-    '-h',
-    '--help'
-  );
+  const { hasArgument: wantHelp } = utils.containsArguments(argv, '-h', '--help');
   if (wantHelp) {
     utils.printUsageAndExit(usage);
   }
 
   const [dbName, snapshotName] = argv;
   if (!snapshotName) {
-    utils.printUserErrorAndDie(
-      `Missing the name of the new snapshot (parameter <snapshot-name>)`
-    );
+    utils.printUserErrorAndDie(`Missing the name of the new snapshot (parameter <snapshot-name>)`);
   }
 
   return promote(dbName, snapshotName);

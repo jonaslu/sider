@@ -73,10 +73,7 @@ Have you tampered with the contents?`,
 
     try {
       const storedSpecs = await fsExtra.readJSON(dbSpecsFile);
-      const newRuntimeConfig = mergeRuntimeConfig(
-        storedSpecs.runtimeConfig,
-        newCliRuntimeConfig
-      );
+      const newRuntimeConfig = mergeRuntimeConfig(storedSpecs.runtimeConfig, newCliRuntimeConfig);
 
       storedSpecs.runtimeConfig = newRuntimeConfig;
 
@@ -84,10 +81,7 @@ Have you tampered with the contents?`,
         spaces: 2
       });
     } catch (e) {
-      internalErrorAndDie(
-        `Error persisting new runtime config to file ${dbSpecsFile}`,
-        e
-      );
+      internalErrorAndDie(`Error persisting new runtime config to file ${dbSpecsFile}`, e);
     }
   },
 
@@ -102,10 +96,7 @@ Have you tampered with the contents?`,
         spaces: 2
       });
     } catch (e) {
-      internalErrorAndDie(
-        `Error persisting last used time to file ${dbSpecsFile}`,
-        e
-      );
+      internalErrorAndDie(`Error persisting last used time to file ${dbSpecsFile}`, e);
     }
   },
 
@@ -128,10 +119,7 @@ Have you tampered with the contents?`,
     } catch (e) {
       await cleanUpBeforeExit();
 
-      internalErrorAndDie(
-        `Could not copy snapshot fileFolder: ${snapshotFileFolder} contents to ${dbFileFolder}`,
-        e
-      );
+      internalErrorAndDie(`Could not copy snapshot fileFolder: ${snapshotFileFolder} contents to ${dbFileFolder}`, e);
     }
 
     const dbSpecsFile = path.join(dbBasePath, specsFileName);

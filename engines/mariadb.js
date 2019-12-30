@@ -9,9 +9,7 @@ module.exports = {
     const dumpBasePathStats = await fs.stat(dumpBasePath);
 
     if (!dumpBasePathStats.isDirectory()) {
-      throw getUserError(
-        `Mariadb currently only loads entire data-dirs, cannot find a directory at ${dumpBasePath}`
-      );
+      throw getUserError(`Mariadb currently only loads entire data-dirs, cannot find a directory at ${dumpBasePath}`);
     }
 
     await fs.copy(dumpBasePath, snapshotStoreFolder);
