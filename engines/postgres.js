@@ -7,9 +7,7 @@ module.exports = {
     const dumpBasePathStats = await fs.stat(dumpBasePath);
 
     if (!dumpBasePathStats.isDirectory()) {
-      throw getUserError(
-        `Postgres currently only loads entire data-dirs, cannot find directory at ${dumpBasePath}`
-      );
+      throw getUserError(`Postgres currently only loads entire data-dirs, cannot find directory at ${dumpBasePath}`);
     }
 
     await fs.copy(dumpBasePath, snapshotStoreFolder);
@@ -22,6 +20,7 @@ module.exports = {
   start(dbPath, dbName, runtimeConfig) {
     const { port } = runtimeConfig;
 
+    // prettier-ignore
     const dockerArgs = [
       '-v',
       `${dbPath}:/var/lib/postgresql/data`,

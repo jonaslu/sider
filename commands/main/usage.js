@@ -1,4 +1,4 @@
-const { didYouMean, printUsageAndExit } =  require('../../utils');
+const { didYouMean, printUsageAndExit } = require('../../utils');
 
 const version = '0.0.8';
 

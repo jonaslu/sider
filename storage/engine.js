@@ -22,11 +22,7 @@ module.exports = {
     const engine = await engines.getEngineOrDie(engineName);
     const defaultRuntimeConfig = engine.getConfig();
 
-    const engineSpecsFile = path.join(
-      engineStoragePath,
-      engineName,
-      specsFileName
-    );
+    const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
 
     let runtimeConfig = {};
     const specsExists = await fsExtra.exists(engineSpecsFile);

@@ -8,15 +8,14 @@ module.exports = {
       Object.keys(config).forEach(configKey => {
         result[configKey] = config[configKey];
       });
-    })
+    });
 
     return result;
   },
 
   parseRuntimeConfigKeyValues(config) {
     return config.reduce((acc, keyValue) => {
-
-      if (!keyValue.includes("=")) {
+      if (!keyValue.includes('=')) {
         printUserErrorAndDie(`Malformed config value: ${keyValue} no "=" found`);
       }
 
@@ -34,4 +33,4 @@ module.exports = {
       return acc;
     }, {});
   }
-}
+};

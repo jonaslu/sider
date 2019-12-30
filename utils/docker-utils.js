@@ -7,6 +7,7 @@ function runDb(dbName, dockerArgs, dockerImageAndCommand) {
   const platform = os.platform();
   if (platform === 'linux') {
     const { uid, gid } = os.userInfo();
+    // prettier-ignore
     osSpecificArgs = [
       '-v',
       '/etc/group:/etc/group:ro',
@@ -17,6 +18,7 @@ function runDb(dbName, dockerArgs, dockerImageAndCommand) {
     ];
   }
 
+  // prettier-ignore
   const args = [
     'run',
     '--rm',
@@ -29,9 +31,7 @@ function runDb(dbName, dockerArgs, dockerImageAndCommand) {
 
   const childProcess = spawn('docker', args);
 
-  childProcess.stdout.on('data', data =>
-    process.stdout.write(`${data.toString('utf-8')}`)
-  );
+  childProcess.stdout.on('data', data => process.stdout.write(`${data.toString('utf-8')}`));
 
   childProcess.stderr.on('data', data => {
     process.stderr.write(`${data.toString('utf-8')}`);

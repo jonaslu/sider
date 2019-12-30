@@ -41,9 +41,7 @@ module.exports = {
   async getAllEngineNames() {
     const allFiles = await fsExtra.readdir(__dirname);
 
-    return allFiles
-      .filter(file => file !== 'index.js')
-      .map(file => path.parse(file).name);
+    return allFiles.filter(file => file !== 'index.js').map(file => path.parse(file).name);
   },
   async start(engineName, dbName, dbFileFolder, runtimeConfig) {
     const engine = await getEngineOrDie(engineName);

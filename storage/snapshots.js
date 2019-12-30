@@ -5,11 +5,7 @@ const path = require('path');
 const engine = require('../engines');
 const { mergeRuntimeConfig } = require('../runtime/config');
 
-const {
-  internalErrorAndDie,
-  isUserError,
-  printUserErrorAndDie
-} = require('../utils');
+const { internalErrorAndDie, isUserError, printUserErrorAndDie } = require('../utils');
 const { snapshotsStoragePath } = require('../siderrc');
 
 /**
@@ -74,18 +70,12 @@ module.exports = {
       return undefined;
     }
 
-    const snapshotFileFolder = path.join(
-      snapshotsBasePath,
-      snapshotFilesFolder
-    );
+    const snapshotFileFolder = path.join(snapshotsBasePath, snapshotFilesFolder);
 
     const snapshotSpecsFile = path.join(snapshotsBasePath, specsFileName);
 
     try {
-      const snapshotSpecsContents = await fsExtra.readJSON(
-        snapshotSpecsFile,
-        'utf-8'
-      );
+      const snapshotSpecsContents = await fsExtra.readJSON(snapshotSpecsFile, 'utf-8');
 
       if (snapshotSpecsContents) {
         return {
@@ -116,54 +106,35 @@ Has the contents been tampered with?`,
 
   // Expects it has been verified snapshot does not exist
   async createImportSnapshot(snapshotName, engine, engineName, dumpBasePath) {
-    return createSnapshot(
-      snapshotName,
-      engineName,
-      async (snapshotFileFolder, cleanUpBeforeExit) => {
-        try {
-          await engine.load(dumpBasePath, snapshotFileFolder);
-        } catch (e) {
-          await cleanUpBeforeExit();
+    return createSnapshot(snapshotName, engineName, async (snapshotFileFolder, cleanUpBeforeExit) => {
+      try {
+        await engine.load(dumpBasePath, snapshotFileFolder);
+      } catch (e) {
+        await cleanUpBeforeExit();
 
-          if (isUserError(e)) {
-            printUserErrorAndDie(e.message);
-          }
-
-          internalErrorAndDie(
-            `Could not load snapshot files from folder ${dumpBasePath}`,
-            e
-          );
+        if (isUserError(e)) {
+          printUserErrorAndDie(e.message);
         }
+
+        internalErrorAndDie(`Could not load snapshot files from folder ${dumpBasePath}`, e);
       }
-    );
+    });
   },
 
   async createEmptySnapshot(snapshotName, engineName, runtimeConfig) {
-    return createSnapshot(
-      snapshotName,
-      engineName,
-      async (snapshotFileFolder, cleanUpBeforeExit) => {
-        try {
-          await engine.start(
-            engineName,
-            snapshotName,
-            snapshotFileFolder,
-            runtimeConfig
-          );
-        } catch (e) {
-          await cleanUpBeforeExit();
+    return createSnapshot(snapshotName, engineName, async (snapshotFileFolder, cleanUpBeforeExit) => {
+      try {
+        await engine.start(engineName, snapshotName, snapshotFileFolder, runtimeConfig);
+      } catch (e) {
+        await cleanUpBeforeExit();
 
-          if (isUserError(e)) {
-            printUserErrorAndDie(e.message);
-          }
-
-          internalErrorAndDie(
-            `Could not create empty snapshot ${snapshotName}`,
-            e
-          );
+        if (isUserError(e)) {
+          printUserErrorAndDie(e.message);
         }
+
+        internalErrorAndDie(`Could not create empty snapshot ${snapshotName}`, e);
       }
-    );
+    });
   },
 
   async saveRuntimeConfig(snapshot, newCliRuntimeConfig) {
@@ -171,10 +142,7 @@ Has the contents been tampered with?`,
 
     try {
       const storedSpecs = await fsExtra.readJSON(snapshotSpecsFile);
-      const newRuntimeConfig = mergeRuntimeConfig(
-        storedSpecs.runtimeConfig,
-        newCliRuntimeConfig
-      );
+      const newRuntimeConfig = mergeRuntimeConfig(storedSpecs.runtimeConfig, newCliRuntimeConfig);
 
       storedSpecs.runtimeConfig = newRuntimeConfig;
 
@@ -182,10 +150,7 @@ Has the contents been tampered with?`,
         spaces: 2
       });
     } catch (e) {
-      internalErrorAndDie(
-        `Error persisting new runtime config to file ${snapshotSpecsFile}`,
-        e
-      );
+      internalErrorAndDie(`Error persisting new runtime config to file ${snapshotSpecsFile}`, e);
     }
   }
 };
