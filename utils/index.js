@@ -8,7 +8,22 @@ function printFatalInternalError(message) {
   console.error(message);
 }
 
+function containsArguments(argv, ...arguments) {
+  const hasArgument = arguments.some(argument => argv.some(arg => arg === argument));
+  const rest = argv.filter(arg => !arguments.some(argument => arg === argument));
+
+  return { hasArgument, rest };
+}
+
+function printUsageAndExit(usage) {
+  console.log(usage);
+  process.exit(0);
+}
+
 module.exports = {
+  containsArguments,
+  printUsageAndExit,
+
   printUserErrorAndDie(message) {
     console.error(`${chalk.yellow(`Error:`)} ${message}`);
 
@@ -57,19 +72,18 @@ module.exports = {
     return error.userError || false;
   },
 
-  printUsageAndExit(usage) {
-    console.log(usage);
-    process.exit(0);
-  },
-
-  containsArguments(argv, ...arguments) {
-    const hasArgument = arguments.some(argument => argv.some(arg => arg === argument));
-    const rest = argv.filter(arg => !arguments.some(argument => arg === argument));
-
-    return { hasArgument, rest };
-  },
-
   printWarning(message) {
     console.log(`${chalk.yellow('Warning:')} ${message}`);
+  },
+
+  printUsageIfHelp(argv, usage) {
+    if (!argv.length) {
+      printUsageAndExit(usage);
+    }
+
+    const { hasArgument: wantHelp } = containsArguments(argv, '-h', '--help');
+    if (wantHelp) {
+      printUsageAndExit(usage);
+    }
   }
 };
