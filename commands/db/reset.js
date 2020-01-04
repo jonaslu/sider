@@ -28,11 +28,7 @@ async function processArgv(argv = []) {
     utils.printUsageAndExit(usage);
   }
 
-  const { hasArgument: wantHelp } = utils.containsArguments(
-    argv,
-    '-h',
-    '--help'
-  );
+  const { hasArgument: wantHelp } = utils.containsArguments(argv, '-h', '--help');
   if (wantHelp) {
     utils.printUsageAndExit(usage);
   }
