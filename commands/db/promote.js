@@ -38,14 +38,7 @@ Options:
 `;
 
 async function processArgv(argv = []) {
-  if (!argv.length) {
-    utils.printUsageAndExit(usage);
-  }
-
-  const { hasArgument: wantHelp } = utils.containsArguments(argv, '-h', '--help');
-  if (wantHelp) {
-    utils.printUsageAndExit(usage);
-  }
+  utils.printUsageIfHelp(argv, usage);
 
   const [dbName, snapshotName] = argv;
   if (!snapshotName) {
