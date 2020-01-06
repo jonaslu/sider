@@ -69,7 +69,7 @@ async function processArgv(argv = []) {
     utils.printUserErrorAndDie(`Missing what database to start (parameter <name>)`);
   }
 
-  if (persist && !runtimeConfig.length) {
+  if (persist && !runtimeConfigKeyValues.length) {
     utils.printWarning(`Persist flag set but no runtime parameters (e g -p but no port=666)`);
   }
 
