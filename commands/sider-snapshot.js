@@ -72,7 +72,7 @@ async function addEmptySnapshot(
   );
   console.log(
     chalk.green(
-      `Sucessfully shut down empty snapshot ${chalk.blue(snapshotName)}`
+      `Successfully shut down empty snapshot ${chalk.blue(snapshotName)}`
     )
   );
 
