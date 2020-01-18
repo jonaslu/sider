@@ -19,6 +19,12 @@ module.exports = {
       port: 3306
     };
   },
+  // !! TODO !!
+  /*
+  Add a validation method that is run when config is set
+  on a snapshot or engine (stuff that doesn't immediately use
+  the parameters).
+  */
   start(dbPath, dbName, runtimeConfig) {
     const { port, password } = runtimeConfig;
 
