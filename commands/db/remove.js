@@ -8,7 +8,7 @@ async function remove(dbName) {
 
   const dbExists = allDbs.some(name => name === dbName);
   if (!dbExists) {
-    utils.didYouMean(dbName, await dbs.getAllDbs(), 'Database');
+    utils.didYouMean(dbName, allDbs, 'Database');
   }
 
   await dbs.removeDb(dbName);
