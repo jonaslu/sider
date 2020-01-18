@@ -11,12 +11,13 @@ Options:
 Commands:
   add         adds a snapshot from disk
   empty       starts and then saves an empty snapshot
+  remove      removes a snapshot
   start       starts an empty snapshot
 
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['add', 'empty', 'start'];
+const knownCommands = ['add', 'empty', 'remove', 'start'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
