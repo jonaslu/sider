@@ -59,6 +59,15 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
 
     internalErrorAndDie(`Could not write ${snapshotSpecsFile} contents`, e);
   }
+
+  // !! TODO !! This is the same as in getSnapshot - marge them
+  // if we copy paste a third time
+  return {
+    snapshotName,
+    snapshotFileFolder,
+    snapshotSpecsFile,
+    ...snapshotSaveValues
+  };
 }
 
 module.exports = {
@@ -71,7 +80,6 @@ module.exports = {
     }
 
     const snapshotFileFolder = path.join(snapshotsBasePath, snapshotFilesFolder);
-
     const snapshotSpecsFile = path.join(snapshotsBasePath, specsFileName);
 
     try {

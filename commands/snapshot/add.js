@@ -1,10 +1,12 @@
+const chalk = require('chalk');
 const fsExtra = require('fs-extra');
 
 const engines = require('../../engines');
+const runtimeConfig = require('../../runtime/config');
 const snapshots = require('../../storage/snapshots');
 const utils = require('../../utils');
 
-async function addSnapshot(engineName, snapshotName, dumpBasePath) {
+async function addSnapshot(engineName, snapshotName, dumpBasePath, cliRuntimeConfig) {
   const dumpBasePathExists = await fsExtra.pathExists(dumpBasePath);
   if (!dumpBasePathExists) {
     utils.printUserErrorAndDie(
@@ -22,16 +24,20 @@ async function addSnapshot(engineName, snapshotName, dumpBasePath) {
     utils.didYouMean(engineName, await engines.getAllEngineNames(), `Engine`);
   }
 
-  await snapshots.createImportSnapshot(
+  const snapshot = await snapshots.createImportSnapshot(
     snapshotName,
     engine,
     engineName,
     dumpBasePath
   );
+
+  await snapshots.saveRuntimeConfig(snapshot, cliRuntimeConfig)
+
+  console.log(`Successfully added snapshot ${chalk.green(snapshotName)}`);
 }
 
 const usage = `
-Usage: sider snapshot add [options] <engine> <name> <path>
+Usage: sider snapshot add [options] <engine> <name> <path> [parameters...]
 
 Adds a snapshot from disk
 
@@ -42,7 +48,7 @@ Options:
 async function processArgv(argv = []) {
   utils.printUsageIfHelp(argv, usage);
 
-  const [engineName, snapshotName, dumpBasePath] = argv;
+  const [engineName, snapshotName, dumpBasePath, ...snapshotRuntimeConfigKeyValues] = argv;
   if (!snapshotName) {
     utils.printUserErrorAndDie(`Missing the name of the snapshot (parameter <name>)`);
   }
@@ -51,7 +57,10 @@ async function processArgv(argv = []) {
     utils.printUserErrorAndDie('Missing the path of the dump (parameter <path>)');
   }
 
-  return addSnapshot(engineName, snapshotName, dumpBasePath);
+  const cliRuntimeConfig = runtimeConfig.parseRuntimeConfigKeyValues(snapshotRuntimeConfigKeyValues);
+  console.log(cliRuntimeConfig);
+
+  return addSnapshot(engineName, snapshotName, dumpBasePath, cliRuntimeConfig);
 }
 
 module.exports = {
