@@ -1,5 +1,4 @@
 const chalk = require('chalk');
-const moment = require('moment');
 
 const utils = require('../../utils');
 const snapshots = require('../../storage/snapshots');
