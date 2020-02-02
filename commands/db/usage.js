@@ -10,6 +10,7 @@ Options:
 
 Commands:
   clone       clones a database from a snapshot
+  list        lists all existing databases
   promote     promotes a database to a new snapshot
   remove      removes a database
   reset       resets a database (clones the snapshot files anew)
@@ -18,7 +19,7 @@ Commands:
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove'];
+const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove', 'list'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
