@@ -166,20 +166,15 @@ Try removing them manually.`,
   },
 
   async removeDbsForSnapshot(snapshotName) {
-    // !! TODO !! This is is in here somewhere, find all
-    // references and put it into this
-    const allDbs = await this.getAllDbNames();
-    const dbs = await Promise.all(allDbs.map(dbName => this.getDb(dbName)));
+    const allDbs = await this.getAllDbs();
 
-    const removeThese = dbs
+    const removeTheseDbsWithNames = allDbs
       .filter(({ snapshotName: dbSnapshotName }) => dbSnapshotName === snapshotName)
-      .map(({ snapshotName }) => snapshotName);
+      .map(({ dbName }) => dbName);
 
-      console.log(removeThese);
+    await Promise.all(removeTheseDbsWithNames.map(dbName => this.removeDb(dbName)));
 
-    await Promise.all(removeThese.map(dbName => this.removeDb(dbName)));
-
-    return removeThese;
+    return removeTheseDbsWithNames;
   },
 
   async resetDb(db) {

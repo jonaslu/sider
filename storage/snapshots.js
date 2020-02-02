@@ -145,20 +145,20 @@ Has the contents been tampered with?`,
     });
   },
 
-    // Expects it has been verified snapshot exists
-    async removeSnapshot(snapshotName) {
-      const snapshotBasePath = path.join(snapshotsStoragePath, snapshotName);
+  // Expects it has been verified snapshot exists
+  async removeSnapshot(snapshotName) {
+    const snapshotBasePath = path.join(snapshotsStoragePath, snapshotName);
 
-      try {
-        await fsExtra.remove(snapshotBasePath);
-      } catch (e) {
-        internalErrorAndDie(
-          `Could not remove some or all of ${snapshotName}:s files at ${snapshotBasePath}.
+    try {
+      await fsExtra.remove(snapshotBasePath);
+    } catch (e) {
+      internalErrorAndDie(
+        `Could not remove some or all of ${snapshotName}:s files at ${snapshotBasePath}.
   Try removing them manually.`,
-          e
-        );
-      }
-    },
+        e
+      );
+    }
+  },
 
   async saveRuntimeConfig(snapshot, newCliRuntimeConfig) {
     const { snapshotSpecsFile } = snapshot;
