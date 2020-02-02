@@ -2,23 +2,28 @@ const chalk = require('chalk');
 
 const utils = require('../../utils');
 const snapshots = require('../../storage/snapshots');
+const dbs = require('../../storage/db');
 
-async function remove(snapshot) {
+async function remove(snapshotName) {
   const allSnapshots = await snapshots.getAllSnapshots();
-  const snapshotExists = allSnapshots.some(name => name === snapshot);
+  const snapshotExists = allSnapshots.some(name => name === snapshotName);
   if (!snapshotExists) {
-    utils.didYouMean(snapshot, allSnapshots, 'Snapshot');
+    utils.didYouMean(snapshotName, allSnapshots, 'Snapshot');
   }
 
-  await snapshots.removeSnapshot(snapshot);
+  await snapshots.removeSnapshot(snapshotName);
+  console.log(`Successfully removed snapshot ${chalk.green(snapshotName)}`);
 
-  console.log(`Successfully removed snapshot ${chalk.green(snapshot)}`);
+  const removedDbNames = await dbs.removeDbsForSnapshot(snapshotName);
+  if (removedDbNames.length) {
+    console.log(`Removed cloned databases: ${chalk.green(removedDbNames.join(', '))}`);
+  }
 }
 
 const usage = `
 Usage: sider snapshot remove [options] <name>
 
-Removes a snapshot
+Removes a snapshot and it's cloned databases
 
 Options:
   -h, --help     output usage information

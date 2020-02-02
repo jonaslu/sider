@@ -11,7 +11,7 @@ Options:
 Commands:
   add         adds a snapshot from disk
   empty       starts and then saves an empty snapshot
-  remove      removes a snapshot
+  remove      removes a snapshot and it's cloned databases
   start       starts an empty snapshot
 
   help [cmd]  display help for [cmd]
