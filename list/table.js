@@ -163,13 +163,11 @@ function padOrElipsize(columWidth, text) {
   return text + ' '.repeat(paddedTextWidth);
 }
 
-function printDataRow(row, columnWidths) {
+function printDataRow(row) {
   output.write(cellEdge);
 
-  row.forEach((rowValue, columnIndex) => {
-    let paddedText = padOrElipsize(columnWidths[columnIndex], rowValue);
-
-    output.write(tableCellLeftPad + paddedText + tableCellRightPad);
+  row.forEach(cellValue => {
+    output.write(tableCellLeftPad + cellValue + tableCellRightPad);
     output.write(cellEdge);
   });
 
@@ -182,7 +180,7 @@ function printRows(data, columnWidths) {
   printFrameRow(columnWidths, tableFrameTopLeft, tableFrameTopLine, tableFrameTopSeparator, tableFrameTopRight);
 
   init.forEach(row => {
-    printDataRow(row, columnWidths);
+    printDataRow(row);
     printFrameRow(
       columnWidths,
       tableFrameMiddleLeft,
@@ -192,7 +190,7 @@ function printRows(data, columnWidths) {
     );
   });
 
-  printDataRow(lastRow, columnWidths);
+  printDataRow(lastRow);
   printFrameRow(
     columnWidths,
     tableFrameBottomLeft,
@@ -229,11 +227,13 @@ module.exports = {
         const terminalWidth = process.stdout.columns;
 
         columnWidths = fitColumnWidthsToBoundingFrameWidth(terminalWidth, columnWidths);
+        const processedText = data.map(row => row.map((cellValue, columnIndex) => padOrElipsize(columnWidths[columnIndex], cellValue)));
 
         if (preDisplayHook) {
-          preDisplayHook(data);
+          preDisplayHook(processedText);
         }
-        printRows(data, columnWidths);
+
+        printRows(processedText, columnWidths);
       }
     };
   }

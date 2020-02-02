@@ -76,8 +76,8 @@ module.exports = {
     console.log(`${chalk.yellow('Warning:')} ${message}`);
   },
 
-  printUsageIfHelp(argv, usage) {
-    if (!argv.length) {
+  printUsageIfHelp(argv, usage, needsArguments = true) {
+    if (needsArguments && !argv.length) {
       printUsageAndExit(usage);
     }
 
