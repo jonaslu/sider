@@ -6,7 +6,7 @@ const dbs = require('../../storage/db');
 async function reset(dbName) {
   const db = await dbs.getDb(dbName);
   if (!db) {
-    utils.didYouMean(dbName, await dbs.getAllDbs(), 'Database');
+    utils.didYouMean(dbName, await dbs.getAllDbNames(), 'Database');
   }
 
   await dbs.resetDb(db);
