@@ -68,6 +68,11 @@ Have you tampered with the contents?`,
     return [];
   },
 
+  async getAllDbs() {
+    const allDbNames = await this.getAllDbNames();
+    return Promise.all(allDbNames.map(dbName => this.getDb(dbName)));
+  },
+
   async saveRuntimeConfig(db, newCliRuntimeConfig) {
     const { dbSpecsFile } = db;
 
