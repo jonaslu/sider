@@ -4,7 +4,7 @@ const utils = require('../../utils');
 const dbs = require('../../storage/db');
 
 async function remove(dbName) {
-  const allDbs = await dbs.getAllDbs();
+  const allDbs = await dbs.getAllDbNames();
 
   const dbExists = allDbs.some(name => name === dbName);
   if (!dbExists) {

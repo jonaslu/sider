@@ -59,7 +59,7 @@ Have you tampered with the contents?`,
     return undefined;
   },
 
-  async getAllDbs() {
+  async getAllDbNames() {
     const anyDbExists = await fsExtra.pathExists(dbsStoragePath);
     if (anyDbExists) {
       return fsExtra.readdir(dbsStoragePath);
@@ -158,6 +158,23 @@ Try removing them manually.`,
         e
       );
     }
+  },
+
+  async removeDbsForSnapshot(snapshotName) {
+    // !! TODO !! This is is in here somewhere, find all
+    // references and put it into this
+    const allDbs = await this.getAllDbNames();
+    const dbs = await Promise.all(allDbs.map(dbName => this.getDb(dbName)));
+
+    const removeThese = dbs
+      .filter(({ snapshotName: dbSnapshotName }) => dbSnapshotName === snapshotName)
+      .map(({ snapshotName }) => snapshotName);
+
+      console.log(removeThese);
+
+    await Promise.all(removeThese.map(dbName => this.removeDb(dbName)));
+
+    return removeThese;
   },
 
   async resetDb(db) {

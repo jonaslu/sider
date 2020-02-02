@@ -8,7 +8,7 @@ const utils = require('../../utils');
 async function promote(dbName, snapshotName) {
   const db = await dbs.getDb(dbName);
   if (!db) {
-    utils.didYouMean(dbName, await dbs.getAllDbs(), 'Database');
+    utils.didYouMean(dbName, await dbs.getAllDbNames(), 'Database');
   }
 
   const allSnapshots = await snapshots.getAllSnapshots();

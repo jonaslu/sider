@@ -7,7 +7,7 @@ const dbs = require('../../storage/db');
 const { table } = require('../../list/table');
 
 async function list() {
-  const allDbNames = await dbs.getAllDbs();
+  const allDbNames = await dbs.getAllDbNames();
   const allDbs = await Promise.all(allDbNames.map(async name => dbs.getDb(name)));
 
   const dbListingTable = table();
