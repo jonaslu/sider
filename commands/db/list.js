@@ -15,13 +15,6 @@ async function list() {
 
   allDbs.forEach(db => {
     const { dbName, snapshotName, engineName, fstats: { created, lastUsed }} = db;
-    // !! TODO !! These should use utc, and the created
-    // should use moment().format() <- will return local time on the machine.
-
-    // In full format this will be printed again in local time
-    // moment().format("YY-MM-DD HH:mm:ss")
-
-    // So when changing timezone dates will show in that timezone
     const timeSinceCreated = moment(created).from(moment());
 
     let timeSinceLastUsed = 'never';
@@ -55,3 +48,4 @@ async function processArgv(argv = []) {
 module.exports = {
   processArgv
 };
+

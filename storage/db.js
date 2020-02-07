@@ -133,7 +133,7 @@ Have you tampered with the contents?`,
     const dbSaveValues = {
       snapshotName,
       fstats: {
-        created: moment().utc()
+        created: moment().format()
       },
       runtimeConfig: {},
       engineName
