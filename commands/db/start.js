@@ -31,7 +31,7 @@ async function start(dbName, cliRuntimeConfig, persist) {
   );
 
   const { port } = dbRuntimeConfig;
-  const dbStartTime = moment().utc();
+  const dbStartTime = moment().format();
 
   console.log(chalk.green(`✨ Starting database ${dbName} on port ${port} 🚀`));
   try {

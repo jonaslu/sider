@@ -46,7 +46,7 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
 
   const snapshotSaveValues = {
     engineName,
-    fstats: { created: moment().utc() },
+    fstats: { created: moment().format() },
     runtimeConfig: {}
   };
 
