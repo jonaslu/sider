@@ -165,13 +165,16 @@ Try removing them manually.`,
     }
   },
 
-  async removeDbsForSnapshot(snapshotName) {
+  async getAllDbNamesForSnapshotName(snapshotName) {
     const allDbs = await this.getAllDbs();
 
-    const removeTheseDbsWithNames = allDbs
+    return  allDbs
       .filter(({ snapshotName: dbSnapshotName }) => dbSnapshotName === snapshotName)
       .map(({ dbName }) => dbName);
+  },
 
+  async removeDbsForSnapshot(snapshotName) {
+    const removeTheseDbsWithNames = await this.getAllDbNamesForSnapshotName(snapshotName);
     await Promise.all(removeTheseDbsWithNames.map(dbName => this.removeDb(dbName)));
 
     return removeTheseDbsWithNames;

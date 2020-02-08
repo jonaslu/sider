@@ -112,6 +112,11 @@ Has the contents been tampered with?`,
     return [];
   },
 
+  async getAllSnapshots() {
+    const allSnapshotNames = await this.getAllSnapshotNames();
+    return Promise.all(allSnapshotNames.map(snapshotName => this.getSnapshot(snapshotName)));
+  },
+
   // Expects it has been verified snapshot does not exist
   async createImportSnapshot(snapshotName, engine, engineName, dumpBasePath) {
     return createSnapshot(snapshotName, engineName, async (snapshotFileFolder, cleanUpBeforeExit) => {
