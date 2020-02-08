@@ -5,7 +5,7 @@ const snapshots = require('../../storage/snapshots');
 const dbs = require('../../storage/db');
 
 async function remove(snapshotName) {
-  const allSnapshots = await snapshots.getAllSnapshots();
+  const allSnapshots = await snapshots.getAllSnapshotNames();
   const snapshotExists = allSnapshots.some(name => name === snapshotName);
   if (!snapshotExists) {
     utils.didYouMean(snapshotName, allSnapshots, 'Snapshot');

@@ -11,7 +11,7 @@ async function promote(dbName, snapshotName) {
     utils.didYouMean(dbName, await dbs.getAllDbNames(), 'Database');
   }
 
-  const allSnapshots = await snapshots.getAllSnapshots();
+  const allSnapshots = await snapshots.getAllSnapshotNames();
   const snapshotExists = allSnapshots.some(snapshotname => snapshotname === snapshotName);
 
   if (snapshotExists) {

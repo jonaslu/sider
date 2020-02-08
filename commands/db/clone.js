@@ -7,7 +7,7 @@ const utils = require('../../utils');
 async function clone(dbName, snapshotName) {
   const snapshot = await snapshots.getSnapshot(snapshotName);
   if (!snapshot) {
-    utils.didYouMean(snapshotName, await snapshots.getAllSnapshots(), 'Snapshot');
+    utils.didYouMean(snapshotName, await snapshots.getAllSnapshotNames(), 'Snapshot');
   }
 
   const dbExists = await dbs.getDb(dbName);

@@ -103,7 +103,7 @@ Has the contents been tampered with?`,
 
     return undefined;
   },
-  async getAllSnapshots() {
+  async getAllSnapshotNames() {
     const anySnapshotExists = await fsExtra.pathExists(snapshotsStoragePath);
     if (anySnapshotExists) {
       return fsExtra.readdir(snapshotsStoragePath);
