@@ -1,46 +1,37 @@
 const { didYouMean, printUsageAndExit } = require('../../utils');
 
-const version = '0.0.8';
-
 const usage = `
-Usage: sider <command> [arguments]
+Usage: sider engine <command> [arguments]
 
-Database dump manager
+Manages engine settings
 
 Options:
-  -V, --version  output the version number
-  -h, --help     output usage information
+  -h, --help    Displays this help message
 
 Commands:
-  db          manages databases
-  engine      manages engines
-  snapshot    manages snapshots
+  getconf      clones a database from a snapshot
+  remconf      lists all existing databases
+  setconfg     promotes a database to a new snapshot
 
   help [cmd]  display help for [cmd]
-  version     display version
 `;
 
-const knownCommands = ['db', 'engine', 'snapshot'];
+const knownCommands = ['getconf'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
 
   if (commandFound) {
-    return require(`../${subcommand}/usage`);
+    return require(`./${subcommand}`);
   }
 
   didYouMean(subcommand, knownCommands, 'Command');
 }
 
-async function processArgv(argv) {
+async function processArgv(argv = []) {
   const [subcommand, ...rest] = argv;
 
   switch (subcommand) {
-    case '-V':
-    case 'version':
-      console.log(version);
-      process.exit(0);
-
     case 'help':
       const [helpCommand] = rest;
 
