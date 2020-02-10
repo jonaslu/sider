@@ -58,7 +58,6 @@ async function processArgv(argv = []) {
   }
 
   const cliRuntimeConfig = runtimeConfig.parseRuntimeConfigKeyValues(snapshotRuntimeConfigKeyValues);
-  console.log(cliRuntimeConfig);
 
   return addSnapshot(engineName, snapshotName, dumpBasePath, cliRuntimeConfig);
 }

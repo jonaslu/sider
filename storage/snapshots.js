@@ -3,7 +3,7 @@ const moment = require('moment');
 const path = require('path');
 
 const engine = require('../engines');
-const { mergeRuntimeConfig } = require('../runtime/config');
+const runtimeConfig = require('../runtime/config');
 
 const { internalErrorAndDie, isUserError, printUserErrorAndDie } = require('../utils');
 const { snapshotsStoragePath } = require('../siderrc');
@@ -167,18 +167,6 @@ Has the contents been tampered with?`,
 
   async saveRuntimeConfig(snapshot, newCliRuntimeConfig) {
     const { snapshotSpecsFile } = snapshot;
-
-    try {
-      const storedSpecs = await fsExtra.readJSON(snapshotSpecsFile);
-      const newRuntimeConfig = mergeRuntimeConfig(storedSpecs.runtimeConfig, newCliRuntimeConfig);
-
-      storedSpecs.runtimeConfig = newRuntimeConfig;
-
-      return await fsExtra.writeJSON(snapshotSpecsFile, storedSpecs, {
-        spaces: 2
-      });
-    } catch (e) {
-      internalErrorAndDie(`Error persisting new runtime config to file ${snapshotSpecsFile}`, e);
-    }
+    await runtimeConfig.saveRuntimeConfig(snapshotSpecsFile, newCliRuntimeConfig);
   }
 };

@@ -4,7 +4,7 @@ const path = require('path');
 
 const { internalErrorAndDie } = require('../utils');
 const { dbsStoragePath } = require('../siderrc');
-const { mergeRuntimeConfig } = require('../runtime/config');
+const runtimeConfig = require('../runtime/config');
 const snapshots = require('./snapshots');
 
 /**
@@ -75,19 +75,7 @@ Have you tampered with the contents?`,
 
   async saveRuntimeConfig(db, newCliRuntimeConfig) {
     const { dbSpecsFile } = db;
-
-    try {
-      const storedSpecs = await fsExtra.readJSON(dbSpecsFile);
-      const newRuntimeConfig = mergeRuntimeConfig(storedSpecs.runtimeConfig, newCliRuntimeConfig);
-
-      storedSpecs.runtimeConfig = newRuntimeConfig;
-
-      return await fsExtra.writeJSON(dbSpecsFile, storedSpecs, {
-        spaces: 2
-      });
-    } catch (e) {
-      internalErrorAndDie(`Error persisting new runtime config to file ${dbSpecsFile}`, e);
-    }
+    await runtimeConfig.saveRuntimeConfig(dbSpecsFile, newCliRuntimeConfig);
   },
 
   async setLastUsed(db, dbStartTime) {
