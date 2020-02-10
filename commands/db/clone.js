@@ -16,7 +16,7 @@ async function clone(dbName, snapshotName) {
   }
 
   await dbs.createDb(dbName, snapshot);
-  console.log(chalk.green(`✨ Sucessfully cloned database ${dbName} from snapshot ${snapshotName} 🚀`));
+  console.log(chalk.green(`✨ Successfully cloned database ${dbName} from snapshot ${snapshotName} 🚀`));
 }
 
 const usage = `
