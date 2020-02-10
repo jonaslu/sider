@@ -13,12 +13,11 @@ Commands:
   empty       starts and then saves an empty snapshot
   list        lists all existing snapshots
   remove      removes a snapshot and it's cloned databases
-  start       starts an empty snapshot
 
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['add', 'empty', 'list', 'remove', 'start'];
+const knownCommands = ['add', 'empty', 'list', 'remove'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
