@@ -40,7 +40,7 @@ async function start(dbName, cliRuntimeConfig, persist) {
     utils.internalErrorAndDie(`Could not start database ${dbName}`, e);
   }
 
-  console.log(chalk.green(`Sucessfully shut down database ${chalk.blue(dbName)}`));
+  console.log(chalk.green(`Successfully shut down database ${chalk.blue(dbName)}`));
 
   if (persist) {
     await dbs.saveRuntimeConfig(db, cliRuntimeConfig);

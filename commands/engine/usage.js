@@ -9,9 +9,9 @@ Options:
   -h, --help    Displays this help message
 
 Commands:
-  getconf      clones a database from a snapshot
-  remconf      lists all existing databases
-  setconfg     promotes a database to a new snapshot
+  getconf      gets config for an engine
+  remconf      removes config for an engine
+  setconfg     sets config for an engine
 
   help [cmd]  display help for [cmd]
 `;
