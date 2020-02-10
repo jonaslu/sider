@@ -5,9 +5,9 @@ const { getEngineRuntimeConfig } = require('../../storage/engine');
 const utils = require('../../utils');
 
 async function getConf(engineName) {
-  const engine = await engines.getEngine(engineName);
-  if (!engine) {
-    utils.didYouMean(engineName, await engines.getAllEngineNames(), `Engine`);
+  const engineNames = await engines.getAllEngineNames();
+  if (!engineNames.some(name => name === engineName)) {
+    utils.didYouMean(engineName, engineNames, `Engine`);
   }
 
   const { runtimeConfig } = await getEngineRuntimeConfig(engineName);
@@ -15,13 +15,13 @@ async function getConf(engineName) {
 
   sortedConfigKeys.forEach(key => {
     console.log(`${chalk.yellow(key)}=${runtimeConfig[key]}`);
-  })
+  });
 }
 
 const usage = `
 Usage: sider engine getconf [options] <name>
 
-Clones a database from a snapshot
+Gets config for an engine
 
 Options:
   -h, --help     output usage information

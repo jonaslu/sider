@@ -2,7 +2,7 @@ const fsExtra = require('fs-extra');
 const path = require('path');
 
 const engines = require('../engines');
-const { mergeRuntimeConfig } = require('../runtime/config');
+const runtimeConfig = require('../runtime/config');
 
 const { internalErrorAndDie } = require('../utils');
 const { engineStoragePath } = require('../siderrc');
@@ -24,12 +24,12 @@ module.exports = {
 
     const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
 
-    let runtimeConfig = {};
+    let diskRuntimeConfig = {};
     const specsExists = await fsExtra.exists(engineSpecsFile);
     if (specsExists) {
       try {
         const diskSpecs = await fsExtra.readJSON(engineSpecsFile, 'utf-8');
-        runtimeConfig = diskSpecs.runtimeConfig;
+        diskRuntimeConfig = diskSpecs.runtimeConfig;
       } catch (e) {
         internalErrorAndDie(
           `Could not read file ${engineSpecsFile}.
@@ -40,7 +40,7 @@ Has the contents been tampered with?`,
     }
 
     return {
-      runtimeConfig: mergeRuntimeConfig(defaultRuntimeConfig, runtimeConfig)
+      runtimeConfig: diskRuntimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, diskRuntimeConfig)
     };
   }
 };
