@@ -16,7 +16,7 @@ Commands:
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['getconf'];
+const knownCommands = ['getconf', 'setconf'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
