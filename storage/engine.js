@@ -40,7 +40,18 @@ Has the contents been tampered with?`,
     }
 
     return {
-      runtimeConfig: diskRuntimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, diskRuntimeConfig)
+      runtimeConfig: runtimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, diskRuntimeConfig)
     };
+  },
+
+  // It's expected to been verified that the engineName exist
+  async saveRuntimeConfig(engineName, newCliRuntimeConfig) {
+    const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
+    const specsExists = await fsExtra.exists(engineSpecsFile);
+    if (!specsExists) {
+      await fsExtra.writeJSON(engineSpecsFile, { runtimeConfig: {} });
+    }
+
+    await runtimeConfig.saveRuntimeConfig(engineSpecsFile, newCliRuntimeConfig);
   }
 };
