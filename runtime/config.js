@@ -1,4 +1,6 @@
-const { printUserErrorAndDie } = require('../utils');
+const fsExtra = require('fs-extra');
+
+const { printUserErrorAndDie, internalErrorAndDie } = require('../utils');
 
 module.exports = {
   // Later in list = higher prio
@@ -32,5 +34,20 @@ module.exports = {
 
       return acc;
     }, {});
+  },
+
+  async saveRuntimeConfig(specsFile, newRuntimeConfig) {
+    try {
+      const storedSpecs = await fsExtra.readJSON(specsFile);
+      const mergedRuntimeConfig = this.mergeRuntimeConfig(storedSpecs.runtimeConfig, newRuntimeConfig);
+
+      storedSpecs.runtimeConfig = mergedRuntimeConfig;
+
+      return await fsExtra.writeJSON(specsFile, storedSpecs, {
+        spaces: 2
+      });
+    } catch (e) {
+      internalErrorAndDie(`Error persisting new runtime config to file ${specsFile}`, e);
+    }
   }
 };
