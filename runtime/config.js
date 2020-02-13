@@ -36,7 +36,7 @@ module.exports = {
     }, {});
   },
 
-  async saveRuntimeConfig(specsFile, newRuntimeConfig) {
+  async appendRuntimeConfig(specsFile, newRuntimeConfig) {
     try {
       const storedSpecs = await fsExtra.readJSON(specsFile);
       const mergedRuntimeConfig = this.mergeRuntimeConfig(storedSpecs.runtimeConfig, newRuntimeConfig);

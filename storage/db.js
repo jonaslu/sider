@@ -73,9 +73,9 @@ Have you tampered with the contents?`,
     return Promise.all(allDbNames.map(dbName => this.getDb(dbName)));
   },
 
-  async saveRuntimeConfig(db, newCliRuntimeConfig) {
+  async appendRuntimeConfig(db, newCliRuntimeConfig) {
     const { dbSpecsFile } = db;
-    await runtimeConfig.saveRuntimeConfig(dbSpecsFile, newCliRuntimeConfig);
+    await runtimeConfig.appendRuntimeConfig(dbSpecsFile, newCliRuntimeConfig);
   },
 
   async setLastUsed(db, dbStartTime) {

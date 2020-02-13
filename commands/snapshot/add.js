@@ -31,7 +31,7 @@ async function addSnapshot(engineName, snapshotName, dumpBasePath, cliRuntimeCon
     dumpBasePath
   );
 
-  await snapshots.saveRuntimeConfig(snapshot, cliRuntimeConfig)
+  await snapshots.appendRuntimeConfig(snapshot, cliRuntimeConfig)
 
   console.log(`Successfully added snapshot ${chalk.green(snapshotName)}`);
 }
