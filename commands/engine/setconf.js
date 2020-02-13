@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 
 const engines = require('../../engines');
-const { saveRuntimeConfig } = require('../../storage/engine');
+const { appendRuntimeConfig } = require('../../storage/engine');
 const utils = require('../../utils');
 const runtimeConfig = require('../../runtime/config');
 
@@ -11,7 +11,7 @@ async function setConf(engineName, cliRuntimeConfig) {
     utils.didYouMean(engineName, engineNames, `Engine`);
   }
 
-  await saveRuntimeConfig(engineName, cliRuntimeConfig);
+  await appendRuntimeConfig(engineName, cliRuntimeConfig);
   console.log(chalk.green(`Successfully stored settings on engine ${chalk.blue(engineName)}`));
 }
 

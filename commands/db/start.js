@@ -43,7 +43,7 @@ async function start(dbName, cliRuntimeConfig, persist) {
   console.log(chalk.green(`Successfully shut down database ${chalk.blue(dbName)}`));
 
   if (persist) {
-    await dbs.saveRuntimeConfig(db, cliRuntimeConfig);
+    await dbs.appendRuntimeConfig(db, cliRuntimeConfig);
   }
 
   await dbs.setLastUsed(db, dbStartTime);

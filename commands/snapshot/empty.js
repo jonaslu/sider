@@ -32,7 +32,7 @@ async function addEmptySnapshot(engineName, snapshotName, cliRuntimeConfig, pers
   console.log(chalk.green(`Successfully shut down empty snapshot ${chalk.blue(snapshotName)}`));
 
   if (persist) {
-    await snapshots.saveRuntimeConfig(newSnapshot, cliRuntimeConfig);
+    await snapshots.appendRuntimeConfig(newSnapshot, cliRuntimeConfig);
   }
 }
 

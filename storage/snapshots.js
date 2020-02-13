@@ -165,8 +165,8 @@ Has the contents been tampered with?`,
     }
   },
 
-  async saveRuntimeConfig(snapshot, newCliRuntimeConfig) {
+  async appendRuntimeConfig(snapshot, newCliRuntimeConfig) {
     const { snapshotSpecsFile } = snapshot;
-    await runtimeConfig.saveRuntimeConfig(snapshotSpecsFile, newCliRuntimeConfig);
+    await runtimeConfig.appendRuntimeConfig(snapshotSpecsFile, newCliRuntimeConfig);
   }
 };
