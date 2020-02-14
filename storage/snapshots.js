@@ -18,7 +18,7 @@ const { snapshotsStoragePath } = require('../siderrc');
  *  fstats: {
  *    created
  *  },
- *  runtimeConfig: {
+ *  runtimeConfigSpec: {
  *  }
  * }
  */
@@ -47,7 +47,7 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
   const snapshotSaveValues = {
     engineName,
     fstats: { created: moment().format() },
-    runtimeConfig: {}
+    runtimeConfigSpec: {}
   };
 
   try {

@@ -24,9 +24,9 @@ async function start(dbName, cliRuntimeConfig, persist) {
   const engineRuntimeConfig = await getEngineRuntimeConfig(engineName);
 
   const dbRuntimeConfig = runtimeConfig.mergeRuntimeConfig(
-    engineRuntimeConfig.runtimeConfig,
-    snapshot.runtimeConfig,
-    db.runtimeConfig,
+    engineRuntimeConfig.runtimeConfigSpec,
+    snapshot.runtimeConfigSpec,
+    db.runtimeConfigSpec,
     cliRuntimeConfig
   );
 

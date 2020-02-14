@@ -18,7 +18,7 @@ const snapshots = require('./snapshots');
  *    created:
  *    lastUsed: <- set this on run
  *  },
- *  runtimeConfig: {
+ *  runtimeConfigSpec: {
  *  },
  *  engineName: 'redis' <- won't change
  * }
@@ -123,7 +123,7 @@ Have you tampered with the contents?`,
       fstats: {
         created: moment().format()
       },
-      runtimeConfig: {},
+      runtimeConfigSpec: {},
       engineName
     };
 
