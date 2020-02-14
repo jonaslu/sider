@@ -38,12 +38,12 @@ module.exports = {
 
   async appendRuntimeConfig(specsFile, newRuntimeConfig) {
     try {
-      const storedSpecs = await fsExtra.readJSON(specsFile);
-      const mergedRuntimeConfig = this.mergeRuntimeConfig(storedSpecs.runtimeConfig, newRuntimeConfig);
+      const specsFileContents = await fsExtra.readJSON(specsFile);
+      const mergedRuntimeConfig = this.mergeRuntimeConfig(specsFileContents.runtimeConfigSpec, newRuntimeConfig);
 
-      storedSpecs.runtimeConfig = mergedRuntimeConfig;
+      specsFileContents.runtimeConfigSpec = mergedRuntimeConfig;
 
-      return await fsExtra.writeJSON(specsFile, storedSpecs, {
+      return await fsExtra.writeJSON(specsFile, specsFileContents, {
         spaces: 2
       });
     } catch (e) {

@@ -10,7 +10,7 @@ const { engineStoragePath } = require('../siderrc');
 /**
  * {
  * // For the config file2
- *  runtimeConfig: {
+ *  runtimeConfigSpec: {
  *  }
  * }
  */
@@ -24,12 +24,12 @@ module.exports = {
 
     const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
 
-    let diskRuntimeConfig = {};
+    let runtimeConfigSpec = {};
     const specsExists = await fsExtra.exists(engineSpecsFile);
     if (specsExists) {
       try {
         const diskSpecs = await fsExtra.readJSON(engineSpecsFile, 'utf-8');
-        diskRuntimeConfig = diskSpecs.runtimeConfig;
+        runtimeConfigSpec = diskSpecs.runtimeConfigSpec;
       } catch (e) {
         internalErrorAndDie(
           `Could not read file ${engineSpecsFile}.
@@ -40,7 +40,7 @@ Has the contents been tampered with?`,
     }
 
     return {
-      runtimeConfig: runtimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, diskRuntimeConfig)
+      runtimeConfigSpec: runtimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, runtimeConfigSpec)
     };
   },
 
@@ -49,7 +49,8 @@ Has the contents been tampered with?`,
     const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
     const specsExists = await fsExtra.exists(engineSpecsFile);
     if (!specsExists) {
-      await fsExtra.writeJSON(engineSpecsFile, { runtimeConfig: {} });
+      await fsExtra.createFile(engineSpecsFile);
+      await fsExtra.writeJSON(engineSpecsFile, { runtimeConfigSpec: {} });
     }
 
     await runtimeConfig.appendRuntimeConfig(engineSpecsFile, newCliRuntimeConfig);

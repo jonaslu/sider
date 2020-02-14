@@ -10,11 +10,11 @@ async function getConf(engineName) {
     utils.didYouMean(engineName, engineNames, `Engine`);
   }
 
-  const { runtimeConfig } = await getEngineRuntimeConfig(engineName);
-  const sortedConfigKeys = Object.keys(runtimeConfig).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
+  const { runtimeConfigSpec } = await getEngineRuntimeConfig(engineName);
+  const sortedConfigKeys = Object.keys(runtimeConfigSpec).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
 
   sortedConfigKeys.forEach(key => {
-    console.log(`${chalk.yellow(key)}=${runtimeConfig[key]}`);
+    console.log(`${chalk.yellow(key)}=${runtimeConfigSpec[key]}`);
   });
 }
 
