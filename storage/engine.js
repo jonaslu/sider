@@ -18,10 +18,7 @@ const { engineStoragePath } = require('../siderrc');
 const specsFileName = 'specs.json';
 
 module.exports = {
-  async getEngineRuntimeConfig(engineName) {
-    const engine = await engines.getEngineOrDie(engineName);
-    const defaultRuntimeConfig = engine.getConfig();
-
+  async getEngineRuntimeConfigSpec(engineName) {
     const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
 
     let runtimeConfigSpec = {};
@@ -38,6 +35,15 @@ Has the contents been tampered with?`,
         );
       }
     }
+
+    return runtimeConfigSpec;
+  },
+
+  async getEngineRuntimeConfig(engineName) {
+    const engine = await engines.getEngineOrDie(engineName);
+    const defaultRuntimeConfig = engine.getConfig();
+
+    const runtimeConfigSpec = this.getEngineRuntimeConfigSpec(engineName);
 
     return {
       runtimeConfigSpec: runtimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, runtimeConfigSpec)

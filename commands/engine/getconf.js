@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 
 const engines = require('../../engines');
-const { getEngineRuntimeConfig } = require('../../storage/engine');
+const storageEngine = require('../../storage/engine');
 const utils = require('../../utils');
 
 async function getConf(engineName) {
@@ -10,7 +10,7 @@ async function getConf(engineName) {
     utils.didYouMean(engineName, engineNames, `Engine`);
   }
 
-  const { runtimeConfigSpec } = await getEngineRuntimeConfig(engineName);
+  const { runtimeConfigSpec } = await storageEngine.getEngineRuntimeConfig(engineName);
   const sortedConfigKeys = Object.keys(runtimeConfigSpec).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
 
   sortedConfigKeys.forEach(key => {
