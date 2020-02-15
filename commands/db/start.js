@@ -4,7 +4,7 @@ const moment = require('moment');
 const utils = require('../../utils');
 const dbs = require('../../storage/db');
 const snapshots = require('../../storage/snapshots');
-const { getEngineRuntimeConfig } = require('../../storage/engine');
+const storageEngine = require('../../storage/engine');
 const runtimeConfig = require('../../runtime/config');
 const engines = require('../../engines');
 
@@ -21,7 +21,7 @@ async function start(dbName, cliRuntimeConfig, persist) {
     utils.printInternalAndDie(`Cannot find specs file for for snapshot: ${snapshotName}`);
   }
 
-  const engineRuntimeConfig = await getEngineRuntimeConfig(engineName);
+  const engineRuntimeConfig = await storageEngine.getEngineRuntimeConfig(engineName);
 
   const dbRuntimeConfig = runtimeConfig.mergeRuntimeConfig(
     engineRuntimeConfig.runtimeConfigSpec,

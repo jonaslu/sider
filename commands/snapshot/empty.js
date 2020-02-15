@@ -2,7 +2,7 @@ const chalk = require('chalk');
 
 const engines = require('../../engines');
 const runtimeConfig = require('../../runtime/config');
-const { getEngineRuntimeConfig } = require('../../storage/engine');
+const storageEngine = require('../../storage/engine');
 const { printUserErrorAndDie, didYouMean } = require('../../utils');
 const snapshots = require('../../storage/snapshots');
 const utils = require('../../utils');
@@ -20,7 +20,7 @@ async function addEmptySnapshot(engineName, snapshotName, cliRuntimeConfig, pers
     didYouMean(engineName, await engines.getAllEngineNames(), `Engine`);
   }
 
-  const engineRuntimeConfig = await getEngineRuntimeConfig(engineName);
+  const engineRuntimeConfig = await storageEngine.getEngineRuntimeConfig(engineName);
   const snapshotRuntimeConfig = runtimeConfig.mergeRuntimeConfig(engineRuntimeConfig.runtimeConfigSpec, cliRuntimeConfig);
 
   const { port } = snapshotRuntimeConfig;
