@@ -27,6 +27,18 @@ const snapshots = require('./snapshots');
 const dbFilesFolder = 'files';
 const specsFileName = 'specs.json';
 
+async function writeDbToSpecFile(db) {
+  const shallowCopy = { ...db };
+
+  delete shallowCopy.dbName;
+  delete shallowCopy.dbFileFolder;
+  delete shallowCopy.dbSpecsFile;
+
+  return await fsExtra.writeJSON(db.dbSpecsFile, shallowCopy, {
+    spaces: 2
+  });
+}
+
 module.exports = {
   async getDb(dbName) {
     const dbBasePath = path.join(dbsStoragePath, dbName);
@@ -73,23 +85,26 @@ Have you tampered with the contents?`,
     return Promise.all(allDbNames.map(dbName => this.getDb(dbName)));
   },
 
-  async appendRuntimeConfig(db, newCliRuntimeConfig) {
-    const { dbSpecsFile } = db;
-    await runtimeConfig.appendRuntimeConfig(dbSpecsFile, newCliRuntimeConfig);
+   async appendRuntimeConfig(db, newCliRuntimeConfig) {
+    db.runtimeConfigSpec = {
+      ...db.runtimeConfigSpec,
+      ...newCliRuntimeConfig
+    };
+
+    try {
+      return await writeDbToSpecFile(db);
+    } catch (e) {
+      internalErrorAndDie(`Error persisting new runtime config to file ${db.dbSpecsFile}`, e);
+    }
   },
 
   async setLastUsed(db, dbStartTime) {
-    const { dbSpecsFile } = db;
+    db.fstats.lastUsed = dbStartTime;
 
     try {
-      const storedSpecs = await fsExtra.readJSON(dbSpecsFile);
-      storedSpecs.fstats.lastUsed = dbStartTime;
-
-      return await fsExtra.writeJSON(dbSpecsFile, storedSpecs, {
-        spaces: 2
-      });
+      return await writeDbToSpecFile(db);
     } catch (e) {
-      internalErrorAndDie(`Error persisting last used time to file ${dbSpecsFile}`, e);
+      internalErrorAndDie(`Error persisting last used time to file ${db.dbSpecsFile}`, e);
     }
   },
 
@@ -156,7 +171,7 @@ Try removing them manually.`,
   async getAllDbNamesForSnapshotName(snapshotName) {
     const allDbs = await this.getAllDbs();
 
-    return  allDbs
+    return allDbs
       .filter(({ snapshotName: dbSnapshotName }) => dbSnapshotName === snapshotName)
       .map(({ dbName }) => dbName);
   },
