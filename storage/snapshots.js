@@ -25,6 +25,18 @@ const { snapshotsStoragePath } = require('../siderrc');
 const snapshotFilesFolder = 'files';
 const specsFileName = 'specs.json';
 
+async function writeSnaoshotToSpecFile(snapshot) {
+  const shallowCopy = { ...snapshot };
+
+  delete shallowCopy.dbName;
+  delete shallowCopy.dbFileFolder;
+  delete shallowCopy.dbSpecsFile;
+
+  return await fsExtra.writeJSON(snapshot.snapshotSpecsFile, shallowCopy, {
+    spaces: 2
+  });
+}
+
 // Expects it has been verified snapshot does not exist
 async function createSnapshot(snapshotName, engineName, loadFilesCb) {
   const snapshotBasePath = path.join(snapshotsStoragePath, snapshotName);
@@ -166,7 +178,15 @@ Has the contents been tampered with?`,
   },
 
   async appendRuntimeConfig(snapshot, newCliRuntimeConfig) {
-    const { snapshotSpecsFile } = snapshot;
-    await runtimeConfig.appendRuntimeConfig(snapshotSpecsFile, newCliRuntimeConfig);
+    snapshot.runtimeConfigSpec = {
+      ...snapshot.runtimeConfigSpec,
+      ...newCliRuntimeConfig
+    };
+
+    try {
+      return await writeSnaoshotToSpecFile(snapshot);
+    } catch (e) {
+      internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.dbSpecsFile}`, e);
+    }
   }
 };
