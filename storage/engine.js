@@ -39,11 +39,14 @@ Has the contents been tampered with?`,
     return runtimeConfigSpec;
   },
 
+  // !! TODO !! Maybe this should not load the defaults from the engine
+  // but let the caller handle that - so this knows nothing but
+  // the internal structure
   async getEngineRuntimeConfig(engineName) {
     const engine = await engines.getEngineOrDie(engineName);
     const defaultRuntimeConfig = engine.getConfig();
 
-    const runtimeConfigSpec = this.getEngineRuntimeConfigSpec(engineName);
+    const runtimeConfigSpec = await this.getEngineRuntimeConfigSpec(engineName);
 
     return {
       runtimeConfigSpec: runtimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, runtimeConfigSpec)
@@ -54,11 +57,26 @@ Has the contents been tampered with?`,
   async appendRuntimeConfig(engineName, newCliRuntimeConfig) {
     const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
     const specsExists = await fsExtra.exists(engineSpecsFile);
-    if (!specsExists) {
-      await fsExtra.createFile(engineSpecsFile);
-      await fsExtra.writeJSON(engineSpecsFile, { runtimeConfigSpec: {} });
+
+    let specsFileContents = { runtimeConfigSpec: {} };
+
+    if (specsExists) {
+      try {
+        specsFileContents = await fsExtra.readJSON(engineSpecsFile);
+      } catch (e) {
+        internalErrorAndDie(`Error reading file ${engineSpecsFile}`, e);
+      }
     }
 
-    await runtimeConfig.appendRuntimeConfig(engineSpecsFile, newCliRuntimeConfig);
+    specsFileContents.runtimeConfigSpec = {
+      ...specsFileContents.runtimeConfigSpec,
+      ...newCliRuntimeConfig
+    };
+
+    try {
+      await fsExtra.outputJSON(engineSpecsFile, specsFileContents, { spaces: 2 });
+    } catch (e) {
+      internalErrorAndDie(`Error persisting settings to file ${engineSpecsFile}`);
+    }
   }
 };
