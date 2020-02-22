@@ -17,6 +17,29 @@ const { engineStoragePath } = require('../siderrc');
 
 const specsFileName = 'specs.json';
 
+async function writeRuntimeConfigSpecToFile(engineName, modifyRuntimeConfigSpecCb) {
+  const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
+  const specsExists = await fsExtra.exists(engineSpecsFile);
+
+  let specsFileContents = { runtimeConfigSpec: {} };
+
+  if (specsExists) {
+    try {
+      specsFileContents = await fsExtra.readJSON(engineSpecsFile);
+    } catch (e) {
+      internalErrorAndDie(`Error reading file ${engineSpecsFile}`, e);
+    }
+  }
+
+  modifyRuntimeConfigSpecCb(specsFileContents);
+
+  try {
+    await fsExtra.outputJSON(engineSpecsFile, specsFileContents, { spaces: 2 });
+  } catch (e) {
+    internalErrorAndDie(`Error persisting settings to file ${engineSpecsFile}`);
+  }
+}
+
 module.exports = {
   async getEngineRuntimeConfigSpec(engineName) {
     const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
@@ -55,28 +78,18 @@ Has the contents been tampered with?`,
 
   // It's expected to been verified that the engineName exist
   async appendRuntimeConfig(engineName, newCliRuntimeConfig) {
-    const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
-    const specsExists = await fsExtra.exists(engineSpecsFile);
+    writeRuntimeConfigSpecToFile(engineName, specsFileContents => {
+      specsFileContents.runtimeConfigSpec = {
+        ...specsFileContents.runtimeConfigSpec,
+        ...newCliRuntimeConfig
+      };
+    });
+  },
 
-    let specsFileContents = { runtimeConfigSpec: {} };
-
-    if (specsExists) {
-      try {
-        specsFileContents = await fsExtra.readJSON(engineSpecsFile);
-      } catch (e) {
-        internalErrorAndDie(`Error reading file ${engineSpecsFile}`, e);
-      }
-    }
-
-    specsFileContents.runtimeConfigSpec = {
-      ...specsFileContents.runtimeConfigSpec,
-      ...newCliRuntimeConfig
-    };
-
-    try {
-      await fsExtra.outputJSON(engineSpecsFile, specsFileContents, { spaces: 2 });
-    } catch (e) {
-      internalErrorAndDie(`Error persisting settings to file ${engineSpecsFile}`);
-    }
+  // It's expected to been verified that the engineName exist
+  async overwriteRuntimeConfigSpec(engineName, newRutimeConfigSpec) {
+    writeRuntimeConfigSpecToFile(engineName, specsFileContents => {
+      specsFileContents.runtimeConfigSpec = newRutimeConfigSpec;
+    });
   }
 };
