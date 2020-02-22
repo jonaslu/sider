@@ -1,20 +1,6 @@
-const fsExtra = require('fs-extra');
-
-const { printUserErrorAndDie, internalErrorAndDie } = require('../utils');
+const { printUserErrorAndDie } = require('../utils');
 
 module.exports = {
-  // Later in list = higher prio
-  mergeRuntimeConfig(...config) {
-    const result = {};
-    config.forEach(config => {
-      Object.keys(config).forEach(configKey => {
-        result[configKey] = config[configKey];
-      });
-    });
-
-    return result;
-  },
-
   parseRuntimeConfigKeyValues(config) {
     return config.reduce((acc, keyValue) => {
       if (!keyValue.includes('=')) {
