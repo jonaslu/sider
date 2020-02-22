@@ -49,7 +49,7 @@ Has the contents been tampered with?`,
     const runtimeConfigSpec = await this.getEngineRuntimeConfigSpec(engineName);
 
     return {
-      runtimeConfigSpec: runtimeConfig.mergeRuntimeConfig(defaultRuntimeConfig, runtimeConfigSpec)
+      runtimeConfigSpec: { ...defaultRuntimeConfig, ...runtimeConfigSpec }
     };
   },
 

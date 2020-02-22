@@ -23,12 +23,13 @@ async function start(dbName, cliRuntimeConfig, persist) {
 
   const engineRuntimeConfig = await storageEngine.getEngineRuntimeConfig(engineName);
 
-  const dbRuntimeConfig = runtimeConfig.mergeRuntimeConfig(
-    engineRuntimeConfig.runtimeConfigSpec,
-    snapshot.runtimeConfigSpec,
-    db.runtimeConfigSpec,
-    cliRuntimeConfig
-  );
+  const dbRuntimeConfig = {
+    ...engineRuntimeConfig.runtimeConfigSpec,
+    ...snapshot.runtimeConfigSpec,
+    ...db.runtimeConfigSpec,
+    ...cliRuntimeConfig,
+  }
+
 
   const { port } = dbRuntimeConfig;
   const dbStartTime = moment().format();

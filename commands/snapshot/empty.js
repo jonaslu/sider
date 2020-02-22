@@ -21,7 +21,10 @@ async function addEmptySnapshot(engineName, snapshotName, cliRuntimeConfig, pers
   }
 
   const engineRuntimeConfig = await storageEngine.getEngineRuntimeConfig(engineName);
-  const snapshotRuntimeConfig = runtimeConfig.mergeRuntimeConfig(engineRuntimeConfig.runtimeConfigSpec, cliRuntimeConfig);
+  const snapshotRuntimeConfig = {
+    ...engineRuntimeConfig.runtimeConfigSpec,
+    ...cliRuntimeConfig
+  };
 
   const { port } = snapshotRuntimeConfig;
 
