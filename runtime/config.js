@@ -35,19 +35,4 @@ module.exports = {
       return acc;
     }, {});
   },
-
-  async appendRuntimeConfig(specsFile, newRuntimeConfig) {
-    try {
-      const specsFileContents = await fsExtra.readJSON(specsFile);
-      const mergedRuntimeConfig = this.mergeRuntimeConfig(specsFileContents.runtimeConfigSpec, newRuntimeConfig);
-
-      specsFileContents.runtimeConfigSpec = mergedRuntimeConfig;
-
-      return await fsExtra.writeJSON(specsFile, specsFileContents, {
-        spaces: 2
-      });
-    } catch (e) {
-      internalErrorAndDie(`Error persisting new runtime config to file ${specsFile}`, e);
-    }
-  }
 };
