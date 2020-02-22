@@ -13,17 +13,23 @@ async function remConf(engineName, runtimeConfigKeys) {
   const runtimeConfigSpec = await storageEngine.getEngineRuntimeConfigSpec(engineName);
   const engineRuntimeConfigSpecKeys = Object.keys(runtimeConfigSpec);
 
-  const existingEngineKeys = runtimeConfigKeys.filter(runtimeConfigKey => {
+  let someRemoved = false;
+
+  runtimeConfigKeys.forEach(runtimeConfigKey => {
     const keyExists = engineRuntimeConfigSpecKeys.indexOf(runtimeConfigKey) > -1;
     if (!keyExists) {
       utils.printWarning(`Cannot remove parameter ${runtimeConfigKey} - not found in settings`);
+    } else {
+      delete runtimeConfigSpec[runtimeConfigKey];
+      someRemoved = true;
     }
-
-    return keyExists;
   });
 
-  existingEngineKeys.forEach(existingEngineKey => delete runtimeConfigSpec[existingEngineKey]);
-  console.log(runtimeConfigSpec);
+
+  if (someRemoved) {
+    await storageEngine.overwriteRuntimeConfigSpec(engineName, runtimeConfigSpec);
+    console.log(chalk.green(`Successfully removed settings on engine ${chalk.blue(engineName)}`));
+  }
 }
 
 const usage = `
