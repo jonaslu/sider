@@ -85,7 +85,7 @@ Have you tampered with the contents?`,
     return Promise.all(allDbNames.map(dbName => this.getDb(dbName)));
   },
 
-   async appendRuntimeConfig(db, newCliRuntimeConfig) {
+  async appendRuntimeConfig(db, newCliRuntimeConfig) {
     db.runtimeConfigSpec = {
       ...db.runtimeConfigSpec,
       ...newCliRuntimeConfig
