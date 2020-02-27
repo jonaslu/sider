@@ -18,7 +18,7 @@ async function setConf(engineName, cliRuntimeConfig) {
 const usage = `
 Usage: sider engine setconf [options] <name> <parameters...>
 
-Sets config for an engine
+Sets runtime config for an engine
 
 Options:
   -h, --help     output usage information
