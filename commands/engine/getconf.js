@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const engines = require('../../engines');
 const storageEngine = require('../../storage/engine');
 const utils = require('../../utils');
+const config = require('../../runtime/config')
 
 async function getConf(engineName) {
   const engineNames = await engines.getAllEngineNames();
@@ -10,18 +11,15 @@ async function getConf(engineName) {
     utils.didYouMean(engineName, engineNames, `Engine`);
   }
 
+  // !! TODO !! Print out what's default and what's not default
   const { runtimeConfigSpec } = await storageEngine.getEngineRuntimeConfig(engineName);
-  const sortedConfigKeys = Object.keys(runtimeConfigSpec).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
-
-  sortedConfigKeys.forEach(key => {
-    console.log(`${chalk.yellow(key)}=${runtimeConfigSpec[key]}`);
-  });
+  config.printRuntimeConfigValues(runtimeConfigSpec);
 }
 
 const usage = `
 Usage: sider engine getconf [options] <name>
 
-Gets config for an engine
+Displays runtime config for an engine
 
 Options:
   -h, --help     output usage information
