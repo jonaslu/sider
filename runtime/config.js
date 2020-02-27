@@ -1,3 +1,4 @@
+const chalk = require('chalk');
 const { printUserErrorAndDie } = require('../utils');
 
 module.exports = {
@@ -21,4 +22,12 @@ module.exports = {
       return acc;
     }, {});
   },
+
+  printRuntimeConfigValues(runtimeConfig) {
+    const sortedConfigKeys = Object.keys(runtimeConfig).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
+
+    sortedConfigKeys.forEach(key => {
+      console.log(`${chalk.yellow(key)}=${runtimeConfig[key]}`);
+    });
+  }
 };

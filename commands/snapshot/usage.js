@@ -14,10 +14,12 @@ Commands:
   list        lists all existing snapshots
   remove      removes a snapshot and it's cloned databases
 
+  getconf     displays runtime config for an engine
+
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['add', 'empty', 'list', 'remove'];
+const knownCommands = ['add', 'empty', 'getconf', 'list', 'remove'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
