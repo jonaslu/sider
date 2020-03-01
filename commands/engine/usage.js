@@ -9,9 +9,9 @@ Options:
   -h, --help    Displays this help message
 
 Commands:
-  getconf      gets config for an engine
-  remconf      removes config for an engine
-  setconfg     sets config for an engine
+  getconf      displays runtime config for an engine
+  remconf      removes runtime config for an engine
+  setconfg     sets runtime config for an engine
 
   help [cmd]  display help for [cmd]
 `;

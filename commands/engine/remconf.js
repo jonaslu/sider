@@ -33,9 +33,9 @@ async function remConf(engineName, runtimeConfigKeys) {
 }
 
 const usage = `
-Usage: sider engine remconf [options] <name> [parameters...]
+Usage: sider engine remconf [options] <name> <parameters...>
 
-Gets config for an engine
+Removes runtime for an engine
 
 Options:
   -h, --help     output usage information
@@ -47,7 +47,7 @@ async function processArgv(argv = []) {
   const [engineName, ...runtimeConfigKeys] = argv;
 
   if (!runtimeConfigKeys.length) {
-    utils.printUserErrorAndDie('Need at least one setting');
+    utils.printUserErrorAndDie('Need at least config to remove');
   }
 
   return remConf(engineName, runtimeConfigKeys);
