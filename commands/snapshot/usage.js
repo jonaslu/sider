@@ -15,12 +15,13 @@ Commands:
   remove      removes a snapshot and it's cloned databases
 
   getconf     displays runtime config for an engine
+  remconf     removes runtime config for a snapshot
   setconf     sets runtime config for a snapshot
 
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['add', 'empty', 'getconf', 'list', 'remove', 'setconf'];
+const knownCommands = ['add', 'empty', 'getconf', 'list', 'remconf', 'remove', 'setconf'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);

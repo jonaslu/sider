@@ -25,7 +25,7 @@ const { snapshotsStoragePath } = require('../siderrc');
 const snapshotFilesFolder = 'files';
 const specsFileName = 'specs.json';
 
-async function writeSnaoshotToSpecFile(snapshot) {
+async function writeSnapshotToSpecFile(snapshot) {
   const shallowCopy = { ...snapshot };
 
   delete shallowCopy.dbName;
@@ -184,7 +184,17 @@ Has the contents been tampered with?`,
     };
 
     try {
-      return await writeSnaoshotToSpecFile(snapshot);
+      return await writeSnapshotToSpecFile(snapshot);
+    } catch (e) {
+      internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.dbSpecsFile}`, e);
+    }
+  },
+
+  async overwriteRuntimeConfigSpec(snapshot, newCliRuntimeConfig) {
+    snapshot.runtimeConfigSpec = newCliRuntimeConfig;
+
+    try {
+      return await writeSnapshotToSpecFile(snapshot);
     } catch (e) {
       internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.dbSpecsFile}`, e);
     }
