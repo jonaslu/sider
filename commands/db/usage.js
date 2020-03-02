@@ -17,10 +17,12 @@ Commands:
   reset       resets a database (clones the snapshot files anew)
   start       starts a previously cloned database
 
+  getconf     displays runtime config for a database
+
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove', 'list', 'eject'];
+const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove', 'list', 'eject', 'getconf'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
