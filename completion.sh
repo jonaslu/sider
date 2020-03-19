@@ -1,3 +1,22 @@
+# Returns the .siderrc (or default) basePath
+__sider_get_base_path() {
+  basePath=~/.sider
+  if [ -e ~/.siderrc ]; then
+    basePath=$(cat ~/.siderrc | grep basePath | sed -E 's/\s*"basePath":\s+"(.+)"$/\1/')
+  fi
+}
+
+# Returns the array in the variable result
+__sider_get_completions_for() {
+  local type=$1
+  local basePath
+  __sider_get_base_path
+
+  local typePath="${basePath/#\~/$HOME}/$type/*"
+
+  result=$(find $typePath -type d -prune -printf "%f " 2> /dev/null)
+}
+
 __sider_engine() {
   local argv=("$@")
 
@@ -45,14 +64,35 @@ __sider_db() {
       fi
 
       if [ $argvlen = 3 ]; then
-        local basePath=~/.sider
-        if [ -e ~/.siderrc ]; then
-          basePath=$(cat ~/.siderrc | grep basePath | sed -E 's/\s*"basePath":\s+"(.+)"$/\1/')
+        local result
+        __sider_get_completions_for "snapshots"
+
+        if [ "$result" = "" ]; then
+          return 0
         fi
 
-        basePath="${basePath/#\~/$HOME}/snapshots/*"
+        COMPREPLY=( $(compgen -W "$result" -- ${argv[2]}) )
+      fi
+    ;;
 
-        COMPREPLY=( $(compgen -W "$(find $basePath -type d -prune -printf "%f ")" -- ${argv[2]}) )
+    start)
+      local result
+      __sider_get_completions_for "dbs"
+
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help -p ${result}" -- "${argv[1]}") )
+      fi
+
+      if [ $argvlen = 3 ]; then
+        local prev_command=${argv[1]}
+        case $prev_command in
+          -h|--help)
+            return 0
+          ;;
+          -p)
+            COMPREPLY=( $(compgen -W "${result}" -- "${argv[3]}") )
+          ;;
+        esac
       fi
     ;;
   esac
