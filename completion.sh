@@ -33,10 +33,10 @@ __sider_engine() {
   case $subcommand in
     help)
       COMPREPLY=( $(compgen -W "setconf getconf remconf" -- "${argv[1]}") )
-    ;;
+      ;;
     *)
       COMPREPLY=( $(compgen -W "-h --help redis mariadb postgres" -- "${argv[1]}") )
-    ;;
+      ;;
   esac
 }
 
@@ -57,7 +57,8 @@ __sider_db() {
       fi
 
       COMPREPLY=( $(compgen -W "clone eject list promote remove reset start" -- "${argv[1]}") )
-    ;;
+      ;;
+
     clone)
       if [ $argvlen = 2 ]; then
         COMPREPLY=( $(compgen -W "-h --help" -- "${argv[1]}") )
@@ -73,7 +74,7 @@ __sider_db() {
 
         COMPREPLY=( $(compgen -W "$result" -- ${argv[2]}) )
       fi
-    ;;
+      ;;
 
     start)
       local result
@@ -88,13 +89,35 @@ __sider_db() {
         case $prev_command in
           -h|--help)
             return 0
-          ;;
+            ;;
           -p)
             COMPREPLY=( $(compgen -W "${result}" -- "${argv[3]}") )
-          ;;
+            ;;
         esac
       fi
-    ;;
+      ;;
+
+    eject)
+      local result
+      __sider_get_completions_for "dbs"
+
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help ${result}" -- "${argv[1]}") )
+      fi
+
+      if [ $argvlen = 3 ]; then
+        local prev_command=${argv[1]}
+        case $prev_command in
+          -h|--help)
+            return 0
+            ;;
+          *)
+            compopt -o default
+            COMPREPLY=()
+            return 0
+            ;;
+        esac
+      fi
   esac
 }
 
