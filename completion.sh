@@ -1,3 +1,5 @@
+__sider_engines="redis mariadb postgres"
+
 # Returns the .siderrc (or default) basePath
 __sider_get_base_path() {
   basePath=~/.sider
@@ -35,7 +37,7 @@ __sider_engine() {
       COMPREPLY=( $(compgen -W "setconf getconf remconf" -- "${argv[1]}") )
       ;;
     *)
-      COMPREPLY=( $(compgen -W "-h --help redis mariadb postgres" -- "${argv[1]}") )
+      COMPREPLY=( $(compgen -W "-h --help ${__sider_engines}" -- "${argv[1]}") )
       ;;
   esac
 }
@@ -57,6 +59,18 @@ __sider_snapshot() {
       fi
 
       COMPREPLY=( $(compgen -W "add empty list remove getconf setconf remconf" -- "${argv[1]}") )
+      ;;
+
+    add)
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help ${__sider_engines}" -- "${argv[1]}") )
+      fi
+
+      if [ $argvlen = 4 ]; then
+        compopt -o default
+        COMPREPLY=()
+        return 0
+      fi
       ;;
   esac
 }
@@ -127,17 +141,9 @@ __sider_db() {
       fi
 
       if [ $argvlen = 3 ]; then
-        local prev_command=${argv[1]}
-        case $prev_command in
-          -h|--help)
-            return 0
-            ;;
-          *)
-            compopt -o default
-            COMPREPLY=()
-            return 0
-            ;;
-        esac
+        compopt -o default
+        COMPREPLY=()
+        return 0
       fi
       ;;
 
