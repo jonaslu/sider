@@ -120,12 +120,18 @@ __sider_db() {
       fi
       ;;
 
-    getconf|remove)
+    getconf|remove|reset|promote)
       local result
       __sider_get_completions_for "dbs"
 
       if [ $argvlen = 2 ]; then
         COMPREPLY=( $(compgen -W "-h --help ${result}" -- "${argv[1]}") )
+      fi
+      ;;
+
+    list)
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help" -- "${argv[1]}") )
       fi
       ;;
   esac
