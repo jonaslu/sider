@@ -72,6 +72,16 @@ __sider_snapshot() {
         return 0
       fi
       ;;
+
+    empty)
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help -p ${__sider_engines}" -- "${argv[1]}") )
+      fi
+
+      if [ $argvlen = 3 ] && [ ${argv[1]} = "-p" ]; then
+        COMPREPLY=( $(compgen -W "${__sider_engines}" -- "${argv[2]}") )
+      fi
+      ;;
   esac
 }
 
@@ -119,16 +129,8 @@ __sider_db() {
         COMPREPLY=( $(compgen -W "-h --help -p ${result}" -- "${argv[1]}") )
       fi
 
-      if [ $argvlen = 3 ]; then
-        local prev_command=${argv[1]}
-        case $prev_command in
-          -h|--help)
-            return 0
-            ;;
-          -p)
-            COMPREPLY=( $(compgen -W "${result}" -- "${argv[3]}") )
-            ;;
-        esac
+      if [ $argvlen = 3 ] && [ ${argv[1]} = "-p" ]; then
+        COMPREPLY=( $(compgen -W "${result}" -- "${argv[3]}") )
       fi
       ;;
 
