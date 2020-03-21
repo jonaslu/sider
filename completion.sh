@@ -162,14 +162,17 @@ __sider() {
   local cur prev words cword
   _init_completion || return
 
-  local second="${words[1]}"
-
   if [ $prev = "sider" ]; then
     COMPREPLY=( $(compgen -W "engine db snapshot" -- $cur) )
-
     return 0
   fi;
 
+  # Help guard - if any command has -h or --help after it, terminate completion
+  if [ $prev = '-h' ] || [ $prev = '--help' ]; then
+    return 0
+  fi
+
+  local second="${words[1]}"
   case $second in
     db)
       __sider_db "${words[@]:2}"
