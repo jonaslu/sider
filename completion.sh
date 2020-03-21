@@ -82,6 +82,12 @@ __sider_snapshot() {
         COMPREPLY=( $(compgen -W "${__sider_engines}" -- "${argv[2]}") )
       fi
       ;;
+
+    list)
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help" -- "${argv[1]}") )
+      fi
+      ;;
   esac
 }
 
