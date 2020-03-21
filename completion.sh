@@ -88,6 +88,15 @@ __sider_snapshot() {
         COMPREPLY=( $(compgen -W "-h --help" -- "${argv[1]}") )
       fi
       ;;
+
+    remove|getconf|setconf|remconf)
+      local result
+      __sider_get_completions_for "snapshots"
+
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help ${result}" -- "${argv[1]}") )
+      fi
+      ;;
   esac
 }
 
