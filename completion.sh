@@ -40,6 +40,27 @@ __sider_engine() {
   esac
 }
 
+__sider_snapshot() {
+   local argv=("$@")
+  local argvlen="${#argv[@]}"
+
+  if [ $argvlen = 1 ]; then
+    COMPREPLY=( $(compgen -W "add empty list remove getconf setconf remconf help" -- "${argv[0]}") )
+    return 0
+  fi
+
+  local subcommand="${argv[0]}"
+  case $subcommand in
+    help)
+      if [ $argvlen = 3 ]; then
+        return 0
+      fi
+
+      COMPREPLY=( $(compgen -W "add empty list remove getconf setconf remconf" -- "${argv[1]}") )
+      ;;
+  esac
+}
+
 __sider_db() {
   local argv=("$@")
   local argvlen="${#argv[@]}"
@@ -56,7 +77,7 @@ __sider_db() {
         return 0
       fi
 
-      COMPREPLY=( $(compgen -W "clone eject list promote remove reset start" -- "${argv[1]}") )
+      COMPREPLY=( $(compgen -W "clone eject list promote remove reset start getconf" -- "${argv[1]}") )
       ;;
 
     clone)
@@ -157,6 +178,7 @@ __sider() {
       __sider_engine "${words[@]:2}"
     ;;
     snapshot)
+      __sider_snapshot "${words[@]:2}"
     ;;
   esac
 }
