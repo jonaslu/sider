@@ -19,11 +19,12 @@ Commands:
 
   getconf     displays runtime config for a database
   setconf     sets runtime config for a database
+  remconf     Removes runtime config for a database
 
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove', 'list', 'eject', 'getconf', 'setconf'];
+const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove', 'list', 'eject', 'getconf', 'setconf', 'remconf'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);

@@ -98,6 +98,16 @@ Have you tampered with the contents?`,
     }
   },
 
+  async overwriteRuntimeConfigSpec(db, newCliRuntimeConfig) {
+    db.runtimeConfigSpec = newCliRuntimeConfig;
+
+    try {
+      return await writeDbToSpecFile(db);
+    } catch (e) {
+      internalErrorAndDie(`Error persisting new runtime config to file ${db.dbSpecsFile}`, e);
+    }
+  },
+
   async setLastUsed(db, dbStartTime) {
     db.fstats.lastUsed = dbStartTime;
 

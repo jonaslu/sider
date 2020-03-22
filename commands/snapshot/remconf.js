@@ -2,7 +2,6 @@ const chalk = require('chalk');
 
 const utils = require('../../utils');
 const snapshots = require('../../storage/snapshots');
-const runtimeConfig = require('../../runtime/config');
 
 async function remconf(snapshotName, runtimeConfigKeys) {
   const snapshot = await snapshots.getSnapshot(snapshotName);

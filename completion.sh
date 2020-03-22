@@ -105,7 +105,7 @@ __sider_db() {
   local argvlen="${#argv[@]}"
 
   if [ $argvlen = 1 ]; then
-    COMPREPLY=( $(compgen -W "clone eject getconf setconf list promote remove reset start help" -- "${argv[0]}") )
+    COMPREPLY=( $(compgen -W "clone eject getconf setconf remconf list promote remove reset start help" -- "${argv[0]}") )
     return 0
   fi
 
@@ -116,7 +116,7 @@ __sider_db() {
         return 0
       fi
 
-      COMPREPLY=( $(compgen -W "clone eject list promote remove reset start getconf setconf" -- "${argv[1]}") )
+      COMPREPLY=( $(compgen -W "clone eject list promote remove reset start getconf setconf remconf" -- "${argv[1]}") )
       ;;
 
     clone)
@@ -164,7 +164,7 @@ __sider_db() {
       fi
       ;;
 
-    getconf|setconf|remove|reset|promote)
+    getconf|setconf|remconf|remove|reset|promote)
       local result
       __sider_get_completions_for "dbs"
 
