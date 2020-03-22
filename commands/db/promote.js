@@ -29,7 +29,7 @@ async function promote(dbName, snapshotName) {
 }
 
 const usage = `
-Usage: sider db promote [options] <name> <snapshot-name>
+Usage: sider db promote [options] <name> <snapshot>
 
 Promotes a database to a new snapshot
 
