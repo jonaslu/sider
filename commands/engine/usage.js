@@ -11,7 +11,7 @@ Options:
 Commands:
   getconf      displays runtime config for an engine
   remconf      removes runtime config for an engine
-  setconfg     sets runtime config for an engine
+  setconf      sets runtime config for an engine
 
   help [cmd]  display help for [cmd]
 `;
