@@ -186,7 +186,7 @@ Has the contents been tampered with?`,
     try {
       return await writeSnapshotToSpecFile(snapshot);
     } catch (e) {
-      internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.dbSpecsFile}`, e);
+      internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.snapshotSpecsFile}`, e);
     }
   },
 
@@ -196,7 +196,7 @@ Has the contents been tampered with?`,
     try {
       return await writeSnapshotToSpecFile(snapshot);
     } catch (e) {
-      internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.dbSpecsFile}`, e);
+      internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.snapshotSpecsFile}`, e);
     }
   }
 };
