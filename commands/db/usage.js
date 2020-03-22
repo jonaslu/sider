@@ -18,11 +18,12 @@ Commands:
   start       starts a previously cloned database
 
   getconf     displays runtime config for a database
+  setconf     sets runtime config for a database
 
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove', 'list', 'eject', 'getconf'];
+const knownCommands = ['start', 'clone', 'promote', 'reset', 'remove', 'list', 'eject', 'getconf', 'setconf'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
