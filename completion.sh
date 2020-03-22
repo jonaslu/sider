@@ -186,7 +186,7 @@ __sider() {
   _init_completion || return
 
   if [ $prev = "sider" ]; then
-    COMPREPLY=( $(compgen -W "engine db snapshot" -- $cur) )
+    COMPREPLY=( $(compgen -W "engine db snapshot help version" -- $cur) )
     return 0
   fi;
 
@@ -197,6 +197,9 @@ __sider() {
 
   local second="${words[1]}"
   case $second in
+    help)
+      COMPREPLY=( $(compgen -W "engine db snapshot" -- $cur) )
+      ;;
     db)
       __sider_db "${words[@]:2}"
     ;;
