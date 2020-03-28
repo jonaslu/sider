@@ -212,4 +212,9 @@ __sider() {
   esac
 }
 
-complete -F __sider sider
+if [ $BASH_VERSION ]; then
+  complete -F __sider sider
+else
+  2>&1 echo "Completion for this type of shell is not yet supported."
+  2>&1 echo "Supported shells are: [bash]"
+fi
