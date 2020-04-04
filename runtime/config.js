@@ -24,6 +24,7 @@ module.exports = {
   },
 
   printRuntimeConfigValues(runtimeConfig) {
+    // eslint-disable-next-line no-nested-ternary
     const sortedConfigKeys = Object.keys(runtimeConfig).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
 
     sortedConfigKeys.forEach(key => {

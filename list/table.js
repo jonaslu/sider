@@ -57,10 +57,10 @@ function fitColumnWidthsToBoundingFrameWidth(boundingWidth, columnWidths) {
     return columnWidths;
   }
 
-  let numberOfCharsToRemove = rowWidth - boundingWidth;
+  const numberOfCharsToRemove = rowWidth - boundingWidth;
   const columnsWiderThanMinimum = columnWidths.filter(cellWidth => cellWidth > minimumColumnWidth);
 
-  const widthPossibleToShrink = columnsWiderThanMinimum.reduce((acc, columnWidth) => (acc += columnWidth - minimumColumnWidth), 0);
+  const widthPossibleToShrink = columnsWiderThanMinimum.reduce((acc, columnWidth) => (acc + columnWidth - minimumColumnWidth), 0);
   if (widthPossibleToShrink < numberOfCharsToRemove) {
     // We can't trim down enough to accommodate for bounding frame width
     // Return minimumColumnWidth or it's width - whatever is less
@@ -211,7 +211,7 @@ module.exports = {
           dataArity = rowData.length;
         } else {
           const rowArity = rowData.length;
-          if (dataArity != rowArity) {
+          if (dataArity !== rowArity) {
             throw new Error(
               `Row does not have correct arity. Previous row(s) arity: ${dataArity} - this rows arity: ${rowArity}`
             );
@@ -219,7 +219,7 @@ module.exports = {
         }
 
         // Filter out undefineds here and make them empty strings
-        rowData = rowData.map(rowValue => (rowValue ? rowValue : ''));
+        rowData = rowData.map(rowValue => (rowValue || ''));
         data.push(rowData);
       },
       display(preDisplayHook) {

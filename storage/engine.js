@@ -2,7 +2,6 @@ const fsExtra = require('fs-extra');
 const path = require('path');
 
 const engines = require('../engines');
-const runtimeConfig = require('../runtime/config');
 
 const { internalErrorAndDie } = require('../utils');
 const { engineStoragePath } = require('../siderrc');
@@ -44,12 +43,11 @@ module.exports = {
   async getEngineRuntimeConfigSpec(engineName) {
     const engineSpecsFile = path.join(engineStoragePath, engineName, specsFileName);
 
-    let runtimeConfigSpec = {};
     const specsExists = await fsExtra.exists(engineSpecsFile);
     if (specsExists) {
       try {
         const diskSpecs = await fsExtra.readJSON(engineSpecsFile, 'utf-8');
-        runtimeConfigSpec = diskSpecs.runtimeConfigSpec;
+        return diskSpecs.runtimeConfigSpec;
       } catch (e) {
         internalErrorAndDie(
           `Could not read file ${engineSpecsFile}.
@@ -58,8 +56,6 @@ Has the contents been tampered with?`,
         );
       }
     }
-
-    return runtimeConfigSpec;
   },
 
   // !! TODO !! Maybe this should not load the defaults from the engine

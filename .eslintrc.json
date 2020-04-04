@@ -6,6 +6,10 @@
   "rules": {
     "no-console": "off",
     "arrow-body-style": "off",
-    "no-unused-vars": [2, { "args": "all", "argsIgnorePattern": "^_" }]
+    "no-unused-vars": [2, { "args": "all", "argsIgnorePattern": "^_" }],
+    "no-plusplus": "off",
+    "no-param-reassign": "off",
+    "consistent-return": "off",
+    "no-nested-ternary": "off"
   }
 }

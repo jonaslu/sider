@@ -18,6 +18,7 @@ async function list() {
     const { snapshotName, engineName, fstats: { created }} = allSnapshots[i];
     const timeSinceCreated = moment(created).from(moment());
 
+    // eslint-disable-next-line no-await-in-loop
     const clonedDbs = await dbs.getAllDbNamesForSnapshotName(snapshotName);
     const clonedDbsStr = clonedDbs.join(", ");
 

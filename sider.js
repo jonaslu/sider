@@ -4,6 +4,7 @@ const { processArgv } = require('./commands/main/usage');
 const [, , ...rest] = process.argv;
 const [subcommand] = rest;
 
+/* eslint-disable global-require */
 function getBashRcAndSiderLine() {
   const fsExtra = require('fs-extra');
   const untiltdify = require('untildify');
@@ -68,10 +69,13 @@ switch (subcommand) {
     splitBashRcLines.push(bashRcLine);
 
     writeBashRc(splitBashRcLines);
+
+    console.log("Completion installed, don't forget to close this terminal or reload your .bashrc");
+
     break;
   }
 
-  case 'uninstall-completion':
+  case 'uninstall-completion': {
     const { siderCompletionLine, splitBashRcLines } = getBashRcAndSiderLine();
 
     if (siderCompletionLine === -1) {
@@ -83,7 +87,9 @@ switch (subcommand) {
 
     writeBashRc(splitBashRcLines);
     break;
+  }
 
   default:
     processArgv(rest);
 }
+/* eslint-enable global-require */
