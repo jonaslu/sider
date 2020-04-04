@@ -8,9 +8,9 @@ function printFatalInternalError(message) {
   console.error(message);
 }
 
-function containsArguments(argv, ...arguments) {
-  const hasArgument = arguments.some(argument => argv.some(arg => arg === argument));
-  const rest = argv.filter(arg => !arguments.some(argument => arg === argument));
+function containsArguments(argv, ...args) {
+  const hasArgument = args.some(argument => argv.some(arg => arg === argument));
+  const rest = argv.filter(arg => !args.some(argument => arg === argument));
 
   return { hasArgument, rest };
 }

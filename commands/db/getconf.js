@@ -1,5 +1,3 @@
-const chalk = require('chalk');
-
 const dbs = require('../../storage/db');
 const utils = require('../../utils');
 const config = require('../../runtime/config')

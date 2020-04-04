@@ -1,5 +1,3 @@
-const chalk = require('chalk');
-
 const engines = require('../../engines');
 const storageEngine = require('../../storage/engine');
 const utils = require('../../utils');

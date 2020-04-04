@@ -48,4 +48,3 @@ async function processArgv(argv = []) {
 module.exports = {
   processArgv
 };
-

@@ -2,8 +2,7 @@ const fsExtra = require('fs-extra');
 const moment = require('moment');
 const path = require('path');
 
-const engine = require('../engines');
-const runtimeConfig = require('../runtime/config');
+const engines = require('../engines');
 
 const { internalErrorAndDie, isUserError, printUserErrorAndDie } = require('../utils');
 const { snapshotsStoragePath } = require('../siderrc');
@@ -32,7 +31,7 @@ async function writeSnapshotToSpecFile(snapshot) {
   delete shallowCopy.dbFileFolder;
   delete shallowCopy.dbSpecsFile;
 
-  return await fsExtra.writeJSON(snapshot.snapshotSpecsFile, shallowCopy, {
+  return fsExtra.writeJSON(snapshot.snapshotSpecsFile, shallowCopy, {
     spaces: 2
   });
 }
@@ -149,7 +148,7 @@ Has the contents been tampered with?`,
   async createEmptySnapshot(snapshotName, engineName, runtimeConfig) {
     return createSnapshot(snapshotName, engineName, async (snapshotFileFolder, cleanUpBeforeExit) => {
       try {
-        await engine.start(engineName, snapshotName, snapshotFileFolder, runtimeConfig);
+        await engines.start(engineName, snapshotName, snapshotFileFolder, runtimeConfig);
       } catch (e) {
         await cleanUpBeforeExit();
 

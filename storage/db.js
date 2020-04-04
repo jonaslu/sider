@@ -4,7 +4,6 @@ const path = require('path');
 
 const { internalErrorAndDie } = require('../utils');
 const { dbsStoragePath } = require('../siderrc');
-const runtimeConfig = require('../runtime/config');
 const snapshots = require('./snapshots');
 
 /**
@@ -34,7 +33,7 @@ async function writeDbToSpecFile(db) {
   delete shallowCopy.dbFileFolder;
   delete shallowCopy.dbSpecsFile;
 
-  return await fsExtra.writeJSON(db.dbSpecsFile, shallowCopy, {
+  return fsExtra.writeJSON(db.dbSpecsFile, shallowCopy, {
     spaces: 2
   });
 }

@@ -27,17 +27,18 @@ function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
 
   if (commandFound) {
+    // eslint-disable-next-line import/no-dynamic-require, global-require
     return require(`./${subcommand}`);
   }
 
-  didYouMean(subcommand, knownCommands, 'Command');
+  return didYouMean(subcommand, knownCommands, 'Command');
 }
 
 async function processArgv(argv = []) {
   const [subcommand, ...rest] = argv;
 
   switch (subcommand) {
-    case 'help':
+    case 'help': {
       const [helpCommand] = rest;
 
       if (!helpCommand) {
@@ -45,11 +46,14 @@ async function processArgv(argv = []) {
       }
 
       getCommandFile(helpCommand).processArgv();
+      break;
+    }
 
     case '-h':
     case '--help':
     case undefined:
       printUsageAndExit(usage);
+      break;
 
     default:
       await getCommandFile(subcommand).processArgv(rest);

@@ -39,7 +39,7 @@ function runDb(dbName, dockerArgs, dockerImageAndCommand) {
 
   return new Promise((resolve, reject) => {
     childProcess.on('close', code => {
-      if (code != 0) {
+      if (code !== 0) {
         reject(code);
       } else {
         resolve(code);
