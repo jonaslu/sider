@@ -43,3 +43,28 @@ function moveSnapshotFiles(snapshotName, engineName) {
     throw new Error(`Could not move files in folder ${v0_0_8_snapshotFilesPath} to ${v1_0_0_snapshotFilesPath}: error ${e}`);
   }
 }
+
+function createNewSnapshotSpec(snapshotName, engineName) {
+  const { snapshotsStoragePath, baseDir } = v0_0_8_siderrc;
+  const { birthtime } = fsExtra.lstatSync(path.join(snapshotsStoragePath, snapshotName));
+
+  const snapshotSpec = {
+    engineName,
+    fstats: {
+      created: birthtime,
+    },
+    runtimeConfigSpec: {},
+  };
+
+  const v1_0_0_snapshotDir = path.join(baseDir, 'snapshots/', snapshotName);
+  const v1_0_0_snapshotSpec = path.join(v1_0_0_snapshotDir, 'spec.json');
+
+  try {
+    fsExtra.ensureDirSync(v1_0_0_snapshotDir);
+    fsExtra.writeJSONSync(v1_0_0_snapshotSpec, snapshotSpec, {
+      spaces: 2,
+    });
+  } catch (e) {
+    throw new Error(`Could not write snapshot spec.json ${v1_0_0_snapshotSpec}: error ${e}`);
+  }
+}
