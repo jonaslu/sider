@@ -68,19 +68,16 @@ function createNewSnapshotSpec(snapshotName, engineName) {
   }
 }
 
-function removeOldSnapshotFolderIfDifferentPath(snapshotName, engineName) {
+function removeSnapshotFilesPath(snapshotName, engineName) {
   const { snapshotsStoragePath, snapshotsFolder } = v0_0_8_siderrc;
 
-  let v0_0_8_removePath;
-  if (snapshotsFolder !== 'snapshots/') {
-    v0_0_8_removePath = path.join(snapshotsStoragePath, snapshotName);
-  } else {
-    v0_0_8_removePath = path.join(snapshotsStoragePath, snapshotName, engineName);
-  }
-  try {
-    fsExtra.removeSync(v0_0_8_removePath);
-  } catch (e) {
-    throw new Error(`Could not remove old snapshot folder ${v0_0_8_removePath}: error ${e}`);
+  if (snapshotsFolder === 'snapshots/') {
+    const v0_0_8_removePath = path.join(snapshotsStoragePath, snapshotName, engineName);
+    try {
+      fsExtra.removeSync(v0_0_8_removePath);
+    } catch (e) {
+      throw new Error(`Could not remove old snapshot folder ${v0_0_8_removePath}: error ${e}`);
+    }
   }
 }
 
@@ -88,18 +85,18 @@ function migrateSnapshot(snapshotName) {
   const engineName = getSnapshotEngineName(snapshotName);
   moveSnapshotFiles(snapshotName, engineName);
   createNewSnapshotSpec(snapshotName, engineName);
-  removeOldSnapshotFolderIfDifferentPath(snapshotName, engineName);
+  removeSnapshotFilesPath(snapshotName, engineName);
 }
 
 function migrateAllSnapshots() {
-  const { snapshotStoragePath } = v0_0_8_siderrc;
+  const { snapshotsStoragePath, snapshotsFolder, baseDir } = v0_0_8_siderrc;
 
   let dirContents;
   try {
-    dirContents = fsExtra.readdirSync(snapshotStoragePath, 'utf-8');
+    dirContents = fsExtra.readdirSync(snapshotsStoragePath, 'utf-8');
   } catch (e) {
     if (e.code !== 'ENOENT') {
-      console.error(`Error occurred when trying to migrate snapshot path ${snapshotStoragePath}`);
+      console.error(`Error occurred when trying to migrate snapshot path ${snapshotsStoragePath}`);
       console.error('Not continuing migration');
       process.exit(1);
     }
@@ -114,6 +111,17 @@ function migrateAllSnapshots() {
       console.error(`Continuing migration but snapshot ${snapshotName} needs manual intervention.`);
     }
   });
+
+  if (snapshotsFolder !== 'snapshots/') {
+    const [firstSubFolder] = snapshotsFolder.split(path.sep);
+    const removeFolder = path.join(baseDir, firstSubFolder);
+
+    try {
+      fsExtra.removeSync(removeFolder);
+    } catch (e) {
+      console.error(`Could not remove old snapshots dir ${snapshotsStoragePath}: error ${e}`);
+    }
+  }
 }
 
 module.exports = {
