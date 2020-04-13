@@ -6,7 +6,8 @@ function ensureFolder(folder) {
   return folder.endsWith(path.sep) ? folder : path.join(folder, path.sep);
 }
 
-const siderRcPath = untildify('~/.siderrc');
+const siderPath = process.env.SIDERRC || '~./siderrc';
+const siderRcPath = untildify(siderPath);
 
 nconf.file({ file: siderRcPath }).defaults({
   basePath: '~/.sider',
@@ -18,7 +19,8 @@ nconf.file({ file: siderRcPath }).defaults({
 const nconfBaseDir = nconf.get('basePath');
 const baseDir = ensureFolder(nconfBaseDir);
 
-const snapshotsFullPath = `${baseDir}${ensureFolder(nconf.get('snapshotsFolder'))}`;
+const snapshotsFolder = nconf.get('snapshotsFolder')
+const snapshotsFullPath = `${baseDir}${ensureFolder(snapshotsFolder)}`;
 
 const dbsFullPath = `${baseDir}${ensureFolder(nconf.get('dbsFolder'))}`;
 const enginesFullPath = `${baseDir}${ensureFolder(nconf.get('engineFolder'))}`;
@@ -29,6 +31,7 @@ const engineStoragePath = untildify(enginesFullPath);
 
 module.exports = {
   baseDir: untildify(baseDir),
+  snapshotsFolder,
   snapshotsStoragePath,
   dbsStoragePath,
   engineStoragePath,

@@ -38,7 +38,6 @@ function moveSnapshotFiles(snapshotName, engineName) {
 
   try {
     fsExtra.moveSync(v0_0_8_snapshotFilesPath, v1_0_0_snapshotFilesPath);
-    fsExtra.remove(v0_0_8_snapshotFilesPath);
   } catch (e) {
     throw new Error(`Could not move files in folder ${v0_0_8_snapshotFilesPath} to ${v1_0_0_snapshotFilesPath}: error ${e}`);
   }
@@ -67,4 +66,27 @@ function createNewSnapshotSpec(snapshotName, engineName) {
   } catch (e) {
     throw new Error(`Could not write snapshot spec.json ${v1_0_0_snapshotSpec}: error ${e}`);
   }
+}
+
+function removeOldSnapshotFolderIfDifferentPath(snapshotName, engineName) {
+  const { snapshotsStoragePath, snapshotsFolder } = v0_0_8_siderrc;
+
+  let v0_0_8_removePath;
+  if (snapshotsFolder !== 'snapshots/') {
+    v0_0_8_removePath = path.join(snapshotsStoragePath, snapshotName);
+  } else {
+    v0_0_8_removePath = path.join(snapshotsStoragePath, snapshotName, engineName);
+  }
+  try {
+    fsExtra.removeSync(v0_0_8_removePath);
+  } catch (e) {
+    throw new Error(`Could not remove old snapshot folder ${v0_0_8_removePath}: error ${e}`);
+  }
+}
+
+function migrateSnapshot(snapshotName) {
+  const engineName = getSnapshotEngineName(snapshotName);
+  moveSnapshotFiles(snapshotName, engineName);
+  createNewSnapshotSpec(snapshotName, engineName);
+  removeOldSnapshotFolderIfDifferentPath(snapshotName, engineName);
 }
