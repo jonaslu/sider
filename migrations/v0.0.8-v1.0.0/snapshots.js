@@ -90,3 +90,32 @@ function migrateSnapshot(snapshotName) {
   createNewSnapshotSpec(snapshotName, engineName);
   removeOldSnapshotFolderIfDifferentPath(snapshotName, engineName);
 }
+
+function migrateAllSnapshots() {
+  const { snapshotStoragePath } = v0_0_8_siderrc;
+
+  let dirContents;
+  try {
+    dirContents = fsExtra.readdirSync(snapshotStoragePath, 'utf-8');
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      console.error(`Error occurred when trying to migrate snapshot path ${snapshotStoragePath}`);
+      console.error('Not continuing migration');
+      process.exit(1);
+    }
+  }
+
+  dirContents.forEach((snapshotName) => {
+    try {
+      migrateSnapshot(snapshotName);
+    } catch (e) {
+      console.error(`Cannot migrate: ${snapshotName}`);
+      console.error(e);
+      console.error(`Continuing migration but snapshot ${snapshotName} needs manual intervention.`);
+    }
+  });
+}
+
+module.exports = {
+  migrateAllSnapshots,
+};
