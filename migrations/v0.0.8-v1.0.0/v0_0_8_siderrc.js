@@ -23,7 +23,9 @@ const snapshotsFolder = nconf.get('snapshotsFolder')
 const snapshotsFullPath = `${baseDir}${ensureFolder(snapshotsFolder)}`;
 
 const dbsFullPath = `${baseDir}${ensureFolder(nconf.get('dbsFolder'))}`;
-const enginesFullPath = `${baseDir}${ensureFolder(nconf.get('engineFolder'))}`;
+
+const engineFolder = nconf.get('engineFolder');
+const enginesFullPath = `${baseDir}${ensureFolder(engineFolder)}`;
 
 const snapshotsStoragePath = untildify(snapshotsFullPath);
 const dbsStoragePath = untildify(dbsFullPath);
@@ -35,4 +37,5 @@ module.exports = {
   snapshotsStoragePath,
   dbsStoragePath,
   engineStoragePath,
+  engineFolder
 };
