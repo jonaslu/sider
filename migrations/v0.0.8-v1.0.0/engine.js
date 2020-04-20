@@ -57,7 +57,20 @@ function removeEngineFilesPath(engineName) {
   }
 }
 
-function deleteDebugEngineSpec(engineName) {}
+function deleteDebugEngineSpec() {
+  const { engineStoragePath } = v0_0_8_siderrc;
+  const debugEngineStoragePath = path.join(engineStoragePath, 'debug');
+
+  const debugSettingsExist = fsExtra.existsSync(debugEngineStoragePath);
+  if (debugSettingsExist) {
+    console.log(`Removing debug engine settings - engine no longer supported in v1.0.0`);
+    try {
+      fsExtra.remove(debugEngineStoragePath);
+    } catch (e) {
+      throw new Error(`Could not remove debug engine settings in path ${debugEngineStoragePath}: error ${e}`);
+    }
+  }
+}
 
 function migrateSpec() {
   knownEngines.forEach((engineName) => {
@@ -66,4 +79,6 @@ function migrateSpec() {
       removeEngineFilesPath(engineName);
     }
   });
+
+  deleteDebugEngineSpec();
 }
