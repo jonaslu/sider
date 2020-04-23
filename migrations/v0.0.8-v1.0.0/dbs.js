@@ -28,3 +28,17 @@ function getDbSnapshotName(dbName) {
 
   return snapshotName;
 }
+
+function moveDbFiles(dbName, snapshotName) {
+  const { dbsStoragePath, baseDir } = v0_0_8_siderrc;
+  const v0_0_8_dbFilesPath = path.join(dbsStoragePath, dbName, snapshotName);
+
+  const v1_0_0_dbFilesPath = path.join(baseDir, 'dbs', dbName, 'files');
+
+  try {
+    fsExtra.moveSync(v0_0_8_dbFilesPath, v1_0_0_dbFilesPath);
+  } catch (e) {
+    throw new Error(`Could not move files in folder ${v0_0_8_dbFilesPath} to ${v1_0_0_dbFilesPath}: error ${e}`);
+  }
+}
+
