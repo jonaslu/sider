@@ -11,7 +11,7 @@ function getSnapshotEngineName(snapshotName) {
   try {
     snapshotFolderContents = fsExtra.readdirSync(path.join(snapshotsStoragePath, snapshotName));
   } catch (e) {
-    throw new Error(`Could not read snapshotfolder ${snapshotName}: error ${e}`);
+    throw new Error(`Could not read snapshot folder ${snapshotName}: error ${e}`);
   }
 
   const supportedEngines = ['redis', 'mariadb', 'postgres'];
