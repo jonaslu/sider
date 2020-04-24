@@ -67,3 +67,30 @@ function getRuntimeConfigSpec(dbName) {
     return {};
   }
 }
+
+function createNewDbSpec(dbName, snapshotName, engineName, runtimeConfigSpec) {
+  const { dbsStoragePath, baseDir } = v0_0_8_siderrc;
+  const { birthtime, atime } = fsExtra.lstatSync(path.join(dbsStoragePath, dbName));
+
+  const dbSpec = {
+    engineName,
+    snapshotName,
+    fstats: {
+      created: birthtime,
+      lastUsed: atime,
+    },
+    runtimeConfigSpec,
+  };
+
+  const v1_0_0_dbFolder = path.join(baseDir, 'dbs/', dbName);
+  const v1_0_0_dbSpec = path.join(v1_0_0_dbFolder, 'spec.json');
+
+  try {
+    fsExtra.ensureDirSync(v1_0_0_dbFolder);
+    fsExtra.writeJSONSync(v1_0_0_dbSpec, dbSpec, {
+      spaces: 2,
+    });
+  } catch (e) {
+    throw new Error(`Could not write db spec.json ${v1_0_0_dbSpec}: error ${e}`);
+  }
+}
