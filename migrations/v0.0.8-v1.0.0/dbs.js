@@ -166,4 +166,3 @@ function migrateAllDbs() {
 module.exports = {
   migrateAllDbs,
 };
-

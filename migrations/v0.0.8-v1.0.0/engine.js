@@ -72,7 +72,7 @@ function deleteDebugEngineSpec() {
   }
 }
 
-function migrateSpec() {
+function migrateAllEngines() {
   knownEngines.forEach((engineName) => {
     const removeFile = migrateEngineSpec(engineName);
     if (removeFile) {
@@ -81,4 +81,8 @@ function migrateSpec() {
   });
 
   deleteDebugEngineSpec();
+}
+
+module.exports = {
+  migrateAllEngines
 }
