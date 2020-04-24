@@ -53,3 +53,17 @@ function getEngineNameForSnapshot(snapshotName) {
   }
 }
 
+function getRuntimeConfigSpec(dbName) {
+  const { dbsStoragePath } = v0_0_8_siderrc;
+  const v0_0_8_dbConfigFile = path.join(dbsStoragePath, dbName, "config.json");
+
+  try {
+    return fsExtra.readJSONSync(v0_0_8_dbConfigFile, 'utf-8');
+  } catch(e) {
+    if (e.code !== 'ENOENT') {
+      throw new Error(`Could not read db old config at path ${v0_0_8_dbConfigFile}: error ${e}`);
+    }
+
+    return {};
+  }
+}
