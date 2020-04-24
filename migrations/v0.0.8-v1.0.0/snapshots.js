@@ -83,8 +83,8 @@ function removeSnapshotFilesPath(snapshotName, engineName) {
 
 function migrateSnapshot(snapshotName) {
   const engineName = getSnapshotEngineName(snapshotName);
-  moveSnapshotFiles(snapshotName, engineName);
   createNewSnapshotSpec(snapshotName, engineName);
+  moveSnapshotFiles(snapshotName, engineName);
   removeSnapshotFilesPath(snapshotName, engineName);
 }
 
@@ -119,7 +119,7 @@ function migrateAllSnapshots() {
     try {
       fsExtra.removeSync(removeFolder);
     } catch (e) {
-      console.error(`Could not remove old snapshots dir ${snapshotsStoragePath}: error ${e}`);
+      console.error(`Could not remove old snapshots folder ${snapshotsStoragePath}: error ${e}`);
     }
   }
 }
