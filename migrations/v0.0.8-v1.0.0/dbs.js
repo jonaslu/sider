@@ -116,3 +116,14 @@ function removeDbFilesPath(dbName, snapshotName) {
     }
   }
 }
+
+
+function migrateDb(dbName) {
+  const snapshotName = getDbSnapshotName(dbName);
+  const engineName = getEngineNameForSnapshot(snapshotName);
+  const runtimeConfigSpec = getRuntimeConfigSpec(dbName);
+
+  createNewDbSpec(dbName, snapshotName, engineName, runtimeConfigSpec);
+  moveDbFiles(dbName, snapshotName);
+  removeDbFilesPath(dbName, snapshotName);
+}
