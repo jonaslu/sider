@@ -94,3 +94,25 @@ function createNewDbSpec(dbName, snapshotName, engineName, runtimeConfigSpec) {
     throw new Error(`Could not write db spec.json ${v1_0_0_dbSpec}: error ${e}`);
   }
 }
+
+function removeDbFilesPath(dbName, snapshotName) {
+  const { dbsStoragePath, dbFolder } = v0_0_8_siderrc;
+
+  if (dbFolder === 'dbs/') {
+    const v0_0_8_dbFilesPath = path.join(dbsStoragePath, dbName, snapshotName);
+    try {
+      fsExtra.removeSync(v0_0_8_dbFilesPath);
+    } catch (e) {
+      throw new Error(`Could not remove old dbs folder ${v0_0_8_dbFilesPath}: error ${e}`);
+    }
+
+    const v0_0_8_dbConfigFile = path.join(dbsStoragePath, dbName, "config.json");
+    try {
+      fsExtra.removeSync(v0_0_8_dbConfigFile);
+    } catch (e) {
+      if (e.code !== 'ENOENT') {
+        throw new Error(`Could not remove old dbs folder ${v0_0_8_dbFilesPath}: error ${e}`);
+      }
+    }
+  }
+}
