@@ -42,3 +42,14 @@ function moveDbFiles(dbName, snapshotName) {
   }
 }
 
+function getEngineNameForSnapshot(snapshotName) {
+  const { baseDir } = v0_0_8_siderrc;
+  const snapshotSpecsFile = path.join(baseDir, 'snapshots', snapshotName, 'spec.json');
+  try {
+    const { engineName } = fsExtra.readJSONSync(snapshotSpecsFile, 'utf-8');
+    return engineName;
+  } catch (e) {
+    throw new Error(`Cannot find engine name for snapshot ${snapshotName} during migration: error ${e}`);
+  }
+}
+
