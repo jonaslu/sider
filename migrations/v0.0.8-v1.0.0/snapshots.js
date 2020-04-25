@@ -56,7 +56,7 @@ function createNewSnapshotSpec(snapshotName, engineName) {
   };
 
   const v1_0_0_snapshotDir = path.join(baseDir, 'snapshots/', snapshotName);
-  const v1_0_0_snapshotSpec = path.join(v1_0_0_snapshotDir, 'spec.json');
+  const v1_0_0_snapshotSpec = path.join(v1_0_0_snapshotDir, 'specs.json');
 
   try {
     fsExtra.ensureDirSync(v1_0_0_snapshotDir);
@@ -64,7 +64,7 @@ function createNewSnapshotSpec(snapshotName, engineName) {
       spaces: 2,
     });
   } catch (e) {
-    throw new Error(`Could not write snapshot spec.json ${v1_0_0_snapshotSpec}: error ${e}`);
+    throw new Error(`Could not write snapshot specs.json ${v1_0_0_snapshotSpec}: error ${e}`);
   }
 }
 

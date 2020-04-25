@@ -44,7 +44,7 @@ function moveDbFiles(dbName, snapshotName) {
 
 function getEngineNameForSnapshot(snapshotName) {
   const { baseDir } = v0_0_8_siderrc;
-  const snapshotSpecsFile = path.join(baseDir, 'snapshots', snapshotName, 'spec.json');
+  const snapshotSpecsFile = path.join(baseDir, 'snapshots', snapshotName, 'specs.json');
   try {
     const { engineName } = fsExtra.readJSONSync(snapshotSpecsFile, 'utf-8');
     return engineName;
@@ -83,7 +83,7 @@ function createNewDbSpec(dbName, snapshotName, engineName, runtimeConfigSpec) {
   };
 
   const v1_0_0_dbFolder = path.join(baseDir, 'dbs/', dbName);
-  const v1_0_0_dbSpec = path.join(v1_0_0_dbFolder, 'spec.json');
+  const v1_0_0_dbSpec = path.join(v1_0_0_dbFolder, 'specs.json');
 
   try {
     fsExtra.ensureDirSync(v1_0_0_dbFolder);
@@ -91,7 +91,7 @@ function createNewDbSpec(dbName, snapshotName, engineName, runtimeConfigSpec) {
       spaces: 2,
     });
   } catch (e) {
-    throw new Error(`Could not write db spec.json ${v1_0_0_dbSpec}: error ${e}`);
+    throw new Error(`Could not write db specs.json ${v1_0_0_dbSpec}: error ${e}`);
   }
 }
 
