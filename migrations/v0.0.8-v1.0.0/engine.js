@@ -6,7 +6,7 @@ const v0_0_8_siderrc = require('./v0_0_8_siderrc');
 const knownEngines = ['redis', 'mariadb', 'postgres'];
 
 function migrateEngineSpec(engineName) {
-  const { engineStoragePath, baseDir } = v0_0_8_siderrc;
+  const { engineStoragePath, engineFolder, baseDir } = v0_0_8_siderrc;
   const v0_0_8_engineConfigPath = path.join(engineStoragePath, engineName, 'config.json');
 
   let engineConfig = {};
@@ -17,12 +17,12 @@ function migrateEngineSpec(engineName) {
       throw new Error(`Could not read engine config.json in folder ${v0_0_8_engineConfigPath}: error ${e}`);
     }
 
-    return false;
+    return;
   }
 
   if (!Object.keys(engineConfig).length) {
     // Empty object, new version handles empty configs. Do nothing.
-    return true;
+    return;
   }
 
   const v1_0_0_enginePath = path.join(baseDir, 'engines', engineName);
@@ -39,21 +39,12 @@ function migrateEngineSpec(engineName) {
     throw new Error(`Could not write v1.0.0 engine spec to path ${v1_0_0_engineSpecPath}: error ${e}`);
   }
 
-  return true;
-}
-
-function removeEngineFilesPath(engineName) {
-  const { engineFolder, engineStoragePath } = v0_0_8_siderrc;
-
-  let removePath = path.join(engineStoragePath, engineName);
   if (engineFolder === 'engines/') {
-    removePath = path.join(removePath, 'config.json');
-  }
-
-  try {
-    fsExtra.removeSync(removePath);
-  } catch (e) {
-    throw new Error(`Could not remove engine files ${removePath}: error ${e}`);
+    try {
+      fsExtra.removeSync(v0_0_8_engineConfigPath);
+    } catch (e) {
+      throw new Error(`Could not remove engine files ${v0_0_8_engineConfigPath}: error ${e}`);
+    }
   }
 }
 
@@ -72,17 +63,30 @@ function deleteDebugEngineSpec() {
   }
 }
 
+function deleteNonStandardEngineFolder() {
+  const { baseDir, engineStoragePath, engineFolder } = v0_0_8_siderrc;
+
+  if (engineFolder !== 'engines/') {
+    const [firstSubFolder] = engineFolder.split(path.sep);
+    const removeFolder = path.join(baseDir, firstSubFolder);
+
+    try {
+      fsExtra.removeSync(removeFolder);
+    } catch (e) {
+      throw new Error(`Could not remove engine settings in path ${engineStoragePath}: error ${e}`);
+    }
+  }
+}
+
 function migrateAllEngines() {
   knownEngines.forEach((engineName) => {
-    const removeFile = migrateEngineSpec(engineName);
-    if (removeFile) {
-      removeEngineFilesPath(engineName);
-    }
+    migrateEngineSpec(engineName);
   });
 
   deleteDebugEngineSpec();
+  deleteNonStandardEngineFolder();
 }
 
 module.exports = {
-  migrateAllEngines
-}
+  migrateAllEngines,
+};

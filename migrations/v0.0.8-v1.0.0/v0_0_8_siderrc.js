@@ -19,14 +19,14 @@ nconf.file({ file: siderRcPath }).defaults({
 const nconfBaseDir = nconf.get('basePath');
 const baseDir = ensureFolder(nconfBaseDir);
 
-const snapshotsFolder = nconf.get('snapshotsFolder')
-const snapshotsFullPath = `${baseDir}${ensureFolder(snapshotsFolder)}`;
+const snapshotsFolder = ensureFolder(nconf.get('snapshotsFolder'))
+const snapshotsFullPath = `${baseDir}${snapshotsFolder}`;
 
-const dbFolder = nconf.get('dbsFolder');
-const dbsFullPath = `${baseDir}${ensureFolder(dbFolder)}`;
+const dbFolder = ensureFolder(nconf.get('dbsFolder'));
+const dbsFullPath = `${baseDir}${dbFolder}`;
 
-const engineFolder = nconf.get('engineFolder');
-const enginesFullPath = `${baseDir}${ensureFolder(engineFolder)}`;
+const engineFolder = ensureFolder(nconf.get('engineFolder'));
+const enginesFullPath = `${baseDir}${engineFolder}`;
 
 const snapshotsStoragePath = untildify(snapshotsFullPath);
 const dbsStoragePath = untildify(dbsFullPath);
