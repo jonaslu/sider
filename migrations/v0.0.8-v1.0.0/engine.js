@@ -64,7 +64,7 @@ function deleteDebugEngineSpec() {
   if (debugSettingsExist) {
     console.log(`Removing debug engine settings - engine no longer supported in v1.0.0`);
     try {
-      fsExtra.remove(debugEngineStoragePath);
+      fsExtra.removeSync(debugEngineStoragePath);
     } catch (e) {
       throw new Error(`Could not remove debug engine settings in path ${debugEngineStoragePath}: error ${e}`);
     }
