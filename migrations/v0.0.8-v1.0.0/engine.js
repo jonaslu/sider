@@ -22,6 +22,14 @@ function migrateEngineSpec(engineName) {
 
   if (!Object.keys(engineConfig).length) {
     // Empty object, new version handles empty configs. Do nothing.
+    if (engineFolder === 'engines/') {
+      try {
+        fsExtra.removeSync(path.join(engineStoragePath, engineName));
+      } catch (e) {
+        throw new Error(`Could not remove engine files ${v0_0_8_engineConfigPath}: error ${e}`);
+      }
+    }
+
     return;
   }
 
