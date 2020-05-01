@@ -47,5 +47,3 @@ function detectMigrationToV1_0_0() {
 module.exports = {
   detectMigrationToV1_0_0,
 };
-
-console.log(detectMigrationToV1_0_0());
