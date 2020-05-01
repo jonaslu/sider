@@ -1,8 +1,5 @@
 const { didYouMean, printUsageAndExit } = require('../../utils');
 
-// !! Get this from package.json instead
-const version = '0.0.8';
-
 const usage = `
 Usage: sider <command> [arguments]
 
@@ -40,9 +37,11 @@ async function processArgv(argv) {
   switch (subcommand) {
     case '-V':
     case 'version':
-    case '--version':
+    case '--version': {
+      const {version} = require('../../package.json');
       console.log(version);
       process.exit(0);
+    }
 
     // eslint-disable-next-line no-fallthrough
     case 'help': {
