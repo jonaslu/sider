@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 const fsExtra = require('fs-extra');
 const path = require('path');
-
 const { snapshotsStoragePath, engineStoragePath } = require('./v0_0_8_siderrc');
+
 const v0_0_8_engines = ['redis', 'mariadb', 'postgres'];
 
 function snapshotsHasEngineFolder() {
@@ -18,6 +18,8 @@ function snapshotsHasEngineFolder() {
         if (fsExtra.pathExistsSync(snapshotEnginePath)) {
           return true;
         }
+
+        return false;
       });
     });
 
@@ -33,6 +35,8 @@ function engineHasConfigFile() {
     if (fsExtra.pathExistsSync(engineConfigPath)) {
       return true;
     }
+
+    return false;
   });
 }
 
