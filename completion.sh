@@ -186,7 +186,7 @@ __sider() {
   _init_completion || return
 
   if [ $prev = "sider" ]; then
-    COMPREPLY=( $(compgen -W "engine db snapshot help version" -- $cur) )
+    COMPREPLY=( $(compgen -W "engine db snapshot help version -V --version" -- $cur) )
     return 0
   fi;
 

@@ -1,5 +1,6 @@
 const { didYouMean, printUsageAndExit } = require('../../utils');
 
+// !! Get this from package.json instead
 const version = '0.0.8';
 
 const usage = `
@@ -39,6 +40,7 @@ async function processArgv(argv) {
   switch (subcommand) {
     case '-V':
     case 'version':
+    case '--version':
       console.log(version);
       process.exit(0);
 
