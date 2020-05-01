@@ -1,10 +1,9 @@
-#! /usr/bin/env node
+#!/usr/bin/env node
 const { processArgv } = require('./commands/main/usage');
 
 const [, , ...rest] = process.argv;
 const [subcommand] = rest;
 
-/* eslint-disable global-require */
 function getBashRcAndSiderLine() {
   const fsExtra = require('fs-extra');
   const untiltdify = require('untildify');
@@ -92,4 +91,3 @@ switch (subcommand) {
   default:
     processArgv(rest);
 }
-/* eslint-enable global-require */

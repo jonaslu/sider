@@ -22,7 +22,7 @@ function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);
 
   if (commandFound) {
-    // eslint-disable-next-line import/no-dynamic-require, global-require
+    // eslint-disable-next-line import/no-dynamic-require
     return require(`./${subcommand}`);
   }
 
