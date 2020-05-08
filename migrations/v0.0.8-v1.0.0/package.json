@@ -1,0 +1,8 @@
+{
+  "bin": "./manually.js",
+  "dependencies": {
+    "fs-extra": "^9.0.0",
+    "nconf": "^0.10.0",
+    "untildify": "^4.0.0"
+  }
+}
