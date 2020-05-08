@@ -1,35 +1,44 @@
-# What the heck is this?
-It's a VCS for your local database dumps.
+# Elevator pitch
+Sider is a command-line tool for running and restoring multiple databases locally.
 
-I've often set up a complicated test-scenario
-in my database only to have a slip of the "continue"
-finger botch all of that setup overwriting the data.
+# Longer story
+Sider was born out of frustration of often fetching a production-dump,
+starting it up locally and then accidentally destroying it whilst debugging and having to do
+the process all over again.
 
-The thing is exacerbated by database dumps often being
-complicated to restore or reset with scary sudo-rights
-writing into the wrong directory. Same with running two databases side by side - sudoisms abound!
+There was also the issue of running two or more
+databases of the same type on different ports locally, which is often tricky to do
+ with a system-wide install.
 
-Enter **sider** which is a cli-tool that turns this juggling into a breeze by
-handling importing, running and restoring databases for you.
+Using docker to bind-mount in the dump was a bit better
+since you could run multiple databases at the same time
+on different ports, but still painful since labeling, copying
+and setting up the docker mounts took time and concentration.
 
-# TL;DR
+Sider is the answer to this. I wanted a tool to manage several database
+dumps locally at once. I wanted to run some or all of them
+at the same time and when I did destroy some crucial
+data I wanted to quickly revert to the fetched dump being able
+to start over again.
+
+# For the impatient and brave
 Say to yourself: "I have docker installed" three times.
 
 ```
 npm i -g @jonaslu/sider
 sider install-completion
+sider help
 sider <tab><tab>
 ```
 
-Check the [wiki](/wiki):
+Check the [wiki](/wiki)
 
 # Supported databases
 - Redis
 - Postgres
 - Mariadb
 
-
-## Common use case scenario:
+# Common use case scenario:
 Here's a every day usage scenario to get your appetite up:
 
 ```
@@ -42,7 +51,10 @@ $> sider snapshot list
 │ prod-180922 │ redis  │ a minute ago │ a minute ago │     │
 └─────────────┴────────┴──────────────┴──────────────┴─────┘
 
-$> sider db start test-feature-1 prod-180922
+$> sider db clone test-feature-1 prod-180922
+✨ Successfully cloned database goat from snapshot yaky 🚀
+
+$> sider db start test-feature-1
 ✨ Starting db test-feature-1 on port 6379
 ... hack hack ...
 ... Stuck, I'll work on feature-2 on the meantime ...
@@ -95,7 +107,7 @@ $> sider db list -s
 │                │             │        │             │             │ version=3.2.6 │
 └────────────────┴─────────────┴────────┴─────────────┴─────────────┴───────────────┘
 
-$> sider snapshot add -e postgres my-own-snapshot
+$> sider snapshot empty postgres my-own-snapshot
 ...Set up a empty database with some schema...
 ...And insert some data...
 .... ctrl + c ...
@@ -103,69 +115,43 @@ $> sider snapshot add -e postgres my-own-snapshot
 $ sider db start my-own-db my-own-snapshot
 
 ...Oh, I wrote the program but can't remember that command-line switch...
-$> sider --help
+$> sider help
 ```
 
-# Before we install: a word on
+# Terminology
 
-## ...snapshots
-A snapshot is like a commit or errr... snapshot
-of a database. This is what you export from somewhere most often some running test or prod database.
-and add into sider. A copy fo this is then what you then run as a db.
-There is also an option to start with an empty database with no import dump required.
+## Snapshots
+A snapshot is an imported dump of a database.
+You can also create empty snapshots and initialize
+them with data yourself.
 
-## ...dbs
-Dbs is the database files that the engine manipulates.
-It's the running live version of a database.
+## Databases
+The database is a cloned copy of a snapshot making the
+snapshot immutable and the database mutable. You can reset
+a database to the initial snapshot state at any time.
 
-## ...engines
-An engine is the type of database currently being redis, mariadb and postgres.
-An engine knows how to run a particular type of dump which is associated when
-importing the snapshot.
+## Engines
+Is the supported database types - currently:
+- Redis
+- Postgres
+- Mariadb
 
-## ...settings
-Setting govern what port the db starts up at and can hold other settings too depending on what
-the engine supports (e g redis currently supports version also). The engine itself will provide
-any default settings it needs to be able to run a dump.
+## Runtime settings
+Settings are applied when running a database and controls
+what port to run plus any other individual settings supported
+by the engine (example: engine version).
 
-These settings can be overriden on 3 levels: engine, db and command-line.
-They are also prioritized in that order. To set a config (e g the starting
-port) for an engine type:
-`sider engine setconf redis port=1234`
+The engine itself will provide default settings.
+Settings can be overriden on the engine, snapshot, db and command-line
+and prioritized in that order if overridden.
 
-This setting will override the default and be used for all coming
-invocations where the db or command-line settings have not been specified.
-
-To list the settings on an engine (example redis) type:
-`sider engine getconf redis`.
-This will mix any defaults with any explicitly set values via `setconf`.
-
-The engine setting can be overriden on a db-level. This setting
-will be used for all future invocations on that db. This gives you
-the ability to start dbs on different ports.
-
-To set port on a particular db type:
-`sider db setconf <db-name> port=1234`
-
-To list the stored settings on a db type:
-`sider db getconf <db-name>`. To get the full overview of what settings will be used
-(a merge of the engine and db settings) you can do that in the
-`sider db list -s` where `-s` lists the merged settings.
-
-Lastly you can also set settings on the command-line. They are
-used for that invocation only (but if the parameter `-p` is given when
-running `sider db start` the setting will be persisted (akin to calling
-`sider db setconf`)).
-
-Example:
-`sider db start my-db port=1234 version=3.2.1`
-
-The settings can be removed on an engine and db via `remconf`.
+Settings are persisted between invocations with the exception
+of command-line settings.
 
 # Installation
 
 ## Prerequisites
-Sider currently only depends on [docker](https://www.docker.com/) for running the different
+Sider depends on [docker](https://www.docker.com/) for running the different
 supported database engines. You must have docker installed
 and on your path.
 
@@ -175,192 +161,209 @@ If there is some output from docker you're good to go.
 ## Getting it
 `npm install -g @jonaslu/sider`
 
-## If you're upgrading
-Check [migrations](#Migrating) if there's anything to do.
+If there are any breaking changes a migration will be supplied during
+the upgrade process. You can (but are not advised) to opt out of the migration during upgrade.
+If you do then there's will be a way of migrating manually here: [migrations](#Migrating).
 
 ## Installing tab-completion
-Sider now supports tab-completion. Type `sider install-completion` and tab-tab
-away to your hearts content.
+Type `sider install-completion` and tab-tab away to your hearts content.
+Currently bash is supported. See issues for progress on more shells.
+
+# Usage
+
+## Working with engines
+Holds both the defaults and overridden settings
+that are applied when running a database.
+
+### Persisting settings
+`sider engine setconf <name> <settings...>`
+
+Persists one or more settings on an engine.
+Any database using that engine will inherit it's settings unless overridden when started anew.
+
+**Example:** `sider engine setconf redis port=6780 version=3.2.6`
+
+### Listing settings
+`sider engine getconf <name>`
+
+Lists all persisted settings on an engine.
+
+**Example:** `sider engine getconf redis`
+
+### Removing settings
+`sider engine remconf <name> <settings...>`
+
+Removes one or more settings on an engine reverting back to the defaults.
+
+**Example:** `sider engine remconf redis port version`
 
 ## Working with snapshots
-`sider snapshot add <engine-type> <snapshot-name> <path-to-snapshot>`
+Snapshots are dumps exported from another database.
+The canonical example is getting a dump from production to work on some bug locally.
+
+Redis accepts dump.rdb files, postgres and mariadb
+accepts the contents of the data-dir.
+
+See the [wiki](https://github.com/jonaslu/sider/wiki/Copy-a-live-postgres-database)
+for importing pg_dump / mysqldump sql-files.
+
+### Adding a snapshot
+`sider snapshot add <engine-type> <name> <path-to-snapshot>`
 
 This will load the database dump into sider using the specified engine-type
 to load and process the database dump files.
 
-It will not touch or alter any of the original files (simplu copy them)
-and after completion you'll have a snapshot loaded which
-can be listed with: `sider snapshot list`.
+It will not touch or alter any of the supplied original files.
 
-When you're done with a snapshot you can issue
-`sider snapshot remove <snapshot-name>`. This will delete the
-snapshot and any associated dbs with it.
+**Example:** `sider snapshot add redis prod-dump /home/jonasl/dump.rdb`
 
-If you want do start working with an entirely empty database and
-no dump is required you can start sider with the `sider snapshot add -e <engine-type> <snapshot-name>`
-switch to let the database create an empty database as a snapshot.
+### Adding an empty snapshot
+`sider snapshot empty <engine> <name>`
 
-Do anything you need with the empty snapshot (such as setting up a schema and base-data)
-and then hit ctrl+c to stop and save it as a snapshot. This
-can now be used as a starting point (akin to a commit in git).
+Empty snapshots are handy for adding self-generated data
+such as setting up schemas and test-data.
+
+It's can also be used for importing .sql files (see the [wiki](https://github.com/jonaslu/sider/wiki/Copy-a-live-postgres-database)).
+
+Press `ctrl+c` to stop and save the snapshot.
+
+**Example:** `sider snapshot empty redis test-data`
+
+### Listing imported snapshots
+`sider snapshot list`
+
+Displays a list of the currently available snapshots.
+
+### Removing a snapshot
+`sider snapshot remove <name>`
+
+This will delete the snapshot and databases cloned from it.
+
+**Example:** `sider snapshot remove prod-dump`
+
+### Persisting settings
+`sider snapshot setconf <name> <settings...>`
+
+Persists one or more settings on a snapshot.
+Any database cloned from this snapshot will inherit it's settings unless overridden when started anew.
+
+**Example:** `sider snapshot setconf prod-dump port=6781 version=4.0.0`
+
+### Listing settings
+`sider snapshot getconf <name>`
+
+Lists all persisted settings on a snapshot.
+
+**Example:** `sider snapshot getconf prod-dump`
+
+### Removing settings
+`sider snapshot remconf <name>`
+
+Removes one or more settings on a snapshot.
+
+**Example:** `sider snapshot remconf prod-dump port version`
 
 ## Working with dbs
-First of all a db has to be cloned out from a snapshot. This makes snapshots
-safe from overwrites since they are never touched by the engine. Cloning is done via
-`sider db start <db-name> <snapshot-name>`. If you don't specify a port the
-db will start on the default port of that engine (e g port 6379 for redis).
+The purpose of a database is to work with and
+mutate data cloned from a snapshot.
 
-If you wish to start it on a different port than the default this is done
-by adding the `port=<port-number>` key value last in the command invocation.
-The port will be used for this run only. If you pass `-p` in addition sider will
-persist this non-default port and subsequent starts will be on whatever specified port.
+A db has to be cloned out from a snapshot and cannot be started without an associated snapshot. Thus any associated databases are deleted when a snapshot is removed.
 
-You can later change the port setting via `sider db setconf port=1234`.
+### Cloning a snapshot
+`sider db clone <name> <snapshot-name>`
 
-You stop the engine running the db by hitting ctrl+c in the terminal
-you stated it in. It will save state and shutdown properly.
+Clones out a database from a snapshot. This
+is the only way to add a database.
 
-To start the db again issue `sider db start <db-name>`. Any parameters stored
-with `-p` will be used again. To see or change what config parameters have been
-persisted with a particular db issue `sider db getconf <db-name>`. Parameters
-are changed with `setconf` and removed with `remconf`.
+**Example:** `sider db clone bug-fix prod-dump`
 
-You can list current dbs by issuing: `sider db list`. Adding a `-s` will list
-the settings on all databases (settings are the merged version of the engine
-settings and the database settings).
+### Starting a database
+`sider db start [-p] <name> [settings...]`
 
-When you're done with a
-db it can be removed by `sider db remove <db-name>`. If you've reached a state
-that you'd like to save you can promote a db to a snapshot by
-issuing: `sider db promote <db-name> <new-snapshot-name>`.
+Starts a previously cloned database. It retains
+state over restarts - use sider db reset to discard any changes made.
 
-And if you've f-ed up some data and like to go back to where you came from
-you can issue: `sider db reset <db-name>`. This will reset the database
-back to the state of the snapshot from where it was cloned.
+Press `ctrl+c` to shut down the database.
 
-## Configuring it
+Any settings are applied to this invocation only unless the flag `-p` is given. If you whish to persist settings between invocations add the `-p` flag.
+
+**Exampless:**
+```
+sider db start bug-fix
+sider db start bug-fix port=1234
+sider db start -p bug-fix port=1234
+```
+
+You can later change or remove the persisted settings via `sider db setconf` and `sider db remconf`.
+
+### Listing existing databases
+`sider db list`
+
+Lists the currently existing databases.
+
+### Removing a database
+`sider db remove <name>`
+
+Removes a database.
+
+**Example:** `sider db remove bug-fix`
+
+### Promote a database
+`sider db promote <name> <new-snapshot-name>`
+
+A database can be promoted into a new snapshot. The new snapshot can then be used as a base for further development.
+
+**Example:** `sider db promote bug-fix migrated-prod-data`
+
+### Resetting a database
+`sider db reset <name>`
+
+Resets the database to the cloned snapshot state and thus discarding any changes made.
+
+Any settings applied to database are kept even if it's reset.
+
+**Example:** `sider db reset bug-fix`
+
+### Ejecting a database
+`sider db eject <name> <eject-path>`
+
+This will write out the working data-files
+in a database to disk. Example of this is
+if you've solved a bug and like to re-import
+the changes to some other environment.
+
+The path will be create if it does not exist. The dump will be written into a subfolder named after ejected the database`
+
+**Example** `sider db eject migrated-prod-data /home/jonasl/iwon`
+
+### Persisting settings
+`sider db setconf <name> <settings...>`
+
+Persists one or more settings on a database.
+
+**Example:** `sider db setconf bug-fix port=5432 version=4.0.3`
+
+### Listing settings
+`sider db getconf <name>`
+
+Lists all persisted settings on a database.
+
+**Example:** `sider db getconf bug-fix`
+
+### Removing settings
+`sider db remconf <name> <settings...>`
+
+Removes one or several settings on a database.
+
+**Example:** `sider db remconf bug-fix port version`
+
+## Configuration file
 Sider can be configured by adding a .siderrc to your home-folder. The .siderrc
 is a json-file. You can set the following values and will default to these
 if you don't:
 ```
 basePath: '~/.sider',
-snapshotsFolder: 'snapshots/',
-dbsFolder: 'dbs/',
-engineFolder: 'engines/'
 ```
 
-The basepath is where sider will put all of it's data files. The snapshots
-folder is appended to the basePath to get the storage for snap-shots and
-the same goes for dbs and stores settings for the engines.
-
-# Migrating
-If there are any breaking changes, there will be some sort
-of automated migration. Here's how you run them.
-
-## v0.0.1 -> v0.0.2
-What changed:
-Port is no longer included in the db path, but stored as a config parameter.
-This script gets the port and stores it in the db config then moving
-the files in the port folder to a level above.
-
-To run it:
-`curl -sS https://raw.githubusercontent.com/jonaslu/sider/master/migrations/v0.0.1-v0.0.2/index.js | node`
-
-# Implementing your own engine
-Technically sider handles the juggling of paths and configs. It stores loaded
-dumps as snapshots, copies files to run as dbs and merges configs. Then it
-launches docker with those files bind-mounted in.
-
-## Assumptions
-Sider is built upon one assumptions: there is one data-file or data-folder that
-can be used repeatedly via docker (for now).
-
-## Three methods you should know about
-In order to add your missing engine to sider you need to implement three methods for that specific engine.
-
-## Loading a database
-```javascript
-load(dumpBasePath, snapshotStoreFolder, config)
-```
-This is where files gets imported into sider.
-The engine will know about any conversion that
-needs to be done and should probably do some
-basic sanity checking on the given files
-or folders (such as the files having the
-right extension and format).
-
-The load method takes three arguments: where the file(s)
-are currently located on the file-system, the output folder
-where any processed files are put (this is where you'd
-put them when done sanitizing and copying them).
-
-The config parameter is not yet used but will in the future
-contain any settings done on the engine affecting the import
-(such as version).
-
-No return values are expected.
-
-## Get default config
-```javascript
-getConfig(storedSettings)
-```
-
-Handles merging of default config with
-any stored settings on that engine.
-
-The getConfig has one argument: any stored
-settings on the engine (done by running
-`sider engine setconf <engine> <some=setting>).
-
-Expected to return the merged stored settings
-with any default settings. These settings
-are used for merging with db settings and
-cli settings when passed back starting the database.
-
-## Starting a database
-```javascript
-start(dbPath, dbName, config)
-```
-
-The magic of actually starting the database. This is where you'd figure out
-the docker incantation for running a database against a given data-folder provided by sider.
-
-Takes three arguments: the path to where the data-files are located on
-disk (sider copies the snapshot folder on start). If you're using
-docker this would be the folder mounted in as a docker volume at
-the correct database data-directory.
-
-The second parameter is the name of the database. This should
-be used for naming a docker-container so it's identifiable via
-the `docker ps` command. This is useful for any external access
-and manipulation of the running container via docker commands.
-
-The third parameter is the resulting config of merging the
-engine defaults given in `getConfig` with any database or
-command-line overrides. The engine should perform some validation
-on the given parameters issuing warnings or errors.
-
-The method is expected to return promise that resolves when
-the user shuts down the engine (presses ctrl+c).
-
-## Stopping
-```javascript
-stop(dbName, config)
-```
-
-If your database does not listen to the SIGINT (ctrl+c) signal
-there is a stop method you can implement to do
-any custom shutdown.
-
-# File permissions and using docker host volumes
-Whatever user you're using to run sider with has
-to have permissions to the files in the snapshot and
-db folder.
-
-On Linux this is currently for implemented engines this is done via
-running docker as the sider invoked user and
-mounting in /etc/group and /etc/passwd into the
-container (as per https://stackoverflow.com/a/45959754).
-
-This will give any written files the correct permissions
-on the host side.
+Base path is the top folder where sider keeps all of it's snapshots, dbs
+and settings.
