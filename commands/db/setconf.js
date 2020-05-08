@@ -11,7 +11,7 @@ async function setconf(dbName, runtimeConfigValues) {
   }
 
   await dbs.appendRuntimeConfig(db, runtimeConfigValues);
-  console.log(chalk.green(`Successfully stored settings on database ${chalk.blue(dbName)}`));
+  console.log(`${chalk.green(`Successfully`)} stored settings on database ${chalk.cyanBright(dbName)}`);
 }
 
 const usage = `

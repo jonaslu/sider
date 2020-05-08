@@ -28,7 +28,7 @@ module.exports = {
     const sortedConfigKeys = Object.keys(runtimeConfig).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
 
     sortedConfigKeys.forEach(key => {
-      console.log(`${chalk.yellow(key)}=${runtimeConfig[key]}`);
+      console.log(`${chalk.cyanBright(key)}=${runtimeConfig[key]}`);
     });
   }
 };

@@ -12,7 +12,7 @@ async function setConf(engineName, cliRuntimeConfig) {
   }
 
   await appendRuntimeConfig(engineName, cliRuntimeConfig);
-  console.log(chalk.green(`Successfully stored settings on engine ${chalk.blue(engineName)}`));
+  console.log(`${chalk.green(`Successfully`)} stored settings on engine ${chalk.cyanBright(engineName)}`);
 }
 
 const usage = `

@@ -27,7 +27,7 @@ async function remconf(snapshotName, runtimeConfigKeys) {
 
   if (someRemoved) {
     await snapshots.overwriteRuntimeConfigSpec(snapshot, runtimeConfigSpec);
-    console.log(chalk.green(`Successfully removed settings on snapshot ${chalk.blue(snapshotName)}`));
+    console.log(`${chalk.green(`Successfully`)} removed settings on snapshot ${chalk.cyanBright(snapshotName)}`);
   }
 }
 

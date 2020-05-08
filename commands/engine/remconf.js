@@ -28,7 +28,7 @@ async function remConf(engineName, runtimeConfigKeys) {
 
   if (someRemoved) {
     await storageEngine.overwriteRuntimeConfigSpec(engineName, runtimeConfigSpec);
-    console.log(chalk.green(`Successfully removed settings on engine ${chalk.blue(engineName)}`));
+    console.log(`${chalk.green(`Successfully`)} removed settings on engine ${chalk.cyanBright(engineName)}`);
   }
 }
 

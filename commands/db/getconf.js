@@ -10,7 +10,6 @@ async function getConf(dbName) {
 
   const { runtimeConfigSpec } = db;
   if (Object.keys(runtimeConfigSpec).length === 0) {
-    // !! TODO !! Make coloring consistent
     console.log('No config set');
     return;
   }

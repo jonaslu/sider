@@ -11,7 +11,7 @@ async function setconf(snapshotName, runtimeConfigValues) {
   }
 
   await snapshots.appendRuntimeConfig(snapshot, runtimeConfigValues);
-  console.log(chalk.green(`Successfully stored settings on snapshot ${chalk.blue(snapshotName)}`));
+  console.log(`${chalk.green(`Successfully`)} stored settings on snapshot ${chalk.cyanBright(snapshotName)}`);
 }
 
 const usage = `

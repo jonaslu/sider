@@ -27,7 +27,7 @@ async function remconf(dbName, runtimeConfigKeys) {
 
   if (someRemoved) {
     await dbs.overwriteRuntimeConfigSpec(db, runtimeConfigSpec);
-    console.log(chalk.green(`Successfully removed settings on snapshot ${chalk.blue(dbName)}`));
+    console.log(`${chalk.green(`Successfully`)} removed settings on snapshot ${chalk.cyanBright(dbName)}`);
   }
 }
 
