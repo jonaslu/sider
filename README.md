@@ -42,77 +42,75 @@ Check the [wiki](/wiki)
 Here's a every day usage scenario to get your appetite up:
 
 ```
-$> sider snapshot add redis prod-180922 /home/jonas/temp/dump.rdb
+$ sider snapshot add redis prod-dump /home/jonasl/temp/dump/prod-dump/dump.rdb
+Successfully added snapshot prod-dump
 
-$> sider snapshot list
-┌─────────────┬────────┬──────────────┬──────────────┬─────┐
-│ name        │ engine │ created      │ last used    │ dbs │
-├─────────────┼────────┼──────────────┼──────────────┼─────┤
-│ prod-180922 │ redis  │ a minute ago │ a minute ago │     │
-└─────────────┴────────┴──────────────┴──────────────┴─────┘
+$ sider snapshot list
+┌───────────┬────────┬───────────────────┬───────────┐
+│ name      │ engine │ created           │ cloned by │
+├───────────┼────────┼───────────────────┼───────────┤
+│ prod-dump │ redis  │ a few seconds ago │           │
+└───────────┴────────┴───────────────────┴───────────┘
 
-$> sider db clone test-feature-1 prod-180922
-✨ Successfully cloned database goat from snapshot yaky 🚀
+$ sider db clone test-feature-1 prod-dump
+✨ Successfully cloned database test-feature-1 from snapshot prod-dump 🚀
 
-$> sider db start test-feature-1
-✨ Starting db test-feature-1 on port 6379
+$ sider db start test-feature-1
+✨ Starting database test-feature-1 on port 6379 🚀
 ... hack hack ...
 ... Stuck, I'll work on feature-2 on the meantime ...
 ctrl + c
 
-$> sider db start -p test-feature-2 prod-180922 version=4.0.1
-✨ Starting db test-feature-2 on port 6379
+$ sider db clone test-feature-2 prod-dump
+✨ Successfully cloned database test-feature-2 from snapshot prod-dump 🚀
+
+$ sider db start test-feature-2
+✨ Starting database test-feature-2 on port 6379 🚀
 ... hack hack ...
 ... Oh noes, I destroyed the data ...
 ctrl + c
 
-$> sider db reset test-feature-2
-
-$> sider db start test-feature-2
-✨ Starting db test-feature-2 on port 6379
+$ sider db reset test-feature-2
+Successfully reset test-feature-2
 ... hack hack ...
 ... Yes, I figured out how to solve feature-1 ...
 
 <new terminal>
-$> sider db list
-┌────────────────┬─────────────┬────────┬───────────────────┬───────────────────┐
-│ name           │ snapshot    │ engine │ created           │ last used         │
-├────────────────┼─────────────┼────────┼───────────────────┼───────────────────┤
-│ test-feature-1 │ prod-180922 │ redis  │ a minute ago      │ a minute ago      │
-├────────────────┼─────────────┼────────┼───────────────────┼───────────────────┤
-│ test-feature-2 │ prod-180922 │ redis  │ a few seconds ago │ a few seconds ago │
-└────────────────┴─────────────┴────────┴───────────────────┴───────────────────┘
 
-$> sider db start test-feature-1 port=6380
-✨ Starting db test-feature-1 on port 6380
+$ sider db list
+┌────────────────┬───────────┬────────┬───────────────┬───────────────┐
+│ name           │ snapshot  │ engine │ created       │ last used     │
+├────────────────┼───────────┼────────┼───────────────┼───────────────┤
+│ test-feature-1 │ prod-dump │ redis  │ 4 minutes ago │ 4 minutes ago │
+├────────────────┼───────────┼────────┼───────────────┼───────────────┤
+│ test-feature-2 │ prod-dump │ redis  │ 3 minutes ago │ 2 minutes ago │
+└────────────────┴───────────┴────────┴───────────────┴───────────────┘
+
+$ sider db start test-feature-1 port=6380
+✨ Starting database test-feature-1 on port 6380 🚀
 ... I think I need feature 1 to always run on port 6380...
 .... ctrl + c ...
 
-$> sider db setconf test-feature-1 port=6380
+$ sider db setconf test-feature-1 port=6380
+Successfully stored settings on database test-feature-1
 
-$> sider db start test-feature-1
-✨ Starting db test-feature-1 on port 6380
-... More than 4 seconds elapse ...
-... What were the settings again?...
-.... ctrl + c ...
+$ sider db start test-feature-1
+✨ Starting database test-feature-1 on port 6380 🚀
 
-$> sider db list -s
-┌────────────────┬─────────────┬────────┬─────────────┬─────────────┬───────────────┐
-│ name           │ snapshot    │ engine │ created     │ last used   │ settings      │
-├────────────────┼─────────────┼────────┼─────────────┼─────────────┼───────────────┤
-│ test-feature-1 │ prod-180922 │ redis  │ a day ago   │ a day ago   │ port=6380     │
-│                │             │        │             │             │ version=4.0.1 │
-├────────────────┼─────────────┼────────┼─────────────┼─────────────┼───────────────┤
-│ test-feature-2 │ prod-180922 │ redis  │ 18 days ago │ 18 days ago │ port=6379     │
-│                │             │        │             │             │ version=3.2.6 │
-└────────────────┴─────────────┴────────┴─────────────┴─────────────┴───────────────┘
+<new terminal>
 
-$> sider snapshot empty postgres my-own-snapshot
+$ sider snapshot empty postgres test-data
+✨ Starting empty snapshot test-data on port 5432 🚀
 ...Set up a empty database with some schema...
 ...And insert some data...
 .... ctrl + c ...
 
-$ sider db start my-own-db my-own-snapshot
+$ sider db clone hope-it-works test-data
+✨ Successfully cloned database hope-it-works from snapshot test-data 🚀
+
+$ sider db start hope-it-works
+✨ Starting database hope-it-works on port 5432 🚀
+... ctrl + c ....
 
 ...Oh, I wrote the program but can't remember that command-line switch...
 $> sider help
