@@ -88,6 +88,11 @@ switch (subcommand) {
     break;
   }
 
+  case 'migrate': {
+    require('./migrations/check');
+    break;
+  }
+
   default:
     processArgv(rest);
 }

@@ -26,8 +26,8 @@ if (detectMigrationToV1_0_0()) {
 
     if (answer === 'n') {
       console.log('\nSkipping migration.\n');
-      console.log('Instructions for migrating manually is in the wiki:');
-      console.log('https://github.com/jonaslu/sider/wiki/Migrations')
+      console.log('You can run the migration manually later with');
+      console.log('sider migrate')
 
       process.exit(0);
     }
@@ -36,5 +36,6 @@ if (detectMigrationToV1_0_0()) {
     require('./v0.0.8-v1.0.0/index');
   });
 } else {
+  console.log("No migration needed");
   rl.close();
 }
