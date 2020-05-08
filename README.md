@@ -163,7 +163,7 @@ If there is some output from docker you're good to go.
 
 If there are any breaking changes a migration will be supplied during
 the upgrade process. You can (but are not advised) to opt out of the migration during upgrade.
-If you do then there's will be a way of migrating manually here: [migrations](#Migrating).
+If you do then there's will be a way of migrating manually here: [migrations](https://github.com/jonaslu/sider/wiki/Migrations).
 
 ## Installing tab-completion
 Type `sider install-completion` and tab-tab away to your hearts content.

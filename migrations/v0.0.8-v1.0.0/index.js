@@ -14,7 +14,7 @@ const rl = readline.createInterface({
 console.log(`About to start migration of contents in path ${baseDir}.\n`);
 
 console.log(`Just to be on the super-safe side of things:`);
-console.log(`You're adivsed to back up the contents in this folder,`);
+console.log(`You're advised to back up the contents in this folder,`);
 console.log(`or run git init && git add . && git commit -m "backup"`);
 console.log(`in that folder just in case.\n`);
 
