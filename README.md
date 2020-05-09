@@ -295,9 +295,10 @@ sider db start -p bug-fix port=1234
 You can later change or remove the persisted settings via `sider db setconf` and `sider db remconf`.
 
 ### Listing existing databases
-`sider db list`
+`sider db list [-s]`
 
-Lists the currently existing databases.
+Lists the currently existing databases. Flag `-s` shows the settings
+(default + overriden) for the database.
 
 ### Removing a database
 `sider db remove <name>`
