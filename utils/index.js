@@ -53,9 +53,9 @@ module.exports = {
     );
 
     if (foundCompletion) {
-      console.error(`${messagePrefix} ${chalk.red(name)} not found, did you mean ${chalk.green(foundCompletion)}?`);
+      console.error(`${chalk.red(messagePrefix)} ${chalk.yellow(name)} not found, did you mean ${chalk.cyanBright(foundCompletion)}?`);
     } else {
-      console.error(`${chalk.red(messagePrefix)} ${chalk.green(name)} not found`);
+      console.error(`${chalk.red(messagePrefix)} ${chalk.yellow(name)} not found`);
     }
 
     process.exit(1);
