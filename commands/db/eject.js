@@ -10,7 +10,7 @@ async function eject(dbName, ejectFolder) {
   }
 
   await dbs.ejectDb(db, ejectFolder);
-  console.log(chalk.green(`Successfully ejected files for database ${dbName} to path ${ejectFolder}`));
+  console.log(`${chalk.green(`Successfully`)} ejected files for database ${chalk.cyanBright(dbName)} to path ${chalk.cyanBright(ejectFolder)}`);
 }
 
 const usage = `
