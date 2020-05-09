@@ -4,6 +4,10 @@
 // Overhead
 // Rows
 
+const ansiRegex = require('ansi-regex');
+
+const allAnsiEscapeSequencesRegExp = ansiRegex();
+
 const minimumColumnWidth = 5;
 
 const tableFrameTopLeft = '┌';
@@ -30,12 +34,16 @@ const cellPadLength = tableCellLeftPad.length + tableCellRightPad.length;
 
 const output = process.stdout;
 
+function getTextWithoutAnsiEscapeCodes(text) {
+  return text.replace(allAnsiEscapeSequencesRegExp, '');
+}
+
 function findWidestCellsInRows(rows) {
   return rows.reduce(
     (acc, row) => {
       row.forEach((cellValue, rowIndex) => {
-        const cellValueLength = cellValue.length;
-        acc[rowIndex] = cellValueLength > acc[rowIndex] ? cellValueLength : acc[rowIndex];
+        const maxCellRowLength = Math.max(...cellValue.split('\n').map(cellRow => getTextWithoutAnsiEscapeCodes(cellRow).length));
+        acc[rowIndex] = maxCellRowLength > acc[rowIndex] ? maxCellRowLength : acc[rowIndex];
       });
 
       return acc;
@@ -46,9 +54,7 @@ function findWidestCellsInRows(rows) {
 
 function fitColumnWidthsToBoundingFrameWidth(boundingWidth, columnWidths) {
   const columnWidthSum = columnWidths.reduce((acc, columnWidth) => acc + columnWidth, 0);
-  const overhead =
-    columnWidths.length * (tableFrameMiddleLeft.length + tableCellLeftPad.length + tableCellRightPad.length) +
-    tableFrameMiddleRight.length;
+  const overhead = columnWidths.length * (tableFrameMiddleLeft.length + tableCellLeftPad.length + tableCellRightPad.length) + tableFrameMiddleRight.length;
 
   const rowWidth = columnWidthSum + overhead;
 
@@ -60,7 +66,7 @@ function fitColumnWidthsToBoundingFrameWidth(boundingWidth, columnWidths) {
   const numberOfCharsToRemove = rowWidth - boundingWidth;
   const columnsWiderThanMinimum = columnWidths.filter(cellWidth => cellWidth > minimumColumnWidth);
 
-  const widthPossibleToShrink = columnsWiderThanMinimum.reduce((acc, columnWidth) => (acc + columnWidth - minimumColumnWidth), 0);
+  const widthPossibleToShrink = columnsWiderThanMinimum.reduce((acc, columnWidth) => acc + columnWidth - minimumColumnWidth, 0);
   if (widthPossibleToShrink < numberOfCharsToRemove) {
     // We can't trim down enough to accommodate for bounding frame width
     // Return minimumColumnWidth or it's width - whatever is less
@@ -98,7 +104,7 @@ function fitColumnWidthsToBoundingFrameWidth(boundingWidth, columnWidths) {
     return {
       scaledWidth,
       totalCost,
-      costOfIncreaseWithOne
+      costOfIncreaseWithOne,
     };
   });
 
@@ -152,26 +158,71 @@ function printFrameRow(textWidths, leftEdge, line, separator, rightEdge) {
   output.write('\n');
 }
 
+const isFirstInStringAnAnsiEscapeSequenceRegExp = new RegExp(`^${ansiRegex({ onlyFirst: true }).source}`);
+
+function ellipsizeWithAnsiEscapeSequences(string, ellipsizeLength) {
+  let result = '';
+  let addedChars = 0;
+
+  while (addedChars < ellipsizeLength - 3) {
+    const isFirstInStringAnsiEscSequenceMatch = string.match(isFirstInStringAnAnsiEscapeSequenceRegExp);
+
+    if (isFirstInStringAnsiEscSequenceMatch) {
+      result += isFirstInStringAnsiEscSequenceMatch[0];
+      string = string.substring(isFirstInStringAnsiEscSequenceMatch[0].length);
+    } else {
+      result += string.charAt(0);
+      string = string.substring(1);
+      addedChars++;
+    }
+  }
+
+  result += '...';
+
+  while (string.length) {
+    const isFirstInStringAnsiEscSequenceMatch = string.match(ansiRegex({ onlyFirst: true }));
+
+    if (isFirstInStringAnsiEscSequenceMatch) {
+      result += isFirstInStringAnsiEscSequenceMatch[0];
+      string = string.substring(isFirstInStringAnsiEscSequenceMatch[0].length);
+    } else {
+      string = string.substring(1);
+    }
+  }
+
+  return result;
+}
+
 function padOrElipsize(columWidth, text) {
-  const textLength = text.length;
+  const textLength = getTextWithoutAnsiEscapeCodes(text).length;
   const paddedTextWidth = columWidth - textLength;
 
   if (paddedTextWidth < 0) {
-    return text.slice(0, paddedTextWidth).replace(/...$/, '...');
+    return ellipsizeWithAnsiEscapeSequences(text, columWidth);
   }
 
   return text + ' '.repeat(paddedTextWidth);
 }
 
-function printDataRow(row) {
-  output.write(cellEdge);
+function printDataRow(row, columnWidths) {
+  const rowsSplitOnNewline = row.map(cellValue => cellValue.split('\n'));
+  const tallestRow = Math.max(...rowsSplitOnNewline.map(newlineCell => newlineCell.length));
 
-  row.forEach(cellValue => {
-    output.write(tableCellLeftPad + cellValue + tableCellRightPad);
+  for (let i = 0; i < tallestRow; i++) {
     output.write(cellEdge);
-  });
 
-  output.write('\n');
+    rowsSplitOnNewline.forEach((newlineCell, columnIndex) => {
+      let cellValue = '';
+      if (i < newlineCell.length) {
+        cellValue = newlineCell[i];
+      }
+
+      output.write(tableCellLeftPad + padOrElipsize(columnWidths[columnIndex], cellValue) + tableCellRightPad);
+      output.write(cellEdge);
+    });
+
+    output.write('\n');
+  }
 }
 
 function printRows(data, columnWidths) {
@@ -180,24 +231,12 @@ function printRows(data, columnWidths) {
   printFrameRow(columnWidths, tableFrameTopLeft, tableFrameTopLine, tableFrameTopSeparator, tableFrameTopRight);
 
   init.forEach(row => {
-    printDataRow(row);
-    printFrameRow(
-      columnWidths,
-      tableFrameMiddleLeft,
-      tableFrameMiddleLine,
-      tableFrameMiddleSeparator,
-      tableFrameMiddleRight
-    );
+    printDataRow(row, columnWidths);
+    printFrameRow(columnWidths, tableFrameMiddleLeft, tableFrameMiddleLine, tableFrameMiddleSeparator, tableFrameMiddleRight);
   });
 
-  printDataRow(lastRow);
-  printFrameRow(
-    columnWidths,
-    tableFrameBottomLeft,
-    tableFrameBottomLine,
-    tableFrameBottomSeparator,
-    tableFrameBottomRight
-  );
+  printDataRow(lastRow, columnWidths);
+  printFrameRow(columnWidths, tableFrameBottomLeft, tableFrameBottomLine, tableFrameBottomSeparator, tableFrameBottomRight);
 }
 
 module.exports = {
@@ -212,29 +251,23 @@ module.exports = {
         } else {
           const rowArity = rowData.length;
           if (dataArity !== rowArity) {
-            throw new Error(
-              `Row does not have correct arity. Previous row(s) arity: ${dataArity} - this rows arity: ${rowArity}`
-            );
+            throw new Error(`Row does not have correct arity. Previous row(s) arity: ${dataArity} - this rows arity: ${rowArity}`);
           }
         }
 
         // Filter out undefineds here and make them empty strings
-        rowData = rowData.map(rowValue => (rowValue || ''));
+        rowData = rowData.map(rowValue => rowValue || '');
+
         data.push(rowData);
       },
-      display(preDisplayHook) {
+      display() {
         let columnWidths = findWidestCellsInRows(data);
         const terminalWidth = process.stdout.columns;
 
         columnWidths = fitColumnWidthsToBoundingFrameWidth(terminalWidth, columnWidths);
-        const processedText = data.map(row => row.map((cellValue, columnIndex) => padOrElipsize(columnWidths[columnIndex], cellValue)));
 
-        if (preDisplayHook) {
-          preDisplayHook(processedText);
-        }
-
-        printRows(processedText, columnWidths);
-      }
+        printRows(data, columnWidths);
+      },
     };
-  }
+  },
 };

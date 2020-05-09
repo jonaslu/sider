@@ -11,7 +11,7 @@ async function list() {
   const allSnapshots = await snapshots.getAllSnapshots();
   const snapshotListingsTable = table();
 
-  const headings = ['name', 'engine', 'created', 'cloned by'];
+  const headings = ['name', 'engine', 'created', 'cloned by'].map(heading => chalk.cyanBright(heading));
   snapshotListingsTable.addData(...headings);
 
   for (let i = 0; i<allSnapshots.length; i++) {
@@ -25,9 +25,7 @@ async function list() {
     snapshotListingsTable.addData(snapshotName, engineName, timeSinceCreated, clonedDbsStr);
   };
 
-  snapshotListingsTable.display(data => {
-    data[0] = data[0].map(heading => chalk.red(heading));
-  });
+  snapshotListingsTable.display();
 }
 
 const usage = `

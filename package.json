@@ -1,6 +1,7 @@
 {
   "bin": "./sider.js",
   "dependencies": {
+    "ansi-regex": "^5.0.0",
     "chalk": "^3.0.0",
     "fast-levenshtein": "^2.0.6",
     "fs-extra": "^8.1.0",

@@ -1,6 +1,12 @@
 const chalk = require('chalk');
 const { printUserErrorAndDie } = require('../utils');
 
+function formatRuntimeConfigValues(runtimeConfig) {
+  const sortedConfigKeys = Object.keys(runtimeConfig).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
+  return sortedConfigKeys.map(key => `${chalk.cyanBright(key)}=${runtimeConfig[key]}`);
+};
+
+
 module.exports = {
   parseRuntimeConfigKeyValues(config) {
     return config.reduce((acc, keyValue) => {
@@ -23,12 +29,8 @@ module.exports = {
     }, {});
   },
 
+  formatRuntimeConfigValues,
   printRuntimeConfigValues(runtimeConfig) {
-    // eslint-disable-next-line no-nested-ternary
-    const sortedConfigKeys = Object.keys(runtimeConfig).sort((a, b) => (a > b ? 1 : a === b ? 0 : -1));
-
-    sortedConfigKeys.forEach(key => {
-      console.log(`${chalk.cyanBright(key)}=${runtimeConfig[key]}`);
-    });
-  }
+    formatRuntimeConfigValues(runtimeConfig).forEach(value => console.log(value));
+  },
 };
