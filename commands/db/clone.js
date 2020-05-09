@@ -12,11 +12,11 @@ async function clone(dbName, snapshotName) {
 
   const dbExists = await dbs.getDb(dbName);
   if (dbExists) {
-    utils.printUserErrorAndDie(`Database ${chalk.green(dbName)} exists`);
+    utils.printUserErrorAndDie(`${chalk.yellow(dbName)} exists`);
   }
 
   await dbs.createDb(dbName, snapshot);
-  console.log(chalk.green(`✨ Successfully cloned database ${dbName} from snapshot ${snapshotName} 🚀`));
+  console.log(`${chalk.green(`Successfully`)} cloned database ${chalk.cyanBright(dbName)} from snapshot ${chalk.cyanBright(snapshotName)}`);
 }
 
 const usage = `
