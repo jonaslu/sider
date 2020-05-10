@@ -17,7 +17,7 @@ async function remconf(dbName, runtimeConfigKeys) {
   runtimeConfigKeys.forEach(runtimeConfigKey => {
     const keyExists = dbRuntimeConfigSpecKeys.indexOf(runtimeConfigKey) > -1;
     if (!keyExists) {
-      utils.printWarning(`Cannot remove parameter ${runtimeConfigKey} - not found in settings`);
+      utils.printWarning(`Cannot remove parameter ${chalk.yellow(runtimeConfigKey)} - not found in settings`);
     } else {
       delete runtimeConfigSpec[runtimeConfigKey];
       someRemoved = true;
