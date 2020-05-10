@@ -10,7 +10,7 @@ const utils = require('../../utils');
 async function addEmptySnapshot(engineName, snapshotName, cliRuntimeConfig, persist) {
   const snapshotExists = await snapshots.getSnapshot(snapshotName);
   if (snapshotExists) {
-    printUserErrorAndDie(`Snapshot ${snapshotName} already exists`);
+    printUserErrorAndDie(`Snapshot ${chalk.yellow(snapshotName)} already exists`);
   }
 
   const allEngineNames = await engines.getAllEngineNames();
@@ -23,16 +23,16 @@ async function addEmptySnapshot(engineName, snapshotName, cliRuntimeConfig, pers
   const engineRuntimeConfig = await storageEngine.getEngineRuntimeConfig(engineName);
   const snapshotRuntimeConfig = {
     ...engineRuntimeConfig.runtimeConfigSpec,
-    ...cliRuntimeConfig
+    ...cliRuntimeConfig,
   };
 
   const { port } = snapshotRuntimeConfig;
 
-  console.log(chalk.green(`✨ Starting empty snapshot ${snapshotName} on port ${port} 🚀`));
+  console.log(`${chalk.green(`Starting`)} empty snapshot ${chalk.cyanBright(snapshotName)} on port ${chalk.cyanBright(port)}`);
 
   const newSnapshot = await snapshots.createEmptySnapshot(snapshotName, engineName, snapshotRuntimeConfig);
 
-  console.log(chalk.green(`Successfully shut down empty snapshot ${chalk.blue(snapshotName)}`));
+  console.log(`${chalk.green(`Successfully`)} shut down empty snapshot ${chalk.cyanBright(snapshotName)}`);
 
   if (persist) {
     await snapshots.appendRuntimeConfig(newSnapshot, cliRuntimeConfig);
@@ -69,5 +69,5 @@ async function processArgv(argv = []) {
 }
 
 module.exports = {
-  processArgv
+  processArgv,
 };
