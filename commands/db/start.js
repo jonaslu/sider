@@ -18,7 +18,7 @@ async function start(dbName, cliRuntimeConfig, persist) {
 
   const snapshot = await snapshots.getSnapshot(snapshotName);
   if (!snapshot) {
-    utils.printInternalAndDie(`Cannot find specs file for for snapshot: ${snapshotName}`);
+    utils.printInternalAndDie(`Database snapshot ${chalk.yellow(snapshotName)} is not a valid snapshot`);
   }
 
   const engineRuntimeConfig = await storageEngine.getEngineRuntimeConfig(engineName);
@@ -34,14 +34,14 @@ async function start(dbName, cliRuntimeConfig, persist) {
   const { port } = dbRuntimeConfig;
   const dbStartTime = moment().format();
 
-  console.log(chalk.green(`✨ Starting database ${dbName} on port ${port} 🚀`));
+  console.log(`${chalk.green(`Starting`)} database ${chalk.cyanBright(dbName)} on port ${chalk.cyanBright(port)}`);
   try {
     await engines.start(engineName, dbName, dbFileFolder, dbRuntimeConfig);
   } catch (e) {
-    utils.internalErrorAndDie(`Could not start database ${dbName}`, e);
+    utils.internalErrorAndDie(`Could not start database ${chalk.yellow(dbName)}`, e);
   }
 
-  console.log(chalk.green(`Successfully shut down database ${chalk.blue(dbName)}`));
+  console.log(`${chalk.green(`Successfully`)} shut down database ${chalk.cyanBright(dbName)}`);
 
   if (persist) {
     await dbs.appendRuntimeConfig(db, cliRuntimeConfig);
