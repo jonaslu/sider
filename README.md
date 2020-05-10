@@ -31,7 +31,7 @@ sider help
 sider <tab><tab>
 ```
 
-Check the [wiki](/wiki)
+Check the [wiki](https://github.com/jonaslu/sider/wiki) - at least the [changelog](https://github.com/jonaslu/sider/wiki/Changelog) if you are upgrading.
 
 # Supported databases
 - Redis
@@ -160,8 +160,12 @@ If there is some output from docker you're good to go.
 `npm install -g @jonaslu/sider`
 
 If there are any breaking changes a migration will be supplied during
-the upgrade process. You can (but are not advised) to opt out of the migration during upgrade.
+the upgrade process.
+
+You can (but are not advised) to opt out of the migration during upgrade.
 If you do then there's will be a way of migrating manually here: [migrations](https://github.com/jonaslu/sider/wiki/Migrations).
+
+If you are upgrading, also read the [changelog](https://github.com/jonaslu/sider/wiki/Changelog).
 
 ## Installing tab-completion
 Type `sider install-completion` and tab-tab away to your hearts content.
