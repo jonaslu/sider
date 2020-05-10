@@ -12,11 +12,11 @@ async function remove(snapshotName) {
   }
 
   await snapshots.removeSnapshot(snapshotName);
-  console.log(`Successfully removed snapshot ${chalk.green(snapshotName)}`);
+  console.log(`${chalk.green(`Successfully`)} removed snapshot ${chalk.cyanBright(snapshotName)}`);
 
   const removedDbNames = await dbs.removeDbsForSnapshot(snapshotName);
   if (removedDbNames.length) {
-    console.log(`Removed cloned databases: ${chalk.green(removedDbNames.join(', '))}`);
+    console.log(`${chalk.green(`Successfully`)} removed cloned databases: ${chalk.cyanBright(removedDbNames.join(', '))}`);
   }
 }
 
