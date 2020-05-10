@@ -15,9 +15,7 @@ async function promote(dbName, snapshotName) {
   const snapshotExists = allSnapshots.some(snapshotname => snapshotname === snapshotName);
 
   if (snapshotExists) {
-    utils.printUserErrorAndDie(
-      `Cannot promote ${chalk.red(dbName)}, snapshot ${chalk.green(snapshotName)} already exists`
-    );
+    utils.printUserErrorAndDie(`Cannot promote ${chalk.yellow(dbName)}, snapshot ${chalk.cyanBright(snapshotName)} already exists`);
   }
 
   const { engineName, dbFileFolder } = db;
@@ -25,7 +23,7 @@ async function promote(dbName, snapshotName) {
 
   await snapshots.createImportSnapshot(snapshotName, engine, engineName, dbFileFolder);
 
-  console.log(`Successfully promoted ${chalk.blue(dbName)} to snapshot ${chalk.green(snapshotName)}`);
+  console.log(`${chalk.green(`Successfully`)} promoted ${chalk.cyanBright(dbName)} to snapshot ${chalk.cyanBright(snapshotName)}`);
 }
 
 const usage = `
@@ -49,5 +47,5 @@ async function processArgv(argv = []) {
 }
 
 module.exports = {
-  processArgv
+  processArgv,
 };
