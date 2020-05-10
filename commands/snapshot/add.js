@@ -9,14 +9,12 @@ const utils = require('../../utils');
 async function addSnapshot(engineName, snapshotName, dumpBasePath, cliRuntimeConfig) {
   const dumpBasePathExists = await fsExtra.pathExists(dumpBasePath);
   if (!dumpBasePathExists) {
-    utils.printUserErrorAndDie(
-      `Cannot add snapshot. Path ${dumpBasePath} does not exist`
-    );
+    utils.printUserErrorAndDie(`Cannot add snapshot. Path ${chalk.yellow(dumpBasePath)} does not exist.`);
   }
 
   const snapshotExists = await snapshots.getSnapshot(snapshotName);
   if (snapshotExists) {
-    utils.printUserErrorAndDie(`Snapshot ${snapshotName} already exists`);
+    utils.printUserErrorAndDie(`Snapshot ${chalk.yellow(snapshotName)} already exists`);
   }
 
   const engine = await engines.getEngine(engineName);
@@ -24,16 +22,11 @@ async function addSnapshot(engineName, snapshotName, dumpBasePath, cliRuntimeCon
     utils.didYouMean(engineName, await engines.getAllEngineNames(), `Engine`);
   }
 
-  const snapshot = await snapshots.createImportSnapshot(
-    snapshotName,
-    engine,
-    engineName,
-    dumpBasePath
-  );
+  const snapshot = await snapshots.createImportSnapshot(snapshotName, engine, engineName, dumpBasePath);
 
-  await snapshots.appendRuntimeConfig(snapshot, cliRuntimeConfig)
+  await snapshots.appendRuntimeConfig(snapshot, cliRuntimeConfig);
 
-  console.log(`Successfully added snapshot ${chalk.green(snapshotName)}`);
+  console.log(`${chalk.green(`Successfully`)} added snapshot ${chalk.cyanBright(snapshotName)}`);
 }
 
 const usage = `
@@ -63,5 +56,5 @@ async function processArgv(argv = []) {
 }
 
 module.exports = {
-  processArgv
+  processArgv,
 };
