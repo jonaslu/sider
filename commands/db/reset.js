@@ -11,7 +11,7 @@ async function reset(dbName) {
 
   await dbs.resetDb(db);
 
-  console.log(`Successfully reset ${chalk.green(dbName)}`);
+  console.log(`${chalk.green(`Successfully`)} reset ${chalk.cyanBright(dbName)}`);
 }
 
 const usage = `
