@@ -1,8 +1,10 @@
+const chalk = require('chalk');
+
 const utils = require('../../utils');
 const snapshots = require('../../storage/snapshots');
 const config = require('../../runtime/config');
 
-async function getconf(snapshotName) {
+async function getConf(snapshotName) {
   const snapshot = await snapshots.getSnapshot(snapshotName);
   if (!snapshot) {
     utils.didYouMean(snapshotName, await snapshots.getAllSnapshotNames(), 'Snapshot');
@@ -10,8 +12,7 @@ async function getconf(snapshotName) {
 
   const { runtimeConfigSpec } = snapshot;
   if (Object.keys(runtimeConfigSpec).length === 0) {
-    // !! TODO !! Make coloring consistent
-    console.log('No config set');
+    console.log(`No config set on ${chalk.cyanBright(snapshotName)}`);
     return;
   }
 
@@ -21,7 +22,7 @@ async function getconf(snapshotName) {
 const usage = `
 Usage: sider snapshot getconf [options] <name>
 
-Displays runtime config for an engine
+Displays runtime config for a snapshot
 
 Options:
   -h, --help     output usage information
@@ -31,8 +32,7 @@ async function processArgv(argv = []) {
   utils.printUsageIfHelp(argv, usage);
 
   const [snapshotName] = argv;
-
-  return getconf(snapshotName);
+  return getConf(snapshotName);
 }
 
 module.exports = {

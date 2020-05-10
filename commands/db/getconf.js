@@ -1,3 +1,5 @@
+const chalk = require('chalk');
+
 const dbs = require('../../storage/db');
 const utils = require('../../utils');
 const config = require('../../runtime/config')
@@ -10,7 +12,7 @@ async function getConf(dbName) {
 
   const { runtimeConfigSpec } = db;
   if (Object.keys(runtimeConfigSpec).length === 0) {
-    console.log('No config set');
+    console.log(`No config set on ${chalk.cyanBright(dbName)}`);
     return;
   }
 
