@@ -4,10 +4,14 @@ if ! git diff-index --quiet HEAD -- ; then
   exit 1
 fi
 
-NPM_VERSION=$(node -e "console.log(require('./package.json').version)")
-SIDER_VERSION=$(node sider.js version)
+SIDER_VERSION="v$(node sider.js version)"
 
-if [ $NPM_VERSION != $SIDER_VERSION ]; then
-  echo "NPM and sider -V differs"
+if ! git tag "${SIDER_VERSION}"; then
+  echo "Could not create tag ${SIDER_VERSION}"
   exit 1
+fi
+
+if ! git push origin "${SIDER_VERSION}"; then
+  echo "Could not push tag ${SIDER_VERSION} to origin"
+  exit 1;
 fi
