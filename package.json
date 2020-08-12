@@ -10,8 +10,8 @@
     "untildify": "4.0.0"
   },
   "name": "@jonaslu/sider",
-  "version": "1.0.0",
-  "description": "Sider - database dumps made tolerable",
+  "version": "1.1.0",
+  "description": "A cli for running and restoring multiple databases locally",
   "main": "sider.js",
   "repository": {
     "type": "git",
@@ -37,12 +37,16 @@
     "lint"
   ],
   "keywords": [
-    "cli",
-    "docker",
+    "database",
+    "vcs",
+    "source control",
+    "backups",
     "redis",
-    "dump.rdb",
-    "dumps",
-    "management"
+    "mariadb",
+    "mongodb",
+    "postgre",
+    "postgres",
+    "postgresql"
   ],
   "author": "Jonas Lundberg",
   "license": "MIT"
