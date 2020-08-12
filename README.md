@@ -21,6 +21,8 @@ at the same time and when I did destroy some crucial
 data I wanted to quickly revert to the fetched dump being able
 to start over again.
 
+There's a bit more non-essential background and history [here](https://www.iamjonas.me/2020/05/sider-10-ode-to-yak-shaving.html).
+
 # For the impatient and brave
 Say to yourself: "I have docker installed" three times.
 
