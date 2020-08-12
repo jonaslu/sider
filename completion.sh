@@ -1,4 +1,4 @@
-__sider_engines="redis mariadb postgres"
+__sider_engines="redis mariadb postgres mongodb"
 
 # Returns the .siderrc (or default) basePath
 __sider_get_base_path() {

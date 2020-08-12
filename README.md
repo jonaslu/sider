@@ -39,6 +39,7 @@ Check the [wiki](https://github.com/jonaslu/sider/wiki) - at least the [changelo
 - Redis
 - Postgres
 - Mariadb
+- Mongodb
 
 # Common use case scenario:
 Here's a every day usage scenario to get your appetite up:
@@ -135,6 +136,7 @@ Is the supported database types - currently:
 - Redis
 - Postgres
 - Mariadb
+- Mongodb
 
 ## Runtime settings
 Settings are applied when running a database and controls
@@ -205,7 +207,7 @@ Removes one or more settings on an engine reverting back to the defaults.
 Snapshots are dumps exported from another database.
 The canonical example is getting a dump from production to work on some bug locally.
 
-Redis accepts dump.rdb files, postgres and mariadb
+Redis accepts dump.rdb files, postgres, mariadb and mongodb
 accepts the contents of the data-dir.
 
 See the [wiki](https://github.com/jonaslu/sider/wiki/Copy-a-live-postgres-database)
