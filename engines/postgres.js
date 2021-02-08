@@ -18,10 +18,16 @@ module.exports = {
     };
   },
   start(dbPath, dbName, runtimeConfig) {
-    const { port } = runtimeConfig;
+    const { port, password } = runtimeConfig;
+
+    let passOrTrustSettings = ['-e', 'POSTGRES_HOST_AUTH_METHOD=trust'];
+    if (password) {
+      passOrTrustSettings = ['-e', `POSTGRES_PASSWORD=${password}`];
+    }
 
     // prettier-ignore
     const dockerArgs = [
+      ...passOrTrustSettings,
       '-v',
       `${dbPath}:/var/lib/postgresql/data`,
       '-p',
