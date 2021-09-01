@@ -220,5 +220,14 @@ The contents may have been corrupted. Try removing and cloning out the snapshot 
     } catch (e) {
       internalErrorAndDie(`Could not eject ${dbName} to path ${ejectFullPath}`, e);
     }
+  },
+
+  // Expects verified that newName does not overwrite an existing db
+  async renameDb(db, newName) {
+    const { dbName } = db;
+    const oldDbPath = path.join(dbsStoragePath, dbName);
+    const newDbPath = path.join(dbsStoragePath, newName)
+
+    return fsExtra.rename(oldDbPath, newDbPath)
   }
 };

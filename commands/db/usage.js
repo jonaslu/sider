@@ -12,6 +12,7 @@ Commands:
   clone       clones a database from a snapshot
   eject       ejects the files stored in the database
   list        lists all existing databases
+  mv          renames (moves) a database
   promote     promotes a database to a new snapshot
   remove      removes a database
   reset       resets a database (clones the snapshot files anew)
@@ -34,7 +35,8 @@ const knownCommands = [
   'eject',
   'getconf',
   'setconf',
-  'remconf'
+  'remconf',
+  'mv'
 ];
 
 function getCommandFile(subcommand) {
