@@ -10,6 +10,8 @@ const runtime = require('../../runtime/config');
 const { table } = require('../../list/table');
 
 async function getSettings(db) {
+  console.log("called")
+
   const { snapshotName, engineName } = db;
 
   const snapshot = await snapshots.getSnapshot(snapshotName);
@@ -41,20 +43,26 @@ async function list(displaySettings) {
     headings.push(chalk.cyanBright('settings'));
   }
 
+  console.log(settings);
   dbListingTable.addData(...headings);
 
   allDbs.forEach((db, index) => {
-    const { dbName, snapshotName, engineName, fstats: { created, lastUsed }} = db;
+    const {
+      dbName,
+      snapshotName,
+      engineName,
+      fstats: { created, lastUsed },
+    } = db;
     const timeSinceCreated = moment(created).from(moment());
 
     let timeSinceLastUsed = 'never';
-    if (lastUsed){
+    if (lastUsed) {
       timeSinceLastUsed = moment(lastUsed).from(moment());
     }
 
     if (settings) {
-      settings = runtime.formatRuntimeConfigValues(settings[index]);
-      dbListingTable.addData(dbName, snapshotName, engineName, timeSinceCreated, timeSinceLastUsed, settings.join('\n'));
+      const formattedSettings = runtime.formatRuntimeConfigValues(settings[index]);
+      dbListingTable.addData(dbName, snapshotName, engineName, timeSinceCreated, timeSinceLastUsed, formattedSettings.join('\n'));
     } else {
       dbListingTable.addData(dbName, snapshotName, engineName, timeSinceCreated, timeSinceLastUsed);
     }
@@ -82,5 +90,5 @@ async function processArgv(argv = []) {
 }
 
 module.exports = {
-  processArgv
+  processArgv,
 };
