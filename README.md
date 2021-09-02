@@ -331,6 +331,13 @@ Any settings applied to database are kept even if it's reset.
 
 **Example:** `sider db reset bug-fix`
 
+### Rename a database
+`sider db mv <name>`
+
+Renames a database to a new name.
+
+**Example** `sider db mv bug-fix feature`
+
 ### Ejecting a database
 `sider db eject <name> <eject-path>`
 
