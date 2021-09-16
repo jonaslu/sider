@@ -222,12 +222,29 @@ The contents may have been corrupted. Try removing and cloning out the snapshot 
     }
   },
 
-  // Expects verified that newName does not overwrite an existing db
-  async renameDb(db, newName) {
-    const { dbName } = db;
+  // Expects verified that dbName exists and that
+  // newName does not overwrite an existing db
+  async renameDb(dbName, newName) {
     const oldDbPath = path.join(dbsStoragePath, dbName);
-    const newDbPath = path.join(dbsStoragePath, newName)
+    const newDbPath = path.join(dbsStoragePath, newName);
 
-    return fsExtra.rename(oldDbPath, newDbPath)
-  }
+    return fsExtra.rename(oldDbPath, newDbPath);
+  },
+
+  // Expects at least one db to have the snapshot
+  // as it's parent and that the newName does
+  // not exist (yet).
+  async renameSnapshotOnDbs(snapshotName, newName) {
+    const allDbs = await this.getAllDbs();
+    await Promise.all(
+      allDbs.map(db => {
+        if (db.snapshotName === snapshotName) {
+          db.snapshotName = newName;
+          return writeDbToSpecFile(db);
+        }
+
+        return Promise.resolve()
+      })
+    );
+  },
 };

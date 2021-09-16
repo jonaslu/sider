@@ -8,18 +8,18 @@ async function move(dbName, newName) {
     utils.printUserErrorAndDie(`${chalk.yellow(dbName)} source and destination names are the same`);
   }
 
-  const oldDb = await dbs.getDb(dbName);
-  if (!oldDb) {
-    utils.printUserErrorAndDie(`${chalk.yellow(dbName)} does not exist`);
+  const allDbs = await dbs.getAllDbNames();
+  const oldDbExists = allDbs.some(name => name === dbName)
+  if (!oldDbExists) {
+    utils.didYouMean(dbName, allDbs ,'Database');
   }
 
-  const allExistingDbs = await dbs.getAllDbNames()
-  const newDbAlreadyExists = allExistingDbs.some(name => name === newName)
+  const newDbAlreadyExists = allDbs.some(name => name === newName)
   if (newDbAlreadyExists) {
     utils.printUserErrorAndDie(`${chalk.yellow(newName)} already exist`);
   }
 
-  await dbs.renameDb(oldDb, newName);
+  await dbs.renameDb(dbName, newName);
   console.log(`${chalk.green(`Successfully`)} renamed database ${chalk.cyanBright(dbName)} to snapshot ${chalk.cyanBright(newName)}`);
 }
 
@@ -35,13 +35,13 @@ Options:
 async function processArgv(argv = []) {
   utils.printUsageIfHelp(argv, usage);
 
-  const [dbName, snapshotName] = argv;
+  const [dbName, newName] = argv;
 
-  if (!snapshotName) {
+  if (!newName) {
     utils.printUserErrorAndDie(`Missing the name of the database to rename (parameter <name>)`);
   }
 
-  return move(dbName, snapshotName);
+  return move(dbName, newName);
 }
 
 module.exports = {
