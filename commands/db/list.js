@@ -10,8 +10,6 @@ const runtime = require('../../runtime/config');
 const { table } = require('../../list/table');
 
 async function getSettings(db) {
-  console.log("called")
-
   const { snapshotName, engineName } = db;
 
   const snapshot = await snapshots.getSnapshot(snapshotName);
@@ -43,7 +41,6 @@ async function list(displaySettings) {
     headings.push(chalk.cyanBright('settings'));
   }
 
-  console.log(settings);
   dbListingTable.addData(...headings);
 
   allDbs.forEach((db, index) => {
@@ -53,6 +50,7 @@ async function list(displaySettings) {
       engineName,
       fstats: { created, lastUsed },
     } = db;
+
     const timeSinceCreated = moment(created).from(moment());
 
     let timeSinceLastUsed = 'never';
