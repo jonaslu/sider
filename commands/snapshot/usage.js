@@ -12,6 +12,7 @@ Commands:
   add         adds a snapshot from disk
   empty       starts and then saves an empty snapshot
   list        lists all existing snapshots
+  mv          renames (moves) a snapshot
   remove      removes a snapshot and it's cloned databases
 
   getconf     displays runtime config for an engine
@@ -21,7 +22,7 @@ Commands:
   help [cmd]  display help for [cmd]
 `;
 
-const knownCommands = ['add', 'empty', 'getconf', 'list', 'remconf', 'remove', 'setconf'];
+const knownCommands = ['add', 'empty', 'getconf', 'list', 'mv', 'remconf', 'remove', 'setconf'];
 
 function getCommandFile(subcommand) {
   const commandFound = knownCommands.find(command => command === subcommand);

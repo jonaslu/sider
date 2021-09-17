@@ -197,5 +197,14 @@ Has the contents been tampered with?`,
     } catch (e) {
       internalErrorAndDie(`Error persisting new runtime config to file ${snapshot.snapshotSpecsFile}`, e);
     }
-  }
+  },
+
+  // Expects snapshotName to exist and newName
+  // to not exist (yet)
+  async moveSnapshot(snapshotName, newName) {
+    const oldSnapshotPath = path.join(snapshotsStoragePath, snapshotName);
+    const newSnapshotPath = path.join(snapshotsStoragePath, newName);
+
+    return fsExtra.rename(oldSnapshotPath, newSnapshotPath);
+  },
 };
