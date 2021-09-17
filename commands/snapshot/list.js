@@ -31,7 +31,7 @@ async function list() {
 const usage = `
 Usage: sider snapshot list [options]
 
-lists all existing snapshots
+Lists all existing snapshots
 
 Options:
   -h, --help     output usage information

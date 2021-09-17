@@ -72,7 +72,7 @@ async function list(displaySettings) {
 const usage = `
 Usage: sider db list [options]
 
-lists all existing databases
+Lists all existing databases
 
 Options:
   -s, --settings  include db settings in listing
