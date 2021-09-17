@@ -16,11 +16,11 @@ async function move(dbName, newName) {
 
   const newDbAlreadyExists = allDbs.some(name => name === newName)
   if (newDbAlreadyExists) {
-    utils.printUserErrorAndDie(`${chalk.yellow(newName)} already exist`);
+    utils.printUserErrorAndDie(`${chalk.yellow(newName)} already exists`);
   }
 
   await dbs.renameDb(dbName, newName);
-  console.log(`${chalk.green(`Successfully`)} renamed database ${chalk.cyanBright(dbName)} to snapshot ${chalk.cyanBright(newName)}`);
+  console.log(`${chalk.green(`Successfully`)} renamed database ${chalk.cyanBright(dbName)} to ${chalk.cyanBright(newName)}`);
 }
 
 const usage = `
@@ -38,7 +38,7 @@ async function processArgv(argv = []) {
   const [dbName, newName] = argv;
 
   if (!newName) {
-    utils.printUserErrorAndDie(`Missing the name of the database to rename (parameter <name>)`);
+    utils.printUserErrorAndDie(`Missing the new name of the database (parameter <new-name>)`);
   }
 
   return move(dbName, newName);
