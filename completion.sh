@@ -47,7 +47,7 @@ __sider_snapshot() {
   local argvlen="${#argv[@]}"
 
   if [ $argvlen = 1 ]; then
-    COMPREPLY=( $(compgen -W "add empty list remove getconf setconf remconf help" -- "${argv[0]}") )
+    COMPREPLY=( $(compgen -W "add empty list mv remove getconf setconf remconf help" -- "${argv[0]}") )
     return 0
   fi
 
@@ -58,7 +58,7 @@ __sider_snapshot() {
         return 0
       fi
 
-      COMPREPLY=( $(compgen -W "add empty list remove getconf setconf remconf" -- "${argv[1]}") )
+      COMPREPLY=( $(compgen -W "add empty list mv remove getconf setconf remconf" -- "${argv[1]}") )
       ;;
 
     add)
@@ -80,6 +80,15 @@ __sider_snapshot() {
 
       if [ $argvlen = 3 ] && [ ${argv[1]} = "-p" ]; then
         COMPREPLY=( $(compgen -W "${__sider_engines}" -- "${argv[2]}") )
+      fi
+      ;;
+
+    mv)
+      local result
+      __sider_get_completions_for "snapshots"
+
+      if [ $argvlen = 2 ]; then
+        COMPREPLY=( $(compgen -W "-h --help ${result}" -- "${argv[1]}") )
       fi
       ;;
 
