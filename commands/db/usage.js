@@ -61,7 +61,7 @@ async function processArgv(argv = []) {
         printUsageAndExit(usage);
       }
 
-      getCommandFile(helpCommand).processArgv();
+      getCommandFile(helpCommand).processArgv(['-h']);
       break;
     }
 
