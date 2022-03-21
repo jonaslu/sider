@@ -14,9 +14,9 @@ __sider_get_completions_for() {
   local basePath
   __sider_get_base_path
 
-  local typePath="${basePath/#\~/$HOME}/$type/*"
+  local typePath="${basePath/#\~/$HOME}/$type/*/specs.json"
 
-  result=$(find $typePath -type d -prune -printf "%f " 2> /dev/null)
+  result=$(find $typePath -type f -prune -printf "%h\n" | xargs -I% basename %  2> /dev/null)
 }
 
 __sider_engine() {

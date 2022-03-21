@@ -32,7 +32,7 @@ async function writeSnapshotToSpecFile(snapshot) {
   delete shallowCopy.dbSpecsFile;
 
   return fsExtra.writeJSON(snapshot.snapshotSpecsFile, shallowCopy, {
-    spaces: 2
+    spaces: 2,
   });
 }
 
@@ -58,12 +58,12 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
   const snapshotSaveValues = {
     engineName,
     fstats: { created: moment().format() },
-    runtimeConfigSpec: {}
+    runtimeConfigSpec: {},
   };
 
   try {
     await fsExtra.writeJSON(snapshotSpecsFile, snapshotSaveValues, {
-      spaces: 2
+      spaces: 2,
     });
   } catch (e) {
     await cleanUpBeforeExit();
@@ -77,7 +77,7 @@ async function createSnapshot(snapshotName, engineName, loadFilesCb) {
     snapshotName,
     snapshotFileFolder,
     snapshotSpecsFile,
-    ...snapshotSaveValues
+    ...snapshotSaveValues,
   };
 }
 
@@ -93,6 +93,11 @@ module.exports = {
     const snapshotFileFolder = path.join(snapshotsBasePath, snapshotFilesFolder);
     const snapshotSpecsFile = path.join(snapshotsBasePath, specsFileName);
 
+    const specFileExists = await fsExtra.pathExists(snapshotSpecsFile);
+    if (!specFileExists) {
+      return undefined;
+    }
+
     try {
       const snapshotSpecsContents = await fsExtra.readJSON(snapshotSpecsFile, 'utf-8');
 
@@ -101,7 +106,7 @@ module.exports = {
           snapshotName,
           snapshotFileFolder,
           snapshotSpecsFile,
-          ...snapshotSpecsContents
+          ...snapshotSpecsContents,
         };
       }
     } catch (e) {
@@ -117,7 +122,22 @@ Has the contents been tampered with?`,
   async getAllSnapshotNames() {
     const anySnapshotExists = await fsExtra.pathExists(snapshotsStoragePath);
     if (anySnapshotExists) {
-      return fsExtra.readdir(snapshotsStoragePath);
+      const storageDirectories = await fsExtra.readdir(snapshotsStoragePath);
+
+      const snapshotsWithSpecsFiles = [];
+
+      const checkSpecsFileExistenceFn = async storageDirectory => {
+        const specsFileLocation = path.join(snapshotsStoragePath, storageDirectory, specsFileName);
+        const specsFileExists = await fsExtra.pathExists(specsFileLocation);
+
+        if (specsFileExists) {
+          snapshotsWithSpecsFiles.push(storageDirectory);
+        }
+      };
+
+      await Promise.all(storageDirectories.map(storageDirectory => checkSpecsFileExistenceFn(storageDirectory)));
+
+      return snapshotsWithSpecsFiles;
     }
 
     return [];
@@ -179,7 +199,7 @@ Has the contents been tampered with?`,
   async appendRuntimeConfig(snapshot, newCliRuntimeConfig) {
     snapshot.runtimeConfigSpec = {
       ...snapshot.runtimeConfigSpec,
-      ...newCliRuntimeConfig
+      ...newCliRuntimeConfig,
     };
 
     try {
