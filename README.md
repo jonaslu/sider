@@ -376,7 +376,9 @@ Sider can be configured by adding a .siderrc to your home-folder. The .siderrc
 is a json-file. You can set the following values and will default to these
 if you don't:
 ```
-basePath: '~/.sider',
+{
+  "basePath": "~/.sider"
+}
 ```
 
 Base path is the top folder where sider keeps all of it's snapshots, dbs
