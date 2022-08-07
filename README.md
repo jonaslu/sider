@@ -1,6 +1,8 @@
 # Elevator pitch
 Sider is a command-line tool for running and restoring multiple databases locally.
 
+![The-power-of-sider](/assets/the-power-of-sider.gif?raw=true)
+
 # Longer story
 Sider was born out of frustration of often fetching a production-dump,
 starting it up locally and then accidentally destroying it whilst debugging and having to do
