@@ -1,31 +1,44 @@
 const path = require('path');
-const nconf = require('nconf');
+const fsExtra = require('fs-extra');
+const { exit } = require('process');
 const untildify = require('untildify');
 
 function ensureFolder(folder) {
   return folder.endsWith(path.sep) ? folder : path.join(folder, path.sep);
 }
 
-const siderPath = process.env.SIDERRC || '~./siderrc';
+const siderPath = process.env.SIDERRC || '~/.siderrc';
 const siderRcPath = untildify(siderPath);
 
-nconf.file({ file: siderRcPath }).defaults({
+let siderRcSettings = {
   basePath: '~/.sider',
   snapshotsFolder: 'snapshots/',
   dbsFolder: 'dbs/',
   engineFolder: 'engines/',
-});
+}
 
-const nconfBaseDir = nconf.get('basePath');
+try {
+  siderRcSettings = {
+    ...siderRcSettings,
+    ...fsExtra.readJSONSync(siderRcPath)
+  }
+} catch (e) {
+  if (e.code !== 'ENOENT') {
+    console.error(`Could not read rcfile ${siderRcPath}`, e);
+    exit(1);
+  }
+}
+
+const nconfBaseDir = siderRcSettings.basePath;
 const baseDir = ensureFolder(nconfBaseDir);
 
-const snapshotsFolder = ensureFolder(nconf.get('snapshotsFolder'))
+const snapshotsFolder = ensureFolder(siderRcSettings.snapshotsFolder)
 const snapshotsFullPath = `${baseDir}${snapshotsFolder}`;
 
-const dbFolder = ensureFolder(nconf.get('dbsFolder'));
+const dbFolder = ensureFolder(siderRcSettings.dbsFolder);
 const dbsFullPath = `${baseDir}${dbFolder}`;
 
-const engineFolder = ensureFolder(nconf.get('engineFolder'));
+const engineFolder = ensureFolder(siderRcSettings.engineFolder);
 const enginesFullPath = `${baseDir}${engineFolder}`;
 
 const snapshotsStoragePath = untildify(snapshotsFullPath);
