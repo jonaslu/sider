@@ -1,4 +1,4 @@
-const nconf = require('nconf');
+const fsExtra = require('fs-extra');
 const path = require('path');
 const untildify = require('untildify');
 
@@ -9,20 +9,21 @@ function ensureFolder(folder) {
 }
 
 const siderRcPath = untildify('~/.siderrc');
+let siderRcSettings = { basePath: "~/.sider" }
 
 try {
-  nconf.file({ file: siderRcPath }).defaults({
-    basePath: '~/.sider'
-  });
+    siderRcSettings = { 
+        ...siderRcSettings,
+        ...fsExtra.readJSONSync(siderRcPath)
+    }
 } catch (e) {
-  internalErrorAndDie(
-    `Error trying to read the .siderrc file at path ${siderRcPath}`,
-    e
-  );
+    if (e.code !== 'ENOENT') {
+        internalErrorAndDie(`Could not read rcfile ${siderRcPath}`, e);
+    }
 }
 
-const nconfBaseDir = untildify(nconf.get('basePath'));
-const baseDir = ensureFolder(nconfBaseDir);
+const siderBaseDir = untildify(siderRcSettings.basePath);
+const baseDir = ensureFolder(siderBaseDir);
 
 const snapshotsStoragePath = `${baseDir}${ensureFolder('snapshots/')}`;
 const dbsStoragePath = `${baseDir}${ensureFolder('dbs/')}`;
