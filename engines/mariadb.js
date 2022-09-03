@@ -16,7 +16,8 @@ module.exports = {
   },
   getConfig() {
     return {
-      port: 3306
+      port: 3306,
+      version: 'latest'
     };
   },
   // !! TODO !!
@@ -26,7 +27,7 @@ module.exports = {
   the parameters).
   */
   start(dbPath, dbName, runtimeConfig) {
-    const { port, password } = runtimeConfig;
+    const { port, password, version } = runtimeConfig;
 
     const dockerArgs = ['-v', `${dbPath}:/var/lib/mysql`, '-p', `${port}:3306`];
 
@@ -42,7 +43,7 @@ module.exports = {
       dockerArgs.push('-e', 'MYSQL_ALLOW_EMPTY_PASSWORD=yes');
     }
 
-    const dockerImageAndCommand = ['mariadb'];
+    const dockerImageAndCommand = [`mariadb:${version}`];
 
     return runDb(dbName, dockerArgs, dockerImageAndCommand);
   },
