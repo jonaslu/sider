@@ -5,7 +5,7 @@
     "chalk": "3.0.0",
     "fast-levenshtein": "2.0.6",
     "fs-extra": "8.1.0",
-    "moment": "2.24.0",
+    "moment": "2.29.4",
     "untildify": "4.0.0"
   },
   "name": "@jonaslu/sider",
