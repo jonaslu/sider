@@ -15,15 +15,11 @@ module.exports = {
   getConfig() {
     return {
       port: 27017,
+      version: 'latest'
     };
   },
   start(dbPath, dbName, runtimeConfig) {
-    const { port } = runtimeConfig;
-    let { version } = runtimeConfig;
-
-    if (!version) {
-      version = 'latest';
-    }
+    const { port, version } = runtimeConfig;
 
     const dockerArgs = ['-v', `${dbPath}:/data/db`, '-p', `${port}:27017`];
     const dockerImageAndCommand = [`mongo:${version}`];

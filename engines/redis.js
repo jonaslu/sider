@@ -27,16 +27,12 @@ module.exports = {
   },
   getConfig() {
     return {
-      port: 6379
+      port: 6379,
+      version: 'latest'
     };
   },
   start(dbPath, dbName, runtimeConfig) {
-    const { port } = runtimeConfig;
-    let { version } = runtimeConfig;
-
-    if (!version) {
-      version = 'latest';
-    }
+    const { port, version } = runtimeConfig;
 
     const dockerArgs = ['-v', `${dbPath}:/data`, '-p', `${port}:6379`];
     const dockerImageAndCommand = [`redis:${version}`, 'redis-server'];

@@ -14,7 +14,8 @@ module.exports = {
   },
   getConfig() {
     return {
-      port: 5432
+      port: 5432,
+      version: 'latest'
     };
   },
   start(dbPath, dbName, runtimeConfig) {
@@ -33,10 +34,6 @@ module.exports = {
       '-p',
       `${port}:5432`
     ];
-
-    if (!version) {
-      version = 'latest';
-    }
 
     const dockerImageAndCommand = [`postgres:${version}`,'postgres'];
 
