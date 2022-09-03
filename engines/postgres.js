@@ -18,7 +18,7 @@ module.exports = {
     };
   },
   start(dbPath, dbName, runtimeConfig) {
-    const { port, password } = runtimeConfig;
+    const { port, password, version } = runtimeConfig;
 
     let passOrTrustSettings = ['-e', 'POSTGRES_HOST_AUTH_METHOD=trust'];
     if (password) {
@@ -33,7 +33,12 @@ module.exports = {
       '-p',
       `${port}:5432`
     ];
-    const dockerImageAndCommand = ['postgres'];
+
+    if (!version) {
+      version = 'latest';
+    }
+
+    const dockerImageAndCommand = [`postgres:${version}`,'postgres'];
 
     return runDb(dbName, dockerArgs, dockerImageAndCommand);
   }
