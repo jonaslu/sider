@@ -11,7 +11,7 @@ async function remConf(engineName, runtimeConfigKeys) {
   }
 
   const runtimeConfigSpec = await storageEngine.getEngineRuntimeConfigSpec(engineName);
-  const engineRuntimeConfigSpecKeys = Object.keys(runtimeConfigSpec);
+  const engineRuntimeConfigSpecKeys = Object.keys(runtimeConfigSpec || {});
 
   let someRemoved = false;
 
