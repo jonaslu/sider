@@ -14,9 +14,17 @@ __sider_get_completions_for() {
   local basePath
   __sider_get_base_path
 
-  local typePath="${basePath/#\~/$HOME}/$type/*/specs.json"
+  # TODO If we don't find any files, do exit
 
-  result=$(find $typePath -type f -prune -printf "%h\n" | xargs -I% basename %  2> /dev/null)
+  local typePath="${basePath/#\~/$HOME}/$type/*/specs.json"
+  local files=$(find $typePath -type f -prune -printf "%h\n" 2> /dev/null)
+  
+  if [ -z "$files" ]; then
+    result=""
+    return 0
+  fi
+
+  result=$(xargs -I% basename %  2> /dev/null <<<$files)
 }
 
 __sider_engine() {
