@@ -191,7 +191,6 @@ __sider_db() {
       ;;
 
     list)
-    # TODO Test this
       if [ $argvlen = 2 ]; then
         COMPREPLY=( $(compgen -W "-h --help -s --settings" -- "${argv[1]}") )
       fi
