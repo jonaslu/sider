@@ -27,9 +27,9 @@ const specsFileName = 'specs.json';
 async function writeSnapshotToSpecFile(snapshot) {
   const shallowCopy = { ...snapshot };
 
-  delete shallowCopy.dbName;
-  delete shallowCopy.dbFileFolder;
-  delete shallowCopy.dbSpecsFile;
+  delete shallowCopy.snapshotName;
+  delete shallowCopy.snapshotFileFolder;
+  delete shallowCopy.snapshotSpecsFile;
 
   return fsExtra.writeJSON(snapshot.snapshotSpecsFile, shallowCopy, {
     spaces: 2,
