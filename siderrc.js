@@ -25,9 +25,9 @@ try {
 const siderBaseDir = untildify(siderRcSettings.basePath);
 const baseDir = ensureFolder(siderBaseDir);
 
-const snapshotsStoragePath = `${baseDir}${ensureFolder('snapshots/')}`;
-const dbsStoragePath = `${baseDir}${ensureFolder('dbs/')}`;
-const engineStoragePath = `${baseDir}${ensureFolder('engines/')}`;
+const snapshotsStoragePath = `${baseDir}snapshots/`;
+const dbsStoragePath = `${baseDir}dbs/`;
+const engineStoragePath = `${baseDir}engines/`;
 
 module.exports = {
   snapshotsStoragePath,
