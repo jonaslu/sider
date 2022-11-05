@@ -35,7 +35,6 @@ if (detectMigrationToV1_0_0()) {
     console.log('');
     require('./v0.0.8-v1.0.0/index');
   });
-} else {
-  console.log("No migration needed");
-  rl.close();
 }
+
+rl.close();
