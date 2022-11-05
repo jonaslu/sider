@@ -30,4 +30,3 @@ const snapshotsStoragePath = `${baseDir}snapshots/`;
 module.exports = {
   snapshotsStoragePath,
 };
-
