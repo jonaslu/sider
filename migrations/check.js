@@ -1,40 +1,57 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, import/no-dynamic-require */
 const readline = require('readline');
 const { detectMigrationToV1_0_0 } = require('./v0.0.8-v1.0.0/check');
+const { detectMigrationToV1_2_0 } = require('./v1.1.0-v1.2.0/check');
 
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 
-if (detectMigrationToV1_0_0()) {
-  console.log("You're upgrading from an older version of sider!\n");
-  console.log('A migration of the snapshots, engines and dbs');
-  console.log('is needed.\n');
-
-  console.log('You should do this now, however');
-  console.log('it is possible migrate manually later.\n');
-
-  console.log('Note that sider will ignore old databases, snapshots')
-  console.log('and engine settings if not migrated (i e you\'re asking for trouble).\n');
-
-  console.log('Press n to skip the migration');
-  console.log('or any other key run the migration.\n');
-
-  rl.question('Apply migration [Y/n]? > ', answer => {
-    rl.close();
-
-    if (answer === 'n') {
-      console.log('\nSkipping migration.\n');
-      console.log('You can run the migration manually later with');
-      console.log('sider migrate')
-
-      process.exit(0);
-    }
-
-    console.log('');
-    require('./v0.0.8-v1.0.0/index');
+async function askToApplyMigration(pathToMigrationMainFile) {
+  const answer = await new Promise(resolve => {
+    rl.question('Apply migration [Y/n]? > ', resolve);
   });
+
+  if (answer === 'n') {
+    console.log('\nSkipping migration.\n');
+    console.log('You can run any migration(s) manually later with');
+    console.log('sider migrate');
+
+    rl.close();
+    process.exit(0);
+  }
+
+  console.log('');
+  require(pathToMigrationMainFile);
+  console.log('');
 }
 
-rl.close();
+const needMigrationToV1_0_0 = detectMigrationToV1_0_0();
+const needMigrationToV1_2_0 = detectMigrationToV1_2_0();
+
+async function main() {
+  if (needMigrationToV1_0_0 || needMigrationToV1_2_0) {
+    console.log("You're upgrading from an older version of sider!\n");
+  }
+
+  if (needMigrationToV1_0_0) {
+    console.log('A migration to the v1.0.0 format needed.');
+
+    console.log('If skipped sider will ignore old databases, snapshots and engine settings.\n');
+
+    await askToApplyMigration('./v0.0.8-v1.0.0/index');
+  }
+
+  if (needMigrationToV1_2_0) {
+    console.log('A migration to patch the snapshot(s) specs.json file needed.');
+
+    console.log('If skipped snapshot name after sider snapshot mv will be incorrect.');
+
+    await askToApplyMigration('./v1.1.0-v1.2.0/index');
+  }
+
+  rl.close();
+}
+
+main();
