@@ -1,4 +1,5 @@
 /* eslint-disable camelcase, import/no-dynamic-require */
+const chalk = require('chalk');
 const readline = require('readline');
 const { detectMigrationToV1_0_0 } = require('./v0.0.8-v1.0.0/check');
 const { detectMigrationToV1_2_0 } = require('./v1.1.0-v1.2.0/check');
@@ -30,13 +31,16 @@ async function askToApplyMigration(pathToMigrationMainFile) {
 const needMigrationToV1_0_0 = detectMigrationToV1_0_0();
 const needMigrationToV1_2_0 = detectMigrationToV1_2_0();
 
+const heading = chalk.cyanBright;
+const warning = chalk.yellow;
+
 async function main() {
   if (needMigrationToV1_0_0 || needMigrationToV1_2_0) {
-    console.log("You're upgrading from an older version of sider!\n");
+    console.log(heading("You're upgrading from an older version of sider!\n"));
   }
 
   if (needMigrationToV1_0_0) {
-    console.log('A migration to the v1.0.0 format needed.');
+    console.log(warning('A migration to the v1.0.0 format needed.'));
 
     console.log('If skipped sider will ignore old databases, snapshots and engine settings.\n');
 
@@ -44,7 +48,7 @@ async function main() {
   }
 
   if (needMigrationToV1_2_0) {
-    console.log('A migration to patch the snapshot(s) specs.json file needed.');
+    console.log(warning('A migration to patch the snapshot(s) specs.json file needed.'));
 
     console.log('If skipped snapshot name after sider snapshot mv will be incorrect.');
 
