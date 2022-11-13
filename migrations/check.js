@@ -24,11 +24,10 @@ async function askToApplyMigration(pathToMigrationMainFile) {
   }
 
   console.log('');
-  require(pathToMigrationMainFile);
-  console.log('');
+  await require(pathToMigrationMainFile).main(rl);
 }
 
-const needMigrationToV1_0_0 = detectMigrationToV1_0_0();
+const needMigrationToV1_0_0 = detectMigrationToV1_0_0() || true;
 const needMigrationToV1_2_0 = detectMigrationToV1_2_0();
 
 const heading = chalk.cyanBright;
