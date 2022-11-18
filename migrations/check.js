@@ -27,7 +27,7 @@ async function askToApplyMigration(pathToMigrationMainFile) {
   await require(pathToMigrationMainFile).main(rl);
 }
 
-const needMigrationToV1_0_0 = detectMigrationToV1_0_0() || true;
+const needMigrationToV1_0_0 = detectMigrationToV1_0_0();
 const needMigrationToV1_2_0 = detectMigrationToV1_2_0();
 
 const heading = chalk.cyanBright;
@@ -47,6 +47,10 @@ async function main() {
   }
 
   if (needMigrationToV1_2_0) {
+    if (needMigrationToV1_0_0) {
+      console.log('');
+    }
+
     console.log(warning('A migration to patch the snapshot(s) specs.json file needed.'));
 
     console.log('If skipped snapshot name after sider snapshot mv will be incorrect.');

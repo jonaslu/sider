@@ -28,5 +28,6 @@ const baseDir = ensureFolder(siderBaseDir);
 const snapshotsStoragePath = `${baseDir}snapshots/`;
 
 module.exports = {
+  baseDir,
   snapshotsStoragePath,
 };
