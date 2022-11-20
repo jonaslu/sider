@@ -17,7 +17,7 @@ async function reset(dbName) {
 const usage = `
 Usage: sider db reset [options] <name>
 
-Resets a database (clones the snapshot files anew)
+Resets a database to it's initial cloned state
 
 Options:
   -h, --help     output usage information

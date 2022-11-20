@@ -47,6 +47,7 @@ module.exports = {
 
     return runDb(dbName, dockerArgs, dockerImageAndCommand);
   },
+  
   stop(dbName, runtimeConfig) {
     const { password } = runtimeConfig;
 

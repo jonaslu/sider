@@ -48,19 +48,10 @@ module.exports = {
 
     // !! TODO !! Let engines validate the sent config
 
-    // commanderjs forwards any signals caught to the
-    // it's spawned child process - but the child
-    // process also get's the signal so we're
-    // called twice in the handler. Use this
-    // lo-fi flag to signal we've called stop
-    // already. .once() doesn't work.
-    let stopCalled = false;
-
     // That ctrl+c magic
     process.on('SIGINT', () => {
-      if (!stopCalled && engine.stop) {
+      if (engine.stop) {
         engine.stop(dbName, runtimeConfig);
-        stopCalled = true;
       }
     });
 
