@@ -161,8 +161,9 @@ __sider_db() {
         COMPREPLY=( $(compgen -W "-h --help -p ${result}" -- "${argv[1]}") )
       fi
 
+      # TODO This was broken, test it 
       if [ $argvlen = 3 ] && [ ${argv[1]} = "-p" ]; then
-        COMPREPLY=( $(compgen -W "${result}" -- "${argv[3]}") )
+        COMPREPLY=( $(compgen -W "${result}" -- "${argv[2]}") )
       fi
       ;;
 

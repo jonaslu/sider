@@ -12,7 +12,7 @@ async function promote(dbName, snapshotName) {
   }
 
   const allSnapshots = await snapshots.getAllSnapshotNames();
-  const snapshotExists = allSnapshots.some(snapshotname => snapshotname === snapshotName);
+  const snapshotExists = allSnapshots.some(name => name === snapshotName);
 
   if (snapshotExists) {
     utils.printUserErrorAndDie(`Cannot promote ${chalk.yellow(dbName)}, snapshot ${chalk.cyanBright(snapshotName)} already exists`);
