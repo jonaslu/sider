@@ -150,6 +150,11 @@ Has the contents been tampered with?`,
 
   // Expects it has been verified snapshot does not exist
   async createImportSnapshot(snapshotName, engine, engineName, dumpBasePath) {
+    const files = await fsExtra.readdir(dumpBasePath);
+    if (!files.length) {
+      printUserErrorAndDie(`Could not load snapshot files from folder ${dumpBasePath}. Folder is empty.`);
+    }
+
     return createSnapshot(snapshotName, engineName, async (snapshotFileFolder, cleanUpBeforeExit) => {
       try {
         await engine.load(dumpBasePath, snapshotFileFolder);
