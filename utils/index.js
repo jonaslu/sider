@@ -48,12 +48,19 @@ module.exports = {
   },
 
   didYouMean(name, completions, messagePrefix) {
-    const foundCompletion = completions.find(
-      completion => fastLevenshtein.get(name, completion) <= maxLevenshteinDistanceForCompletion
-    );
+    const [foundCompletion] = completions
+      .reduce((agg, completion) => {
+        const distance = fastLevenshtein.get(name, completion);
+        if (distance <= maxLevenshteinDistanceForCompletion) {
+          agg.push({ distance, completion });
+        }
+
+        return agg;
+      }, [])
+      .sort((a, b) => (a.distance > b.distance ? 1 : a.distance === b.distance ? 0 : -1));
 
     if (foundCompletion) {
-      console.error(`${chalk.red(messagePrefix)} ${chalk.yellow(name)} not found, did you mean ${chalk.cyanBright(foundCompletion)}?`);
+      console.error(`${chalk.red(messagePrefix)} ${chalk.yellow(name)} not found, did you mean ${chalk.cyanBright(foundCompletion.completion)}?`);
     } else {
       console.error(`${chalk.red(messagePrefix)} ${chalk.yellow(name)} not found`);
     }
@@ -85,5 +92,8 @@ module.exports = {
     if (wantHelp) {
       printUsageAndExit(usage);
     }
-  }
+  },
 };
+
+console.log(module.exports.didYouMean("ab", ["abcd"], "goat"));
+// console.log(module.exports.didYouMean("ab", [], "goat"));
