@@ -94,6 +94,3 @@ module.exports = {
     }
   },
 };
-
-console.log(module.exports.didYouMean("ab", ["abcd"], "goat"));
-// console.log(module.exports.didYouMean("ab", [], "goat"));
