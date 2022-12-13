@@ -13,7 +13,7 @@ async function remove(dbName) {
 
   await dbs.removeDb(dbName);
 
-  console.log(`${chalk.green(`Successfully`)} removed db ${chalk.cyanBright(dbName)}`);
+  console.log(`${chalk.green(`Successfully`)} removed database ${chalk.cyanBright(dbName)}`);
 }
 
 const usage = `
