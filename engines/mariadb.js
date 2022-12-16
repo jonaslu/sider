@@ -12,6 +12,7 @@ module.exports = {
       throw getUserError(`Mariadb currently only loads entire data-dirs, cannot find a directory at ${dumpBasePath}`);
     }
 
+
     await fs.copy(dumpBasePath, snapshotStoreFolder);
   },
   getConfig() {

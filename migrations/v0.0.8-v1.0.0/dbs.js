@@ -15,7 +15,7 @@ function getDbSnapshotName(dbName) {
     throw new Error(`Could not read db files folder in ${dbPath}: error ${e}`);
   }
 
-  const dbFolders = dbFolderContents.filter((fileName) => fsExtra.statSync(path.join(dbPath, fileName)).isDirectory());
+  const dbFolders = dbFolderContents.filter(fileName => fsExtra.statSync(path.join(dbPath, fileName)).isDirectory());
 
   if (dbFolders.length === 0) {
     throw new Error(`Did not find any folders in db storage path ${dbPath}`);
@@ -127,6 +127,8 @@ function migrateDb(dbName) {
   removeDbFilesPath(dbName, snapshotName);
 }
 
+let errorsEncountered = false;
+
 function migrateAllDbs() {
   const { dbsStoragePath, dbFolder, baseDir } = v0_0_8_siderrc;
 
@@ -137,17 +139,20 @@ function migrateAllDbs() {
     if (e.code !== 'ENOENT') {
       console.error(`Error occurred when trying to migrate db path ${dbsStoragePath}`);
       console.error('Not continuing migration');
+
       process.exit(1);
     }
   }
 
-  dirContents.forEach((dbName) => {
+  dirContents.forEach(dbName => {
     try {
       migrateDb(dbName);
     } catch (e) {
       console.error(`Cannot migrate: ${dbName}`);
       console.error(e);
+
       console.error(`Continuing migration but db ${dbName} needs manual intervention.`);
+      errorsEncountered = true;
     }
   });
 
@@ -159,8 +164,11 @@ function migrateAllDbs() {
       fsExtra.removeSync(removeFolder);
     } catch (e) {
       console.error(`Could not remove old dbs folder ${dbsStoragePath}: error ${e}`);
+      errorsEncountered = true;
     }
   }
+
+  return errorsEncountered;
 }
 
 module.exports = {

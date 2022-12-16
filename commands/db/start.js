@@ -30,7 +30,6 @@ async function start(dbName, cliRuntimeConfig, persist) {
     ...cliRuntimeConfig,
   }
 
-
   const { port } = dbRuntimeConfig;
   const dbStartTime = moment().format();
 
