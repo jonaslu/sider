@@ -1,4 +1,6 @@
-# Why are we here?
+<img src="assets/logo.svg" height=200 style="margin-bottom: 20px">
+
+# Introduction
 Sider is a command-line tool for running and restoring multiple databases locally.
 
 ![The-power-of-sider](/assets/the-power-of-sider.gif?raw=true)
