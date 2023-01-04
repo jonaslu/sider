@@ -47,8 +47,20 @@ module.exports = {
     const engine = await getEngineOrDie(engineName);
 
     // !! TODO !! Let engines validate the sent config
+    
+    if (process.platform === "win32") {
+      const readline = require("readline");
+      
+      readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+      });
+    
+      readline.on("SIGINT", () => {
+        process.emit("SIGINT");
+      });
+    }
 
-    // That ctrl+c magic
     process.on('SIGINT', () => {
       if (engine.stop) {
         engine.stop(dbName, runtimeConfig);
