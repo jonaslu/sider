@@ -9,7 +9,7 @@
     "untildify": "4.0.0"
   },
   "name": "@jonaslu/sider",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "description": "A cli for running and restoring multiple databases locally",
   "main": "sider.js",
   "repository": {
