@@ -1,5 +1,6 @@
 const fsExtra = require('fs-extra');
 const path = require('path');
+const { spawn } = require('child_process');
 
 const { internalErrorAndDie, printInternalAndDie } = require('../utils');
 
@@ -47,14 +48,18 @@ module.exports = {
     const engine = await getEngineOrDie(engineName);
 
     // !! TODO !! Let engines validate the sent config
-
-    // That ctrl+c magic
+    // SIGINT = ctrl+c on *nix and win
     process.on('SIGINT', () => {
       if (engine.stop) {
-        engine.stop(dbName, runtimeConfig);
+        return engine.stop(dbName, runtimeConfig);
+      }
+
+      if (process.platform === 'win32') {
+        const dockerArgs = ['stop', dbName];
+        spawn('docker', dockerArgs);
       }
     });
 
     return engine.start(dbFileFolder, dbName, runtimeConfig);
-  }
+  },
 };
