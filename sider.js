@@ -22,7 +22,7 @@ function getBashRcAndSiderLine() {
   }
 
   const splitBashRcLines = fileContents.split('\n');
-  const siderCompletionLine = splitBashRcLines.findIndex(line => line.match(/\s*\. <\(sider completion\)\s*$/));
+  const siderCompletionLine = splitBashRcLines.findIndex(line => line.match(/\s*\.\s+<\(sider\s+completion\)\s*$/));
 
   return { siderCompletionLine, splitBashRcLines };
 }
