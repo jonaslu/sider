@@ -12,7 +12,7 @@ function getDbSnapshotName(dbName) {
   try {
     dbFolderContents = fsExtra.readdirSync(dbPath);
   } catch (e) {
-    throw new Error(`Could not read db files folder in ${dbPath}: error ${e}`);
+    throw new Error(`Could not read db files folder in ${dbPath}. Error ${e}.`);
   }
 
   const dbFolders = dbFolderContents.filter(fileName => fsExtra.statSync(path.join(dbPath, fileName)).isDirectory());
@@ -38,7 +38,7 @@ function moveDbFiles(dbName, snapshotName) {
   try {
     fsExtra.moveSync(v0_0_8_dbFilesPath, v1_0_0_dbFilesPath);
   } catch (e) {
-    throw new Error(`Could not move files in folder ${v0_0_8_dbFilesPath} to ${v1_0_0_dbFilesPath}: error ${e}`);
+    throw new Error(`Could not move files in folder ${v0_0_8_dbFilesPath} to ${v1_0_0_dbFilesPath}. Error ${e}.`);
   }
 }
 
@@ -49,7 +49,7 @@ function getEngineNameForSnapshot(snapshotName) {
     const { engineName } = fsExtra.readJSONSync(snapshotSpecsFile, 'utf-8');
     return engineName;
   } catch (e) {
-    throw new Error(`Cannot find engine name for snapshot ${snapshotName} during migration: error ${e}`);
+    throw new Error(`Cannot find engine name for snapshot ${snapshotName} during migration. Error ${e}.`);
   }
 }
 
@@ -61,7 +61,7 @@ function getRuntimeConfigSpec(dbName) {
     return fsExtra.readJSONSync(v0_0_8_dbConfigFile, 'utf-8');
   } catch (e) {
     if (e.code !== 'ENOENT') {
-      throw new Error(`Could not read db old config at path ${v0_0_8_dbConfigFile}: error ${e}`);
+      throw new Error(`Could not read db old config at path ${v0_0_8_dbConfigFile}. Error ${e}.`);
     }
 
     return {};
@@ -91,7 +91,7 @@ function createNewDbSpec(dbName, snapshotName, engineName, runtimeConfigSpec) {
       spaces: 2,
     });
   } catch (e) {
-    throw new Error(`Could not write db specs.json ${v1_0_0_dbSpec}: error ${e}`);
+    throw new Error(`Could not write db specs.json ${v1_0_0_dbSpec}. Error ${e}`);
   }
 }
 
@@ -103,7 +103,7 @@ function removeDbFilesPath(dbName, snapshotName) {
     try {
       fsExtra.removeSync(v0_0_8_dbFilesPath);
     } catch (e) {
-      throw new Error(`Could not remove old dbs folder ${v0_0_8_dbFilesPath}: error ${e}`);
+      throw new Error(`Could not remove old dbs folder ${v0_0_8_dbFilesPath}. Error ${e}.`);
     }
 
     const v0_0_8_dbConfigFile = path.join(dbsStoragePath, dbName, 'config.json');
@@ -111,7 +111,7 @@ function removeDbFilesPath(dbName, snapshotName) {
       fsExtra.removeSync(v0_0_8_dbConfigFile);
     } catch (e) {
       if (e.code !== 'ENOENT') {
-        throw new Error(`Could not remove old dbs folder ${v0_0_8_dbFilesPath}: error ${e}`);
+        throw new Error(`Could not remove old dbs folder ${v0_0_8_dbFilesPath}. Error ${e}.`);
       }
     }
   }
@@ -127,8 +127,6 @@ function migrateDb(dbName) {
   removeDbFilesPath(dbName, snapshotName);
 }
 
-let errorsEncountered = false;
-
 function migrateAllDbs() {
   const { dbsStoragePath, dbFolder, baseDir } = v0_0_8_siderrc;
 
@@ -137,23 +135,12 @@ function migrateAllDbs() {
     dirContents = fsExtra.readdirSync(dbsStoragePath, 'utf-8');
   } catch (e) {
     if (e.code !== 'ENOENT') {
-      console.error(`Error occurred when trying to migrate db path ${dbsStoragePath}`);
-      console.error('Not continuing migration');
-
-      process.exit(1);
+      throw new Error(`Could not read dir ${dbsStoragePath}. Error ${e}.`);
     }
   }
 
   dirContents.forEach(dbName => {
-    try {
       migrateDb(dbName);
-    } catch (e) {
-      console.error(`Cannot migrate: ${dbName}`);
-      console.error(e);
-
-      console.error(`Continuing migration but db ${dbName} needs manual intervention.`);
-      errorsEncountered = true;
-    }
   });
 
   if (dbFolder !== 'dbs/') {
@@ -163,12 +150,9 @@ function migrateAllDbs() {
     try {
       fsExtra.removeSync(removeFolder);
     } catch (e) {
-      console.error(`Could not remove old dbs folder ${dbsStoragePath}: error ${e}`);
-      errorsEncountered = true;
+      throw new Error(`Could not remove old dbs folder ${dbsStoragePath}. Error ${e}.`);
     }
   }
-
-  return errorsEncountered;
 }
 
 module.exports = {
