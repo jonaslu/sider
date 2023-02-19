@@ -22,7 +22,7 @@ function patchSnapshotSpecsFile(snapshotDiskName) {
       spaces: 2,
     });
   } catch (e) {
-    console.error(`Could not patch snapshot ${snapshotDiskName}. Error: ${e}. Manual removal needed.`);
+    throw new Error(`Could not patch snapshot ${snapshotDiskName}. Error: ${e}. Manual removal needed.`);
   }
 }
 

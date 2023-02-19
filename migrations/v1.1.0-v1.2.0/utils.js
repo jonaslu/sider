@@ -19,8 +19,7 @@ function getSnapshotSpecsContent(snapshotDiskName) {
   try {
     snapshotSpecJson = fsExtra.readJSONSync(snapshotSpecPath);
   } catch (e) {
-    console.error(`Error reading snapshot spec ${snapshotSpecPath} cannot patch ${snapshotDiskName}. Error: ${e}. Manual removal needed.`);
-    return;
+    throw new Error(`Error reading snapshot spec ${snapshotSpecPath} cannot patch ${snapshotDiskName}. Error: ${e}. Manual removal needed.`);
   }
 
   return snapshotSpecJson;
