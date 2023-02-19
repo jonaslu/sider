@@ -96,21 +96,11 @@ function migrateAllSnapshots() {
     dirContents = fsExtra.readdirSync(snapshotsStoragePath, 'utf-8');
   } catch (e) {
     if (e.code !== 'ENOENT') {
-      console.error(`Error occurred when trying to migrate snapshot path ${snapshotsStoragePath}`);
-      console.error('Not continuing migration');
-      process.exit(1);
+      throw new Error(`Error occurred when trying to migrate snapshot path ${snapshotsStoragePath}: error ${e}`);
     }
   }
 
-  dirContents.forEach((snapshotName) => {
-    try {
-      migrateSnapshot(snapshotName);
-    } catch (e) {
-      console.error(`Cannot migrate: ${snapshotName}`);
-      console.error(e);
-      console.error(`Continuing migration but snapshot ${snapshotName} needs manual intervention.`);
-    }
-  });
+  dirContents.forEach((snapshotName) => migrateSnapshot(snapshotName));
 
   if (snapshotsFolder !== 'snapshots/') {
     const [firstSubFolder] = snapshotsFolder.split(path.sep);
@@ -119,7 +109,7 @@ function migrateAllSnapshots() {
     try {
       fsExtra.removeSync(removeFolder);
     } catch (e) {
-      console.error(`Could not remove old snapshots folder ${snapshotsStoragePath}: error ${e}`);
+      throw new Error(`Could not remove old snapshots folder ${snapshotsStoragePath}: error ${e}`);
     }
   }
 }
