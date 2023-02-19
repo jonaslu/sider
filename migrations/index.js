@@ -1,5 +1,5 @@
 const { migrateToV1_0_0 } = require('./v0.0.8-v1.0.0/index'); // eslint-disable-line camelcase
-const { migrateToV1_2_0 } = require('./v1.1.0-v1.2.0/index');// eslint-disable-line camelcase
+const { migrateToV1_2_0 } = require('./v1.1.0-v1.2.0/index'); // eslint-disable-line camelcase
 
 try {
   migrateToV1_0_0();

@@ -1,4 +1,4 @@
-const { detectMigrationToV1_2_0 } = require('./check');
+const { detectMigrationToV1_2_0 } = require('./check');  // eslint-disable-line camelcase
 const { patchSnapshots } = require('./patch');
 
 const { snapshotsStoragePath } = require('./v1_0_0_siderrc');
