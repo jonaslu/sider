@@ -1,29 +1,25 @@
+// eslint-disable-next-line camelcase
+const { detectMigrationToV1_0_0 } = require('./check');
+
 const { migrateAllEngines } = require('./engine');
 const { migrateAllSnapshots } = require('./snapshots');
 const { migrateAllDbs } = require('./dbs');
 
-const { baseDir, engineStoragePath, dbsStoragePath, snapshotsStoragePath } = require('./v0_0_8_siderrc');
+const { engineStoragePath, dbsStoragePath, snapshotsStoragePath } = require('./v0_0_8_siderrc');
 
 module.exports = {
-  async main(readline) {
-    console.log(`About to start migration of contents in path ${baseDir}.\n`);
+  migrateToV1_0_0() {
+    if (detectMigrationToV1_0_0()) {
+      console.log("Applying migration to v1.0.0 format");
 
-    console.log(`You're advised to back up the contents in the ${baseDir} folder,`);
-    console.log(`Example via git: cd ${baseDir} && git init && git add . && git commit -m "V1.0.0 migration backup"`);
+      console.log(`\nMigrating any engines in folder ${engineStoragePath}`);
+      migrateAllEngines();
 
-    await new Promise(resolve => { 
-      readline.question('Press any key to continue > ', resolve)
-    });
+      console.log(`\nMigrating any snapshots in folder ${snapshotsStoragePath}`);
+      migrateAllSnapshots();
 
-    console.log(`\nMigrating any engines in folder ${engineStoragePath}`);
-    migrateAllEngines();
-
-    console.log(`\nMigrating any snapshots in folder ${snapshotsStoragePath}`);
-    migrateAllSnapshots();
-
-    console.log(`\nMigrating any dbs in folder ${dbsStoragePath}`);
-    migrateAllDbs();
-
-    console.log(`\nDone!`);
-  },
+      console.log(`\nMigrating any dbs in folder ${dbsStoragePath}`);
+      migrateAllDbs();
+    }
+  }
 };
