@@ -89,7 +89,7 @@ switch (subcommand) {
   }
 
   case 'migrate': {
-    require('./migrations/check');
+    require('./migrations/index');
     break;
   }
 
