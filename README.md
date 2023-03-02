@@ -185,9 +185,18 @@ Once in a while you get something right. If a database is so right it ought to b
 sider db promote <database-name> <snapshot-name>
 ```
 
-# Upgrading
-If there are any breaking changes a migration will be supplied during the upgrade process.
+# Upgrading from an older version
+When any snapshots, databases or settings needs to be patched due to changes or bugs a migration is supplied.
 
-You can (but are not advised) to opt out of the migration during upgrade. If you do then there's will be a way of migrating manually here: [migrations](https://github.com/jonaslu/sider/wiki/Migrations).
+Any migrations are applied automatically when installing via npm as a postinstall hook.
+If there are any errors during the migration an error log will be supplied.
 
-Read the [changelog](https://github.com/jonaslu/sider/wiki/Changelog) if you are upgrading.
+You can (but are strongly advised not to to) opt out of the migration during upgrade by running `npm i -g --ignore-scripts @jonaslu/sider`.
+The migrations can then manually be run via `sider migrate`. Not that sider might be broken if until migrations are applied.
+
+Currently there are migrations when upgrading from version:
+* v0.0.8
+* v1.0.0
+
+# Changelog
+Changes from version to version are documented in the [changelog](https://github.com/jonaslu/sider/wiki/Changelog) .
