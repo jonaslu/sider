@@ -197,6 +197,7 @@ The migrations can then manually be run via `sider migrate`. Not that sider migh
 Currently there are migrations when upgrading from version:
 * v0.0.8
 * v1.0.0
+* v1.1.0
 
 # Changelog
 Changes from version to version are documented in the [changelog](https://github.com/jonaslu/sider/wiki/Changelog) .
