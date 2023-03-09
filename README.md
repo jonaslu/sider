@@ -22,6 +22,30 @@ Sider was built by swedish hands and is therefore obnoxiously overly helpful. Ea
 
 Check the [wiki](https://github.com/jonaslu/sider/wiki) - at least the [changelog](https://github.com/jonaslu/sider/wiki/Changelog) if you are upgrading.
 
+# Table of contents
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Installation](#installation)
+  - [Prerequisites](#prerequisites)
+  - [Getting it](#getting-it)
+- [Quick guide](#quick-guide)
+  - [Engine](#engine)
+  - [Snapshots](#snapshots)
+  - [Databases](#databases)
+  - [Runtime settings](#runtime-settings)
+  - [Configuration file](#configuration-file)
+- [More commands](#more-commands)
+  - [Listing settings](#listing-settings)
+  - [Removing settings](#removing-settings)
+  - [Removing snapshots and databases](#removing-snapshots-and-databases)
+  - [Renaming snapshots and databases](#renaming-snapshots-and-databases)
+  - [Ejecting and promoting](#ejecting-and-promoting)
+- [Upgrading from an older version](#upgrading-from-an-older-version)
+- [Changelog](#changelog)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Installation
 
 ## Prerequisites
