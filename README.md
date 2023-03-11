@@ -53,13 +53,21 @@ Sider depends on the [docker cli](https://docs.docker.com/engine/reference/comma
 
 Type: `docker info` in  a terminal. You'll get a `command not found` if docker is not installed.
 
-## Getting it
+## With nodejs already installed
 `npm install -g @jonaslu/sider`
 
-Type `sider install-completion` and tab-tab away to your hearts content. Currently only bash is supported. See [issues](https://github.com/jonaslu/sider/issues) for progress on more shells.
+## Via homebrew
+```
+brew tap jonaslu/tools
+brew install sider
+```
+
 
 # Quick guide
 The most essential commands and terminology in sider to get you going.
+
+If you're running bash you can type `sider install-completion` and tab-tab away to your hearts content.
+See [issues](https://github.com/jonaslu/sider/issues) for progress on more shells.
 
 ## Engine
 The supported database types are called an engine. Currently supported:
