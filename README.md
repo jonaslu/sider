@@ -216,13 +216,12 @@ Any migrations are applied automatically when installing via npm as a postinstal
 If there are any errors during the migration an error log will be supplied.
 
 You can (but are strongly advised not to to) opt out of the migration during upgrade by running `npm i -g --ignore-scripts @jonaslu/sider`.
-The migrations can then manually be run via `sider migrate`. Not that sider might be broken if until migrations are applied.
+The migrations can then manually be run via `sider migrate`. Not that sider might be broken until migrations are applied.
 
 Currently there are migrations when upgrading from version:
 * v0.0.8
 * v1.0.0
 * v1.1.0
-* v1.2.0
 
 # Changelog
-Changes from version to version are documented in the [changelog](https://github.com/jonaslu/sider/wiki/Changelog) .
+Changes from version to version are documented in the [changelog](https://github.com/jonaslu/sider/wiki/Changelog).
