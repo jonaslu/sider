@@ -5,7 +5,7 @@ function runDb(dbName, dockerArgs, dockerImageAndCommand) {
   let osSpecificArgs = [];
 
   const platform = os.platform();
-  if (platform === 'linux') {
+  if (platform === 'linux' || platform === 'darwin') {
     const { uid, gid } = os.userInfo();
     // prettier-ignore
     osSpecificArgs = [
