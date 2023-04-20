@@ -8,6 +8,21 @@
     "moment": "2.29.4",
     "untildify": "4.0.0"
   },
+  "files": [
+    "/assets",
+    "/commands",
+    "/engines",
+    "/list",
+    "/migrations",
+    "/runtime",
+    "/storage",
+    "/utils",
+    "completion.sh",
+    "LICENSE",
+    "README.md",
+    "sider.js",
+    "siderrc.js"
+  ],
   "name": "@jonaslu/sider",
   "version": "1.2.0",
   "description": "A cli for running and restoring multiple databases locally",
