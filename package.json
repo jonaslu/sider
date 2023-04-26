@@ -24,7 +24,7 @@
     "siderrc.js"
   ],
   "name": "@jonaslu/sider",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A cli for running and restoring multiple databases locally",
   "main": "sider.js",
   "repository": {
