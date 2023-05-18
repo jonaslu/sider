@@ -113,9 +113,9 @@ Start the database:
 sider db start <database-name>
 ```
 
-Any logs from the engine is written to the terminal. Press `ctrl+c` to shut down the database. Database can be started again and again.
+Any logs from the engine is written to the terminal. Press `ctrl+c` to shut down the database. Databases can be started again whereas snapshots are either imported or seeded once.
 
-Revert back the database to it's initial cloned state:
+Reset back the database to it's initial cloned state:
 ```
 sider db reset <database-name>
 ```
