@@ -1,11 +1,15 @@
 <img src="assets/logo.svg" height=200 style="margin-bottom: 20px">
 
 # Introduction
-Sider is a command-line tool for running and restoring multiple databases locally.
+Sider is a command-line tool for installing, running, ruining and reverting databases locally..
 
 ![The-power-of-sider](/assets/the-power-of-sider.gif?raw=true)
 
- It was a [slow revelation](https://www.iamjonas.me/2020/05/sider-10-ode-to-yak-shaving.html) that I'm not perfect, and there wasn't a tool for that (yet). With sider you can run multiple databases with multiple versions on multiple ports with multiple ease!  
+Sider was created because there's always a database somewhere. System-wide installs is cumbersome and reusing system-wide databases over several projects gets out of hand. Sider is a quick start and go solution.
+
+In sider a fresh database is a simple terminal command away. Run it and when done shut it down via ctrl+c.
+
+Internally sider manages bind-mounts to persist the data and uses official docker images. You work on copies of your data and can revert back to the initial state anytime. You can also set and save ports and versions on each individual database.
 
 # For the impatient and brave
 Say to yourself: "I have docker and nodejs installed" three times.
