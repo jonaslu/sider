@@ -43,7 +43,7 @@ async function list(displaySettings) {
 
   dbListingTable.addData(...headings);
 
-  allDbs.forEach((db, index) => {
+  allDbs.sort((a,b) => a.dbName.localeCompare(b.dbName)).forEach((db, index) => {
     const {
       dbName,
       snapshotName,
