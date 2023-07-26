@@ -14,7 +14,9 @@ async function list() {
   const headings = ['name', 'engine', 'created', 'cloned by'].map(heading => chalk.cyanBright(heading));
   snapshotListingsTable.addData(...headings);
 
-  for (let i = 0; i<allSnapshots.length; i++) {
+  const allSnapshotsSorted = allSnapshots.sort((a,b) => a.snapshotName.localeCompare(b.snapshotName));
+
+  for (let i = 0; i<allSnapshotsSorted.length; i++) {
     const { snapshotName, engineName, fstats: { created }} = allSnapshots[i];
     const timeSinceCreated = moment(created).from(moment());
 
