@@ -81,19 +81,26 @@ The supported database types are called an engine. Currently supported:
 - Mongodb
 
 ## Snapshots
-A dump from a database engine are file(s) which can be imported into another instance of the same engine. Examples are redis [dump.rdb](https://redis.io/docs/manual/persistence/#snapshotting) file or the [data-directory](https://www.mongodb.com/docs/manual/tutorial/manage-mongodb-processes/#start-mongod-processes) in mongodb.
+A snapshot is a holder of files containing data. A snapshot is immutable once created. You can import existing data-files from another engine of the same type or create an empty snapshot and seed it with data yourself.
 
-A snapshot is an imported dump of a database. You can also create empty snapshots and seed them with data yourself. Snapshots are immutable.
+Sider supports importing:
+* Redis [snapshot](https://redis.io/docs/management/persistence/#snapshotting) file [dump.rdb](https://redis.io/docs/manual/persistence/#snapshotting)
+* Mongodbs [data-directory](https://www.mongodb.com/docs/manual/tutorial/manage-mongodb-processes/#start-mongod-processes) directory
+* Postgres [data-directory](https://www.postgresql.org/docs/current/storage-file-layout.html) which defaults to `/var/lib/pgsql/data`
+* Mariadbs [data-directory](https://mariadb.com/docs/skysql-dbaas/ref/mdb/system-variables/datadir/) which defaults to `/var/lib/mysql`
 
-Import a dump as a snapshot:
+Dumps produced by [mongodump](https://www.mongodb.com/docs/database-tools/mongodump/), [mariadb-dump/mysqldump](https://mariadb.com/kb/en/mariadb-dump/) and [pg_dump](https://www.postgresql.org/docs/current/app-pgdump.htm) cannot be imported directly as snapshots. They can easily be restored into an running empty snapshot. Reasons and procedure described [here](https://github.com/jonaslu/sider/wiki/Copy-a-live-postgres-database).
+
+Import data-files as a snapshot:
 ```
-sider snapshot add <engine-name> <snapshot-name> <path-to-dump>
+sider snapshot add <engine-name> <snapshot-name> <path-to-data-files>
 ```
 
 Create an empty snapshot:
 ```
 sider snapshot empty <engine-name> <snapshot-name>
 ```
+Then press `ctrl+c` once done manually seeding data.
 
 List all the snapshots:
 ```
@@ -209,7 +216,7 @@ Rename a snapshot or database:
  ```
 
 ## Ejecting and promoting
-If you want to get the dump-files out of a database (in order to import it elsewhere) you can do this via:
+If you want to get the data-files out of a database (in order to import it elsewhere) you can do this via:
 ```
 sider db eject <database-name> <eject-path>
 ```
