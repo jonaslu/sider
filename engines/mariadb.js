@@ -4,6 +4,18 @@ const { spawn } = require('child_process');
 const { runDb } = require('../utils/docker-utils');
 const { getUserError } = require('../utils');
 
+function stopMysqld(binaryName, password, dbName) {
+  const dockerArgs = ['exec', '-uroot'];
+
+  if (password) {
+    dockerArgs.push(`-p${password}`);
+  }
+
+  dockerArgs.push(dbName, binaryName, 'shutdown');
+
+  spawn('docker', dockerArgs);
+}
+
 module.exports = {
   async load(dumpBasePath, snapshotStoreFolder) {
     const dumpBasePathStats = await fs.stat(dumpBasePath);
@@ -12,13 +24,12 @@ module.exports = {
       throw getUserError(`Mariadb currently only loads entire data-dirs, cannot find a directory at ${dumpBasePath}`);
     }
 
-
     await fs.copy(dumpBasePath, snapshotStoreFolder);
   },
   getConfig() {
     return {
       port: 3306,
-      version: 'latest'
+      version: 'latest',
     };
   },
   // !! TODO !!
@@ -48,18 +59,13 @@ module.exports = {
 
     return runDb(dbName, dockerArgs, dockerImageAndCommand);
   },
-  
+
   stop(dbName, runtimeConfig) {
     const { password } = runtimeConfig;
 
-    const dockerArgs = ['exec', dbName, '/usr/bin/mysqladmin', '-uroot'];
-
-    if (password) {
-      dockerArgs.push(`-p${password}`);
-    }
-
-    dockerArgs.push('shutdown');
-
-    spawn('docker', dockerArgs);
-  }
+    stopMysqld('/bin/mariadb-admin', password, dbName);
+    // !! TODO !! Remove once official images
+    // shipping with this command are no longer supported
+    stopMysqld('/usr/bin/mysqladmin', password, dbName);
+  },
 };
